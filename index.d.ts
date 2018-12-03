@@ -421,9 +421,9 @@ declare namespace Connex {
             /**
              * Send request
              * @param options options of signing request
-             * @returns signing result
+             * @returns promise of signing result
              */
-            request(options?: SigningService.Options<T>): SigningService.Result<T>
+            request(options?: SigningService.Options<T>): Promise<SigningService.Result<T>>
         }
 
         namespace SigningService {
