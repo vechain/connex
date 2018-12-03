@@ -63,9 +63,8 @@ declare namespace Connex {
          * 
          * @type T
          * @param kind 
-         * @param criteriaSet 
          */
-        filter<T extends 'event' | 'transfer'>(kind: T, criteriaSet: Array<Thor.Filter.Criteria<T>>): Thor.Filter<T>
+        filter<T extends 'event' | 'transfer'>(kind: T): Thor.Filter<T>
 
         /**
          * To obtain how blockchain would execute a tx with these clauses.
@@ -191,6 +190,12 @@ declare namespace Connex {
         }
 
         interface Filter<T extends 'event' | 'transfer'> {
+            /**
+             * set criteria
+             * @param set 
+             */
+            criteria(set: Filter.Criteria<T>[]): this
+
             /**
              * Set the range to filter in
              * @param range 
@@ -486,7 +491,7 @@ declare namespace Connex {
                 T extends 'tx' ? TxResult :
                 T extends 'cert' ? CertResult : never
 
-            type ErrorType = 'Rejected'
+            type ErrorType = 'BadMessage' | 'Rejected'
         }
     }
 }
