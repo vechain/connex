@@ -195,7 +195,7 @@ declare namespace Connex {
              * Set the range to filter in
              * @param range 
              */
-            range(range: Range): this
+            range(range: Filter.Range): this
 
             /**
              * Set to descending order
