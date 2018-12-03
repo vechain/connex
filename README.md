@@ -1,3 +1,3 @@
-#Connex
+# Connex
 
-Connex defines interfaces to connect DApp with VeChain and user.
+Connex is the standard interface to connect DApp with VeChain and user.

@@ -1,0 +1,24 @@
+{
+  "name": "@vechain/connex",
+  "version": "0.1.0",
+  "description": "Standard interface to connect DApp with VeChain and user",
+  "main": "",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qianbin/connex.git"
+  },
+  "keywords": [
+    "connex",
+    "vechain",
+    "dapp",
+    "blockchain"
+  ],
+  "author": "qianbin",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/qianbin/connex/issues"
+  },
+  "homepage": "https://github.com/qianbin/connex#readme"
+}
