@@ -231,9 +231,10 @@ declare namespace Connex {
             range(range: Filter.Range): this
 
             /**
-             * Set to descending order
+             * Set sort order
+             * @param order
              */
-            desc(): this
+            order(order: 'asc' | 'desc'): this
 
             /**
              * Apply the filter
