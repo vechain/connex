@@ -39,9 +39,8 @@ declare namespace Connex {
          * Create an account visitor.
          * 
          * @param addr account address
-         * @param options 
          */
-        account(addr: string, options?: { revision?: string | number }): Thor.AccountVisitor
+        account(addr: string): Thor.AccountVisitor
 
         /**
          * Create a block visitor.
@@ -54,9 +53,8 @@ declare namespace Connex {
          * Create a transaction visitor.
          * 
          * @param id tx id
-         * @param options 
          */
-        transaction(id: string, options?: { head?: string }): Thor.TransactionVisitor
+        transaction(id: string): Thor.TransactionVisitor
 
         /**
          * Create a filter to filter logs (event | transfer).
@@ -67,12 +65,9 @@ declare namespace Connex {
         filter<T extends 'event' | 'transfer'>(kind: T): Thor.Filter<T>
 
         /**
-         * To obtain how blockchain would execute a tx with these clauses.
-         * 
-         * @param clauses clauses to be atomically executed 
-         * @param options
+         * Create an explainer to obtain how blockchain would execute a tx.
          */
-        explain(clauses: Thor.Clause[], options?: Thor.CallOptions): Promise<Thor.VMOutput[]>
+        explain(): Thor.Explainer
     }
 
     namespace Thor {
@@ -89,6 +84,12 @@ declare namespace Connex {
              * the address of account to be visited
              */
             readonly address: string
+
+            /**
+             * set revision
+             * @param rev block id or number
+             */
+            revision(rev: string | number): this
 
             /**
              * query the account
@@ -130,19 +131,40 @@ declare namespace Connex {
 
         interface Method {
             /**
+             * set value
+             * @param val amount of VET to transfer
+             */
+            value(val: string | number): this
+
+            /**
+             * set caller(msg.sender) 
+             * @param addr caller address
+             */
+            caller(addr: string): this
+
+            /**
+             * set max allowed gas
+             * @param gas 
+             */
+            gas(gas: number): this
+
+            /**
+             * set gas price
+             * @param gp gas price in hex string
+             */
+            gasPrice(gp: string): this
+
+            /**
              * Pack arguments into {@link Clause}.
              * @param args method arguments
-             * @param value amount of VET to transfer
              */
-            asClause(args: any[], value: string | number): Clause
+            asClause(...args: any[]): Clause
 
             /**
              * Call the method to obtain output without altering contract state.
              * @param args method arguments
-             * @param value amount of VET to transfer
-             * @param options 
              */
-            call(args: any[], value: string | number, options?: CallOptions): Promise<VMOutput>
+            call(...args: any[]): Promise<VMOutput>
         }
 
         interface EventVisitor {
@@ -177,6 +199,12 @@ declare namespace Connex {
              * id of transaction to be visited
              */
             readonly id: string
+
+            /**
+             * set head block id
+             * @param head block id
+             */
+            head(head: string): this
 
             /**
              * query the transaction
@@ -214,6 +242,38 @@ declare namespace Connex {
              * @returns filtered records
              */
             apply(offset: number, limit: number): Promise<Thor.Filter.Result<T>>
+        }
+
+        interface Explainer {
+            /**
+             * set caller
+             * @param addr caller address 
+             */
+            caller(addr: string): this
+
+            /**
+             * set max allowed gas
+             * @param gas 
+             */
+            gas(gas: number): this
+
+            /**
+             * set gas price
+             * @param gp gas price in hex string
+             */
+            gasPrice(gp: string): this
+
+            /**
+             * set revision
+             * @param rev block id or number
+             */
+            revision(rev: string | number): this
+
+            /**
+             * execute clauses
+             * @param clauses 
+             */
+            execute(clauses: Clause[]): Promise<VMOutput[]>
         }
 
         /**
@@ -387,14 +447,6 @@ declare namespace Connex {
                 T extends 'transfer' ? Transfer : never>
         }
 
-
-        type CallOptions = {
-            gas?: number
-            gasPrice?: string
-            caller?: string
-            revision?: string | number
-        }
-
         type VMOutput = {
             data: string
             vmError: string
@@ -415,39 +467,66 @@ declare namespace Connex {
     }
 
     namespace Vendor {
-        interface SigningService<T extends 'tx' | 'cert'> {
+        interface TxSigningService {
             /**
-             * Set message
-             * @param msg message requested to be signed
-             * @returns this instance
+             * enforce the signer
+             * @param addr signer address
              */
+            signer(addr: string): this
 
-            message(msg: SigningService.Message<T>): this
             /**
-             * Send request
-             * @param options options of signing request
-             * @returns promise of signing result
+             * enforce max allowed gas
+             * @param gas 
              */
-            request(options?: SigningService.Options<T>): Promise<SigningService.Result<T>>
+            gas(gas: number): this
+
+            /**
+             * set the link to reveal tx related information
+             * @param url link url
+             */
+            link(url: string): this
+
+            /**
+             * set comment for the message
+             * @param text 
+             */
+            comment(text: string): this
+
+            /**
+             * send request
+             * @param msg clauses with comments
+             */
+            request(msg: SigningService.TxMessage): Promise<SigningService.TxResponse>
         }
 
+        interface CertSigningService {
+            /**
+             * enforce the signer
+             * @param addr signer address
+             */
+            signer(addr: string): this
+
+            /**
+             * send request
+             * @param msg 
+             */
+            request(msg: SigningService.CertMessage): Promise<SigningService.CertResponse>
+        }
+
+        type SigningService<T extends 'tx' | 'cert'> =
+            T extends 'tx' ? TxSigningService :
+            T extends 'cert' ? CertSigningService : never
+
         namespace SigningService {
-            type TxMessage = {
-                clauses: {
-                    to: string | null
-                    value: string | number
-                    data: string
-                    /**
-                     * comment to the clause
-                     */
-                    comment?: string
-                }[],
+            type TxMessage = Array<{
+                to: string | null
+                value: string | number
+                data: string
                 /**
-                 * comment to the tx
+                 * comment to the clause
                  */
                 comment?: string
-            }
-
+            }>
 
             type CertMessage = {
                 purpose: 'identification' | 'agreement'
@@ -457,29 +536,12 @@ declare namespace Connex {
                 }
             }
 
-            type Message<T extends 'tx' | 'cert'> =
-                T extends 'tx' ? TxMessage :
-                T extends 'cert' ? CertMessage : never
-
-            type TxOptions = {
-                signer?: string
-                gas?: number
-                link?: string
-            }
-
-            type CertOptions = {
-                signer?: string
-            }
-
-            type Options<T extends 'tx' | 'cert'> =
-                T extends 'tx' ? TxOptions :
-                T extends 'cert' ? CertOptions : never
-
-            type TxResult = {
+            type TxResponse = {
                 txId: string
                 signer: string
             }
-            type CertResult = {
+
+            type CertResponse = {
                 annex: {
                     domain: string
                     timestamp: number
@@ -487,9 +549,6 @@ declare namespace Connex {
                 }
                 signature: string
             }
-            type Result<T extends 'tx' | 'cert'> =
-                T extends 'tx' ? TxResult :
-                T extends 'cert' ? CertResult : never
 
             type ErrorType = 'BadMessage' | 'Rejected'
         }
