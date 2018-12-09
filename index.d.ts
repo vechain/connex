@@ -3,6 +3,11 @@
  */
 declare interface Connex {
     /**
+     * the version number
+     */
+    readonly version: string
+
+    /**
      *  the {@link Thor} instance 
      */
     readonly thor: Connex.Thor
@@ -305,6 +310,11 @@ declare namespace Connex {
                  * block timestamp 
                  */
                 timestamp: number
+
+                /**
+                 * parent block id
+                 */
+                parentID: string
             }
         }
 
