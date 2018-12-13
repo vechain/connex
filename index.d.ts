@@ -92,12 +92,6 @@ declare namespace Connex {
             readonly address: string
 
             /**
-             * set revision
-             * @param rev block id or number
-             */
-            revision(rev: string | number): this
-
-            /**
              * query the account
              * 
              * @returns promise of account
@@ -207,12 +201,6 @@ declare namespace Connex {
             readonly id: string
 
             /**
-             * set head block id
-             * @param head block id
-             */
-            head(head: string): this
-
-            /**
              * query the transaction
              */
             get(): Promise<Transaction | null>
@@ -269,12 +257,6 @@ declare namespace Connex {
              * @param gp gas price in hex string
              */
             gasPrice(gp: string): this
-
-            /**
-             * set revision
-             * @param rev block id or number
-             */
-            revision(rev: string | number): this
 
             /**
              * execute clauses
