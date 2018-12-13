@@ -34,7 +34,7 @@ declare namespace Connex {
         readonly status: Thor.Status
 
         /**
-         * Create a ticker to track block-chain steps.
+         * Create a ticker to track head block changes.
          * 
          * @returns ticker object
          */
@@ -50,9 +50,10 @@ declare namespace Connex {
         /**
          * Create a block visitor.
          * 
-         * @param revision block id or number
+         * @param revision block id or number, 
+         * assumed to current value of status.head.id if omitted
          */
-        block(revision: string | number): Thor.BlockVisitor
+        block(revision?: string | number): Thor.BlockVisitor
 
         /**
          * Create a transaction visitor.
@@ -78,7 +79,7 @@ declare namespace Connex {
     namespace Thor {
         interface Ticker {
             /**
-             * @returns a promise resolves right after new block added
+             * @returns a promise resolves right after head block changed
              * @remarks The returned promise never rejects.
              */
             next(): Promise<void>
@@ -384,7 +385,7 @@ declare namespace Connex {
             nonce: string
             dependsOn: string | null
             size: number
-            meta?: Transaction.Meta
+            meta: Transaction.Meta
         }
 
         type Receipt = {
@@ -398,7 +399,7 @@ declare namespace Connex {
                 events: Event[]
                 transfers: Transfer[]
             }[]
-            meta?: Transaction.Meta
+            meta: Transaction.Meta
         }
 
         type Event = {
@@ -560,10 +561,9 @@ declare namespace Connex {
                 }
                 signature: string
             }
-
-            type ErrorType = 'BadMessage' | 'Rejected'
         }
     }
+    type ErrorType = 'BadParameter' | 'Rejected'
 }
 
 
