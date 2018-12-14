@@ -2,7 +2,7 @@
 
 ## Connex.Version
 
-`connex.version` is a read-only property that indicates the implemented `connex` version in the client. For the differences you can check the [release note]()
+`connex.version` is a read-only property that indicates the implemented `connex` version in the client. For the differences you can check the [release note]().
 
 ``` javascript
 connex.version
@@ -93,34 +93,6 @@ Returns `AccountVisitor`
 
 + `address` - `string`: Account to visit
 
-#### Set block revision for methods
-
-Set the block revision which will be used when you perform methods query info from the blockchain. 
-
-**Parameters**
-
-`revision` - `number|string`: Block ID or block number as revision
-
-Returns `AccountVisitor itself`
-
-``` javascript
-const acc = connex.thor.account('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed')
-acc.revision(0)
-// Display the account detail of genesis block
-acc.get().then(accInfo=>{
-    console.log(accInfo)
-})
-
->{
-    "balance": "0x0",
-    "energy": "0x0",
-    "hasCode": false
-}
-```
-
-
-
-
 #### Get account detail
 
 Returns [`Thor.Account`](#thor.account)
@@ -136,9 +108,100 @@ acc.get().then(accInfo=>{
     "energy": "0x920d91d3ff3bb7f1d527",
     "hasCode": false
 }
+```
+
+#### Get account code
+
+Returns `Thor.Code`
+
+- `code` - `string`: Contract code of account
+
+``` javascript
+const acc = connex.thor.account('0x0000000000000000000000000000456E65726779')
+acc.getCode().then(code=>{
+    console.log(code)
+})
+
+>{
+    "code": "0x6080604052600436106100af576000357c010000000000000000000000000000000000..."
+}
+```
+
+#### Get account storage
+
+**Parameters**
+
+- `key` - `string`: The key to access in  account storage
+
+Returns `Thor.Storage`
+
+- `value` - `string`: The value to the key in account storage
+
+``` javascript
+const acc = connex.thor.account('0x0000000000000000000000000000456E65726779')
+acc.getStorage('0x0000000000000000000000000000000000000000000000000000000000000001').then(storage=>{
+    console.log(storage)
+})
+
+>{
+    "value": "0x7107c9b15a7254dd92173d5421359b33bf40ea4ef0fa278ceaf1d320659d5c7b..."
+}
+```
+
+#### Contract method
+
+With the ABI of a contract,we can create an `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to an clause that is ready to sign.
+
+**Parameters**
+
+- `abi` - `object`: ABI definition of contract method
+
+Returns `Thor.Method`
+
+- `value` - `(val: string|number) :this`: Set value for call and as Clause
+- `caller` - `(addr: string):this`: Set caller for call
+- `gas` - `(gas: string):this`: Set maximum gas allowed for call 
+- `gasPrice` - `(gp: string)`: Set gas price for call in wei
+- `call`: Simulate calling the method to obtain the output without 
+- `asClause`: Pack arguments and setted value into clause
+
+##### Simulate contract call
+
+**Parameters**
+
+- `arguments` - `any`: Arguments defined in method ABI
+
+Returns `Thor.VMOutput`
+
+``` javascript
+// Simulate get name from a VIP-180 compatible contract
+// Solidity: function name() public pure returns(string)
+const nameABI = {}
+const nameMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
+nameMethod.call().then(output=>{
+    console.log(output)
+})
+>{
+    "data": "0x0000000000000000000000...",
+    "events": [],
+    "transfers": [],
+    "gasUsed": 605,
+    "reverted": false,
+    "vmError": "",
+    "decoded": {
+        "0": "VeThor"
+    }
+}
+// Simulate the VIP-180 transfer 1 wei token from Alex to Bob
 
 ```
 
+
+
+
+##### Create a clause for signing
+
+#### Contract Event
 
 ### Create a block visitor
 
