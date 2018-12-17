@@ -304,7 +304,7 @@ Returns `Thor.Event`
 
 **Parameters**
 
-- `indexed` - `object`: Indexed arguments defined in event ABI needed to be filtered
+- `indexed` - `object`: Indexed arguments defined in event ABI needed to be filtered, the items in the object will be combined with `AND` operator. eg. {"ConA": "A", "ConB": "B"} is '`ConA=A` AND `ConB=B`'
 
 Returns `Thor.Criteria`
 
@@ -330,7 +330,7 @@ console.log(criteria)
 
 **Parameters**
 
-- `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, 
+- `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, the items in the array will be combine by `OR` operator to filter the events. eg. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
 
 Returns `Thor.Filter`
 
