@@ -150,7 +150,7 @@ acc.getStorage('0x00000000000000000000000000000000000000000000000000000000000000
 
 #### Contract method
 
-With the ABI of a contract,we can create an `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to an clause that is ready to sign.
+With the ABI of contract,we can create an `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to an clause that is ready to sign.
 
 **Parameters**
 
@@ -177,7 +177,7 @@ Returns `Thor.VMOutput`
 // Simulate get name from a VIP-180 compatible contract
 // Solidity: function name() public pure returns(string)
 const nameABI = {}
-const nameMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
+const nameMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(nameABI)
 nameMethod.call().then(output=>{
     console.log(output)
 })
@@ -192,16 +192,161 @@ nameMethod.call().then(output=>{
         "0": "VeThor"
     }
 }
+
 // Simulate the VIP-180 transfer 1 wei token from Alex to Bob
+// Solidity: function transfer(address _to, uint256 _amount) public returns(bool success)
+const transferABI = {}
+const transferMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
+// Set the args for simulate call
+transferMethod
+    .caller('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed') // Bob's address
+    .gas(100000) // Max gas for simulate 
+    .gasPrice('1000000000000000') // 1 VeThor can buy 1000 gas
 
+// Alice's address and amount in wei
+transferMethod.call('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', 1).then(output=>{
+    console.log(output)
+})
+>{
+    "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
+    "events": [
+        {
+            "address": "0x0000000000000000000000000000456e65726779",
+            "topics": [
+                "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+                "0x0000000000000000000000007567d83b7b8d80addcb281a71d54fc7b3364ffed",
+                "0x000000000000000000000000d3ae78222beadb038203be21ed5ce7c9b1bff602"
+            ],
+            "data": "0x0000000000000000000000000000000000000000000000000000000000000001"
+        }
+    ],
+    "transfers": [],
+    "gasUsed": 13326,
+    "reverted": false,
+    "vmError": "",
+    "decoded": {
+        "0": true,
+        "success": true
+    }
+}
+
+// Simulate EnergyStation convertForEnergy call
+// Solidity:  function convertForEnergy(uint256 _minReturn) public payable
+const convertForEnergyABI = {}
+const convertForEnergyMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(convertForEnergyABI)
+// Set value, leave other arguments unset
+convertForEnergyMethod
+    .value('1000000000000000000') // 1e18 wei
+
+// minReturn in wei(1e16 wei)
+convertForEnergyMethod.call('10000000000000000').then(output=>{
+    console.log(output)
+})
+> ...
 ```
-
-
-
 
 ##### Create a clause for signing
 
+**Parameters**
+
+- `arguments` - `any`: Arguments defined in method ABI
+
+Returns [`Thor.Clause`](#thor.clause)
+
+``` javascript
+// Pack a clause that perform the VIP-180 transfer 1 wei token from Alex to Bob
+// Solidity: function transfer(address _to, uint256 _amount) public returns(bool success)
+const transferABI = {}
+const transferMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
+
+// Alice's address and amount in wei
+const clause = transferMethod.asClause('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', 1)
+console.log(clause)
+>{
+    "to": "0x0000000000000000000000000000456E65726779",
+    "value": "0",
+    "data": "0xa9059cb......"
+}
+
+// Pack a clause that convents 1 VET to VeThor
+// Solidity: function convertForEnergy(uint256 _minReturn) public payable
+const convertForEnergyABI = {}
+const convertForEnergyMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(convertForEnergyABI)
+// Set value, leave other arguments unset
+convertForEnergyMethod
+    .value('1000000000000000000') // 1e18 wei
+
+// minReturn in wei(1e16 wei)
+const clause = convertForEnergyMethod.asClause('10000000000000000')
+console.log(clause)
+> {
+    "to": "0x0000000000000000000000000000456E65726779",
+    "value": "1000000000000000000",
+    "data": "0xa9059cb......"
+}
+// Next you can ask vendor to sign your clause or pack more clause then sign them together
+```
+
 #### Contract Event
+
+With the ABI of contract,we can create an `Thor.Event` object that will be able to filter contracts events with arguments or pack the arguments to criteria for assemble combined filters.
+
+**Parameters**
+
+- `abi` - `object`: ABI definition of contract event
+
+Returns `Thor.Event`
+
+- `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#thor.filter)
+- `filter`: Create a event filter, only accept indexed arguments, see [`Thor.Filter`](#thor.filter)
+
+##### Pack into criteria
+
+**Parameters**
+
+- `indexed` - `object`: Indexed arguments defined in event ABI needed to be filtered
+
+Returns `Thor.Criteria`
+
+``` javascript
+// Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
+const transferEventABI = {}
+const transferEvent = connex.thor.account('0x0000000000000000000000000000456E65726779').event(transferEventABI)
+
+// Pack into criteria filters events that the '_to' is Bob's address
+const criteria = transferEvent.asCriteria({
+    _to: '0xd3ae78222beadb038203be21ed5ce7c9b1bff602'
+})
+console.log(criteria)
+>{
+    "address": "0x0000000000000000000000000000456E65726779",
+    "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+    "topic2": "0x000000000000000000000000d3ae78222beadb038203be21ed5ce7c9b1bff602"
+}
+// Next you can combine different criteria together and put them into filter
+```
+
+#### Create a filter
+
+**Parameters**
+
+- `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, 
+
+Returns `Thor.Filter`
+
+``` javascript
+// Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
+const transferEventABI = {}
+const transferEvent = connex.thor.account('0x0000000000000000000000000000456E65726779').event(transferEventABI)
+
+// Filter the events whether '_to' is Bob's address or '_from' is Alice's address
+const filter = transferEvent.filter([{
+    _to: '0xd3ae78222beadb038203be21ed5ce7c9b1bff602'
+},{
+    _from: '0x733b7269443c70de16bbf9b0615307884bcc5636'
+}])
+// Next you can call the methods of Thor.Filter
+```
 
 ### Create a block visitor
 
