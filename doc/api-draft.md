@@ -13,7 +13,7 @@ connex.version
 
 ### Get genesis block info
 
-Returns [`Thor.Block`](#thor.block)
+Returns [`Thor.Block`](#thorblock)
 
 ``` javascript
 console.log(connex.thor.genesis)
@@ -95,7 +95,7 @@ Returns `AccountVisitor`
 
 #### Get account detail
 
-Returns [`Thor.Account`](#thor.account)
+Returns `Thor.Account`
 
 ``` javascript
 const acc = connex.thor.account('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed')
@@ -251,7 +251,7 @@ convertForEnergyMethod.call('10000000000000000').then(output=>{
 
 - `arguments` - `any`: Arguments defined in method ABI
 
-Returns [`Thor.Clause`](#thor.clause)
+Returns [`Thor.Clause`](#thorclause)
 
 ``` javascript
 // Pack a clause that perform the VIP-180 transfer 1 wei token from Alex to Bob
@@ -297,8 +297,8 @@ With the ABI of contract,we can create an `Thor.Event` object that will be able 
 
 Returns `Thor.Event`
 
-- `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#thor.filter)
-- `filter`: Create a event filter, only accept indexed arguments, see [`Thor.Filter`](#thor.filter)
+- `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#thorfilter)
+- `filter`: Create a event filter, only accept indexed arguments, see [`Thor.Filter`](#thorfilter)
 
 ##### Pack into criteria
 
@@ -390,14 +390,14 @@ const filter = transferEvent.filter([{
 + `chainTag` - `number`: Last byte of genesis block ID
 + `blockRef` - `string`: The BlockRef (an eight-byte array string) includes two parts: the first four bytes contains the block height (number) and the rest four bytes is part of the referred block’s ID. If the referred block is future block, blockNumber + "00000000" should be added
 + `expiration` - `number` : Expiration relative to blockRef(in unit block)
-+ `clauses` - [`Array<Thor.Clause>`](#thor.clause)
++ `clauses` - [`Array<Thor.Clause>`](#thorclause)
 + `gasPriceCoef` - `number`: Coefficient used to calculate the final gas price
 + `gas`  - `number`: Maximum of gas can be consumed to execute this transaction
 origin
 + `nonce` - `string`: Transaction nonce
 + `dependsOn` - `string|null`: ID of the transaction which the current transaction depends(bytes32)
 + `size` - `number`: Byte size of the transaction that is RLP encoded
-+ `meta` - [`Thor.Transaction.Meta`](#thor.transaction.meta)
++ `meta` - [`Thor.Transaction.Meta`](#thortransaction.meta)
 
 ### Thor.Clause
 
@@ -418,29 +418,29 @@ origin
 + `paid` - `string`: Hex form of amount of paid energy
 + `reward` - `string`: Hex form of amount of reward
 + `reverted` - `boolean`: true means the transaction was reverted
-+ `outputs` - [`Array<Thor.Receipt.Output>`]('#thor.receipt.output'): Clause's corresponding outputs
-+ `meta` - [`Thor.Transaction.Meta`](#thor.transaction.meta)
++ `outputs` - [`Array<Thor.Receipt.Output>`]('#thorreceipt.output'): Clause's corresponding outputs
++ `meta` - [`Thor.Transaction.Meta`](#thortransaction.meta)
 
 ### Thor.Receipt.Output
 
 + `contractAddress` - `string`: Deployed contract address, if the corresponding clause is a contract deployment clause
-+ `events` - [`Array<Thor.Event>`](#thor.event): Event log objects produced during clause execution
-+ `transfers` - [`Array<Thor.Transfer>`](#thor.transfer) Transfer log produced during clause execution
++ `events` - [`Array<Thor.Event>`](#thorevent): Event log objects produced during clause execution
++ `transfers` - [`Array<Thor.Transfer>`](#thortransfer) Transfer log produced during clause execution
 
 ### Thor.Event
 
 + `address` - `string`: The address of contract which produces the event (bytes20)
 + `topics` - `Array<string>`: an array with max 5 32 Byte topics, topic 1-4 contains indexed parameters of the log
 + `data` - `string`: The data containing non-indexed log parameter
-+ `meta`  - [`Thor.Log.Meta`](#thor.log.meta)
-+ `decoded`  - [`Thor.Decoded`](#thor.decoded)
++ `meta`  - [`Thor.Log.Meta`](#thorlog.meta)
++ `decoded`  - [`Thor.Decoded`](#thordecoded)
 
 ### Thor.Transfer
 
 + `sender` - `string`: Address that sends vet.
 + `recipient` - `string`: Address that receives vet.
 + `amount` - `string`: Amount of vet in `wei`.
-+ `meta`  - [`Thor.Log.Meta`](#thor.log.meta)
++ `meta`  - [`Thor.Log.Meta`](#thorlog.meta)
 
 ### Thor.Log.Meta
 
