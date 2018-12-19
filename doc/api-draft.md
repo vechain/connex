@@ -171,7 +171,7 @@ Returns `Thor.Method`
 
 - `arguments` - `any`: Arguments defined in method ABI
 
-Returns `Promise<Thor.VMOutput>`
+Returns [`Promise<Thor.VMOutput>`](#thorvmoutput)
 
 ``` javascript
 // Simulate get name from a VIP-180 compatible contract
@@ -557,7 +557,7 @@ filter.criteria([
 + `offset` - `Number`: Start cursor in result 
 + `limit` - `Number`: Constrain the number of result returned
 
-Returns `Promise<Thor.Filter.Result>`
+Returns [`Promise<Thor.Filter.Result>`](#thorfilterresult)
 
 ``` javascript
 // Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
@@ -608,11 +608,11 @@ filter.apply(0, 1).then(logs=>{
     }
 ]
 
-// Filter the transfer log that from 0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed
+// Filter the transfer log that from 0x7567d83b7b8d80addcb281a71d54fc7b3364ffed
 const filter=connex.thor.filter('transfer')
 
 filter.criteria([{
-    sender: '0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed'
+    sender: '0x7567d83b7b8d80addcb281a71d54fc7b3364ffed'
 }])
 
 filter.apply(0,1).then(logs=>{
@@ -635,6 +635,78 @@ filter.apply(0,1).then(logs=>{
 ```
 
 ### Explainer
+
+Explainer gets what would be produced after blockchain execute a tx.
+
+Returns `Thor.Explainer`
+
+- `caller` - `(addr: string): this`: Set caller
+- `gas` - `(gas: number): this`: Set max allowed gas 
+- `gasPrice` - `(gp: string): this`: Set gas price in hex string
+- `execute`: execute the explainer
+
+#### Execute
+
+**Parameters**
+
+Returns [`Promise<Array<Thor.VMOutput>>`](#thorvmoutput)
+
+``` javascript
+const explainer=connex.thor.explain()
+explainer
+    .gas(200000) // Set maximum gas
+    .caller('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed') // Set caller
+
+// Prepare energy transfer clause
+const transferABI = {}
+const transferMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
+// Alice's address and amount in wei
+const energyClause = transferMethod.asClause('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', 1)
+
+explainer.execute([
+    {
+        to: '0xd3ae78222beadb038203be21ed5ce7c9b1bff602',
+        value: 1,
+        data: '0x'
+    },
+    energyClause
+]).then(outputs=>{
+    console.log(outputs)
+})
+>[
+    {
+        "data": "0x",
+        "events": [],
+        "transfers": [
+            {
+                "sender": "0x7567d83b7b8d80addcb281a71d54fc7b3364ffed",
+                "recipient": "0xd3ae78222beadb038203be21ed5ce7c9b1bff602",
+                "amount": "0x1"
+            }
+        ],
+        "gasUsed": 0,
+        "reverted": false,
+        "vmError": ""
+    },
+    {
+        "data": "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "events": [
+            {
+                "address": "0x0000000000000000000000000000456e65726779",
+                "topics": [
+                    "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+                    "0x0000000000000000000000007567d83b7b8d80addcb281a71d54fc7b3364ffed",
+                    "0x000000000000000000000000d3ae78222beadb038203be21ed5ce7c9b1bff602"
+                ],
+                "data": "0x0000000000000000000000000000000000000000000000000000000000000001"
+            }
+        ],
+        "transfers": [],
+        "gasUsed": 13326,
+        "reverted": false,
+        "vmError": ""
+ 
+``` 
 
 ## Connex.Vendor
 
@@ -730,7 +802,10 @@ origin
 + `txID` - `string`: Transaction identifier of the log
 + `txOrigin` - `string`: Transaction signer the log
 
+### Thor.VMOutput
+
+### Thor.Filter.Result
+
 ### Thor.Decoded
 
-### Thor.VMOutput
 
