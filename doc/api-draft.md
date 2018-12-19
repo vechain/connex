@@ -67,7 +67,7 @@ Ticker is an concept that describes chain increment, when there is new block add
 
 Returns `Thor.Ticker`
 
-+ `next` - `() => Promise<void>`: Call next will create a promise that resolves when there is a new block added
++ `next` - `(): Promise<void>`: Call next will create a promise that resolves when there is a new block added
 
 ``` javascript
 const ticker = connex.thor.ticker()
@@ -95,7 +95,7 @@ Returns `AccountVisitor`
 
 #### Get account detail
 
-Returns `Thor.Account`
+Returns [`Promise<Thor.Account>`](#thoraccount)
 
 ``` javascript
 const acc = connex.thor.account('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed')
@@ -112,7 +112,7 @@ acc.get().then(accInfo=>{
 
 #### Get account code
 
-Returns `Thor.Code`
+Returns `Promise<Thor.Code>`
 
 - `code` - `string`: Contract code of account
 
@@ -133,7 +133,7 @@ acc.getCode().then(code=>{
 
 - `key` - `string`: The key to access in  account storage
 
-Returns `Thor.Storage`
+Returns `Promise<Thor.Storage>`
 
 - `value` - `string`: The value to the key in account storage
 
@@ -158,7 +158,7 @@ With the ABI of contract,we can create an `Thor.Method` object that will be able
 
 Returns `Thor.Method`
 
-- `value` - `(val: string|number) :this`: Set value for call and as Clause
+- `value` - `(val: string|number):this`: Set value for call and as Clause
 - `caller` - `(addr: string):this`: Set caller for call
 - `gas` - `(gas: string):this`: Set maximum gas allowed for call 
 - `gasPrice` - `(gp: string)`: Set gas price for call in wei
@@ -171,7 +171,7 @@ Returns `Thor.Method`
 
 - `arguments` - `any`: Arguments defined in method ABI
 
-Returns `Thor.VMOutput`
+Returns `Promise<Thor.VMOutput>`
 
 ``` javascript
 // Simulate get name from a VIP-180 compatible contract
@@ -189,7 +189,8 @@ nameMethod.call().then(output=>{
     "reverted": false,
     "vmError": "",
     "decoded": {
-        "0": "VeThor"
+        "0": "VeThor",
+         "__length__": 1
     }
 }
 
@@ -226,6 +227,7 @@ transferMethod.call('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', 1).then(output
     "vmError": "",
     "decoded": {
         "0": true,
+        "__length__": 1,
         "success": true
     }
 }
@@ -304,7 +306,7 @@ Returns `Thor.Event`
 
 **Parameters**
 
-- `indexed` - `object`: Indexed arguments defined in event ABI needed to be filtered, the items in the object will be combined with `AND` operator. eg. {"ConA": "A", "ConB": "B"} is '`ConA=A` AND `ConB=B`'
+- `indexed` - `object`: Indexed arguments defined in event ABI needed to be filtered, the items in the object will be combined with `AND` operator. e.g. {"ConA": "A", "ConB": "B"} is '`ConA=A` AND `ConB=B`'
 
 Returns `Thor.Criteria`
 
@@ -330,9 +332,9 @@ console.log(criteria)
 
 **Parameters**
 
-- `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, the items in the array will be combine by `OR` operator to filter the events. eg. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
+- `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, the items in the array will be combined by `OR` operator to filter the events. e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
 
-Returns `Thor.Filter`
+Returns [`Thor.Filter`](#filter)
 
 ``` javascript
 // Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
@@ -348,13 +350,291 @@ const filter = transferEvent.filter([{
 // Next you can call the methods of Thor.Filter
 ```
 
-### Create a block visitor
+### Block visitor
 
-### Create a transaction visitor
+**Parameters**
 
-### Create a filter for event logs or transfers
+- `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision(As long as the revision is set,it can't be changed again)
 
-### Create a explainer
+Returns `Thor.BlockVisitor`
+
+- `revision` - `number|string`: Block number or ID to be visited
+
+#### Get block detail
+
+Returns [`Promise<Thor.Block>`](#thorblock)
+
+``` javascript
+const blk=connex.thor.block(0)
+
+blk.get().then(block=>{
+    console.log(block)
+})
+>{
+    "number": 0,
+    "id": "0x000000000b2bce3c70bc649a02749e8687721b09ed2e15997f466536b20bb127",
+    "size": 170,
+    "parentID": "0xffffffff00000000000000000000000000000000000000000000000000000000",
+    "timestamp": 1530014400,
+    "gasLimit": 10000000,
+    "beneficiary": "0x0000000000000000000000000000000000000000",
+    "gasUsed": 0,
+    "totalScore": 0,
+    "txsRoot": "0x45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0",
+    "stateRoot": "0x4ec3af0acbad1ae467ad569337d2fe8576fe303928d35b8cdd91de47e9ac84bb",
+    "receiptsRoot": "0x45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0",
+    "signer": "0x0000000000000000000000000000000000000000",
+    "isTrunk": true,
+    "transactions": []
+}
+```
+
+### Transaction visitor
+
+**Parameters**
+
+- `id` - `string`: Transaction ID to visit(As long as the revision is set,it can't be changed again)
+
+Returns `Thor.TransactionVisitor`
+
+- `id` - `number|string`: Block number or ID to be visited
+
+#### Get transaction detail
+
+Returns [`Thor.Transaction`](#thortransaction)
+
+``` javascript
+const transaction=connex.thor.transaction('0x9daa5b584a98976dfca3d70348b44ba5332f966e187ba84510efb810a0f9f851')
+
+transaction.get().then(tx=>{
+    console.log(tx)
+})
+>{
+    "id": "0x9daa5b584a98976dfca3d70348b44ba5332f966e187ba84510efb810a0f9f851",
+    "chainTag": 39,
+    "blockRef": "0x00003abac0432454",
+    "expiration": 720,
+    "clauses": [
+        {
+            "to": "0x7567d83b7b8d80addcb281a71d54fc7b3364ffed",
+            "value": "0x152d02c7e14af6800000",
+            "data": "0x"
+        }
+    ],
+    "gasPriceCoef": 128,
+    "gas": 21000,
+    "origin": "0xe59d475abe695c7f67a8a2321f33a856b0b4c71d",
+    "nonce": "0x12256df6fb",
+    "dependsOn": null,
+    "size": 128,
+    "meta": {
+        "blockID": "0x00003abbf8435573e0c50fed42647160eabbe140a87efbe0ffab8ef895b7686e",
+        "blockNumber": 15035,
+        "blockTimestamp": 1530164750
+    }
+}
+```
+
+#### Get transaction receipt
+
+Returns [`Thor.Receipt`](#thorreceipt)
+
+``` javascript
+const transaction=connex.thor.transaction('0x9daa5b584a98976dfca3d70348b44ba5332f966e187ba84510efb810a0f9f851')
+
+transaction.getReceipt().then(tx=>{
+    console.log(tx)
+})
+>{
+    "gasUsed": 21000,
+    "gasPayer": "0xe59d475abe695c7f67a8a2321f33a856b0b4c71d",
+    "paid": "0x1b5b8c4e33f51f5e8",
+    "reward": "0x835107ddc632302c",
+    "reverted": false,
+    "meta": {
+        "blockID": "0x00003abbf8435573e0c50fed42647160eabbe140a87efbe0ffab8ef895b7686e",
+        "blockNumber": 15035,
+        "blockTimestamp": 1530164750,
+        "txID": "0x9daa5b584a98976dfca3d70348b44ba5332f966e187ba84510efb810a0f9f851",
+        "txOrigin": "0xe59d475abe695c7f67a8a2321f33a856b0b4c71d"
+    },
+    "outputs": [
+        {
+            "contractAddress": null,
+            "events": [],
+            "transfers": []
+        }
+    ]
+}
+```
+
+### Filter
+
+Filter event and transfer logs on the blockchain.Filter often works with `Connex.Thor.Account`, either create a filter from a event or pack a criteria and then assemble several criteria and set to a filter.But also there is a way of create a filter and assemble criteria as your need then apply it.
+
+**Parameters**
+
+- `kind` - `'event'|'transfer'`: Which kind of filter that creates
+
+Returns `Thor.Filter`
+
++ `order` - `(order: 'asc'|'desc'): this`: Set the order for filter
++ `range` - `(range: Thor.Filter.Range): this`: Set the range for the filter 
++ `criteria` - `(set: Array<Thor.Filter.Criteria>): this`: Set criteria set for the filter
++ `apply` - `(offset: number, limit: number): Promise<Thor.Filter.Result`: Apply the filter and get the result
+
+#### Filter range
+
+**Parameters**
+
+`Thor.Filter.Range`:
+
+- `unit` - `'block'|'time'`: Range unit, can be filtered by block number or timestamp in second
+- `from` - `Number`: Filter start point in unit
+- `to` - `Number`: Filter stop point in unit
+
+Returns `this`
+
+``` javascript
+const filter =  connex.thor.filter('transfer')
+
+// Set the filter range as block 0 to block 100
+filter.range({
+    unit: 'block',
+    from: 0,
+    to: 100
+})
+// Next you can set other options or perform apply, complete demo code will be provided below
+```
+
+#### Filter criteria
+
+Filters support two different type of log: `event` and `transfer` so there are two type of `Thor.Filter.Criteria`.
+
+`Thor.Filter.Event.Criteria`:
+
+- `address` - `string(optional)`: An address to get logs from particular account
++ `topic0` - `string(optional)`: Topic0 to match
++ `topic1` - `string(optional)`: Topic1 to match
++ `topic2` - `string(optional)`: Topic2 to match
++ `topic3` - `string(optional)`: Topic3 to match
++ `topic4` - `string(optional)`: Topic4 to match
+
+`Thor.Filter.Transfer.Criteria`:
+
++ `txOrigin` - `string(optional)`: Signer address of tx 
++ `sender` - `string(optional)`: Vet sender address
++ `recipient` - `string(optional)`: Vet recipient address
+
+**Parameters**
+
+- `set` - `Array<Thor.Filter.Criteria>`: Criteria set for the filter,either array of `Event.Criteria` or array of `Transfer.Criteria`，items in the criteria array will be combined by `OR` operator to filter the events. e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
+
+``` javascript
+const filter=connex.thor.filter('event')
+
+filter.criteria([
+    // Matches VIP-180 Transfer from '0xd3ae78222beadb038203be21ed5ce7c9b1bff602'
+    {
+        "address": "0x0000000000000000000000000000456E65726779",
+        "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "topic1": "0x000000000000000000000000d3ae78222beadb038203be21ed5ce7c9b1bff602"
+    },
+    // Matches VIP-180 Transfer to '0x7567d83b7b8d80addcb281a71d54fc7b3364ffed'
+    {
+        "address": "0x0000000000000000000000000000456E65726779",
+        "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "topic2": "0x0000000000000000000000007567d83b7b8d80addcb281a71d54fc7b3364ffed"
+    }
+])
+// Next you can set other options or call apply to execute the filter
+```
+
+#### Apply
+
+**Parameters**
+
++ `offset` - `Number`: Start cursor in result 
++ `limit` - `Number`: Constrain the number of result returned
+
+Returns `Promise<Thor.Filter.Result>`
+
+``` javascript
+// Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
+const transferEventABI = {}
+const transferEvent = connex.thor.account('0x0000000000000000000000000000456E65726779').event(transferEventABI)
+
+// Create a filter from eventABI
+filter=transferEvent.filter([{
+    _to: '0xd3ae78222beadb038203be21ed5ce7c9b1bff602'
+}])
+// Set filter options
+filter
+    .order('desc') // Work from the last event
+    .range({
+        unit: 'block',
+        from: '10000',
+        to: '40000'
+    }) // Set the range
+// Apply the filter, get the first one
+filter.apply(0, 1).then(logs=>{
+    console.log(logs)
+})
+>[
+    {
+        "address": "0x0000000000000000000000000000456e65726779",
+        "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+            "0x0000000000000000000000007567d83b7b8d80addcb281a71d54fc7b3364ffed",
+            "0x00000000000000000000000000f34f4462c0f6a6f5e76fb1b6d63f05a32ed2c6"
+        ],
+        "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+        "meta": {
+            "blockID": "0x0000813fbe48421dfdc9400f1f4e1d67ce34256538afd1c2149c4047d72c4175",
+            "blockNumber": 33087,
+            "blockTimestamp": 1530345270,
+            "txID": "0x29b0af3ffb8eff4cc48a24ce9a800aaf4d0e92b72dbcf17ce01b14fd01af1290",
+            "txOrigin": "0x7567d83b7b8d80addcb281a71d54fc7b3364ffed"
+        },
+        "decoded": {
+            "0": "0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed",
+            "1": "0x00F34f4462c0f6a6f5E76Fb1b6D63F05A32eD2C6",
+            "2": "1000000000000000000",
+            "__length__": 3,
+            "_from": "0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed",
+            "_to": "0x00F34f4462c0f6a6f5E76Fb1b6D63F05A32eD2C6",
+            "_value": "1000000000000000000"
+        }
+    }
+]
+
+// Filter the transfer log that from 0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed
+const filter=connex.thor.filter('transfer')
+
+filter.criteria([{
+    sender: '0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed'
+}])
+
+filter.apply(0,1).then(logs=>{
+    console.log(logs)
+})
+>[
+    {
+        "sender": "0x7567d83b7b8d80addcb281a71d54fc7b3364ffed",
+        "recipient": "0x3cc190d342a0d3a7365538d94adffec34f789cd0",
+        "amount": "0xde0b6b3a7640000",
+        "meta": {
+            "blockID": "0x00005be5d2129f01cb60ef20b43208091722bf6e0086ac24745cd26698e9d93d",
+            "blockNumber": 23525,
+            "blockTimestamp": 1530249650,
+            "txID": "0xd08e959c0ae918ab72d4da162856e7a4556c576b8ae849d09dbd38e5a419e94b",
+            "txOrigin": "0x7567d83b7b8d80addcb281a71d54fc7b3364ffed"
+        }
+    }
+] 
+```
+
+### Explainer
 
 ## Connex.Vendor
 
@@ -418,8 +698,8 @@ origin
 + `paid` - `string`: Hex form of amount of paid energy
 + `reward` - `string`: Hex form of amount of reward
 + `reverted` - `boolean`: true means the transaction was reverted
-+ `outputs` - [`Array<Thor.Receipt.Output>`]('#thorreceipt.output'): Clause's corresponding outputs
-+ `meta` - [`Thor.Transaction.Meta`](#thortransaction.meta)
++ `outputs` - [`Array<Thor.Receipt.Output>`]('#thorreceiptoutput'): Clause's corresponding outputs
++ `meta` - [`Thor.Transaction.Meta`](#thortransactionmeta)
 
 ### Thor.Receipt.Output
 
@@ -433,14 +713,14 @@ origin
 + `topics` - `Array<string>`: an array with max 5 32 Byte topics, topic 1-4 contains indexed parameters of the log
 + `data` - `string`: The data containing non-indexed log parameter
 + `meta`  - [`Thor.Log.Meta`](#thorlog.meta)
-+ `decoded`  - [`Thor.Decoded`](#thordecoded)
++ `decoded`  - [`Thor.Decoded(optional)`](#thordecoded)
 
 ### Thor.Transfer
 
 + `sender` - `string`: Address that sends vet.
 + `recipient` - `string`: Address that receives vet.
 + `amount` - `string`: Amount of vet in `wei`.
-+ `meta`  - [`Thor.Log.Meta`](#thorlog.meta)
++ `meta`  - [`Thor.Log.Meta`](#thorlogmeta)
 
 ### Thor.Log.Meta
 
@@ -451,4 +731,6 @@ origin
 + `txOrigin` - `string`: Transaction signer the log
 
 ### Thor.Decoded
+
+### Thor.VMOutput
 
