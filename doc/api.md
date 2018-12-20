@@ -2,7 +2,7 @@
 
 ## Connex.Version
 
-`connex.version` is a read-only property that indicates the implemented `connex` version in the client. For the differences you can check the [release note]().
+`connex.version` is a read-only property that indicates the implemented `connex` version in the client. For the differences, you can check the [release note]().
 
 ``` javascript
 connex.version
@@ -63,7 +63,7 @@ console.log(connex.thor.status)
 
 ### Create a ticker
 
-Ticker is an concept that describes chain increment, when there is new block added to the chain, tickers will be triggered.This API will create an ticker which has a function that creates an promise that will resolve when it's triggered, please be noted that it never rejects.
+Ticker is a concept that describes chain increment when there is new block added to the chain, tickers will be triggered. This API will create a ticker which has a function that creates a promise that will resolve when it's triggered, please be noted that it never rejects.
 
 Returns `Thor.Ticker`
 
@@ -75,7 +75,7 @@ ticker().next().then(()=>{
     console.log('ticker triggered')
 })
 
-// Few seconds after
+// After a few seconds 
 > 'ticker triggered'
 ```
 
@@ -83,7 +83,7 @@ ticker().next().then(()=>{
 
 Account visitor a bunch of APIs to get account details and interact with account methods.
 
-#### Create a account visitor
+#### Create an account visitor
 
 ``` javascript
 const acc = connex.thor.account('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed')
@@ -131,7 +131,7 @@ acc.getCode().then(code=>{
 
 **Parameters**
 
-+ `key` - `string`: The key to access in  account storage
++ `key` - `string`: The accessing in  account storage
 
 Returns `Promise<Thor.Storage>`
 
@@ -150,7 +150,7 @@ acc.getStorage('0x00000000000000000000000000000000000000000000000000000000000000
 
 #### Contract method
 
-With the ABI of contract,we can create an `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to an clause that is ready to sign.
+With the ABI of contract,we can create a `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to a clause that is ready to sign.
 
 **Parameters**
 
@@ -291,7 +291,7 @@ console.log(clause)
 
 #### Contract Event
 
-With the ABI of contract,we can create an `Thor.Event` object that will be able to filter contracts events with arguments or pack the arguments to criteria for assemble combined filters.
+With the ABI of contract, we can create a `Thor.Event` object that will be able to filter contracts events with arguments or pack the arguments to criteria for assembling combined filters.
 
 **Parameters**
 
@@ -300,7 +300,7 @@ With the ABI of contract,we can create an `Thor.Event` object that will be able 
 Returns `Thor.Event`
 
 + `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#thorfilter)
-+ `filter`: Create a event filter, only accept indexed arguments, see [`Thor.Filter`](#thorfilter)
++ `filter`: Create an event filter, only accept indexed arguments, see [`Thor.Filter`](#thorfilter)
 
 ##### Pack into criteria
 
@@ -354,7 +354,7 @@ const filter = transferEvent.filter([{
 
 **Parameters**
 
-+ `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision(As long as the revision is set,it can't be changed again)
++ `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision(As long as the revision is set, it can't be changed again)
 
 Returns `Thor.BlockVisitor`
 
@@ -393,7 +393,7 @@ blk.get().then(block=>{
 
 **Parameters**
 
-+ `id` - `string`: Transaction ID to visit(As long as the revision is set,it can't be changed again)
++ `id` - `string`: Transaction ID to visit(As long as the revision is set, it can't be changed again)
 
 Returns `Thor.TransactionVisitor`
 
@@ -470,7 +470,7 @@ transaction.getReceipt().then(tx=>{
 
 ### Filter
 
-Filter event and transfer logs on the blockchain.Filter often works with `Connex.Thor.Account`, either create a filter from a event or pack a criteria and then assemble several criteria and set to a filter.But also there is a way of create a filter and assemble criteria as your need then apply it.
+Filter event and transfer logs on the blockchain. Filter often works with `Connex.Thor.Account`, either create a filter from an event or pack a criteria and then assemble several criteria and set to a filter.But also there is a way to creating a filter and assemble criteria as your need then apply it.
 
 **Parameters**
 
@@ -509,7 +509,7 @@ filter.range({
 
 #### Filter criteria
 
-Filters support two different type of log: `event` and `transfer` so there are two type of `Thor.Filter.Criteria`.
+Filters support two different types of log: `event` and `transfer` so there are two type of `Thor.Filter.Criteria`.
 
 `Thor.Filter.Event.Criteria`:
 
@@ -636,7 +636,7 @@ filter.apply(0,1).then(logs=>{
 
 ### Explainer
 
-Explainer gets what would be produced after blockchain execute a tx.
+Explainer gets what would be produced after blockchain executes a tx.
 
 Returns `Thor.Explainer`
 
@@ -754,8 +754,8 @@ origin
 ### Thor.Clause
 
 + `to` - `string|null`: The destination address of the message, null for a contract-creation transaction
-+ `value`- `string|number`: The value, with an unit of `wei`, transferred through the transaction. Specifically, it plays the role of endowment when the transaction is contract-creation type
-+ `data` - `string`: Either the [ABI byte string](http://solidity.readthedocs.io/en/latest/abi-spec.html) containing the data of the function call on a contract, or the initialization code of a contract-creation transaction
++ `value`- `string|number`: In transfer transaction, the value is measuring in `wei`. Specifically, it plays the role of endowment when the transaction is contract-creation type
++ `data` - `string`: Either the [ABI byte string](http://solidity.readthedocs.io/en/latest/abi-spec.html) containing the data of the function call on a contract or the initialization code of a contract-creation transaction
 
 ### Thor.Transaction.Meta
 
@@ -834,7 +834,7 @@ For example if a method's definition is `function name() public pure returns(str
 
 You can access the name by calling `decoded['name']` or `decoded['0']`(Number index is for non-named outputs).
 
-Another example if a event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after perform the filter `decoded` will be like following: 
+Another example if an event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after performing the filter `decoded` will be following: 
 
 ``` javascript
 {
