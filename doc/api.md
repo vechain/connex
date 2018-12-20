@@ -63,7 +63,7 @@ console.log(connex.thor.status)
 
 ### Create a Ticker
 
-`Ticker` is a concept that describes chain increment, when there is a new block added to the chain, tickers will be triggered. This API will create a ticker which has a function that creates a `Promise` that will resolve when a new block is truely added, please be advised that it never rejects.
+`Ticker` is a concept that describes chain increment, when there is a new block added to the chain, tickers will be triggered. This API will create a ticker which has a function that creates a `Promise` that will resolve when a new block is truly added, please be advised that it never rejects.
 
 Returns `Thor.Ticker`
 
@@ -470,7 +470,7 @@ transaction.getReceipt().then(tx=>{
 
 ### Filter
 
-Filter event and transfer logs on the blockchain. Filter often works with `Connex.Thor.Account`, either creates a filter from a event or packs criteria and then assembles several criteria and sets to a filter. But also there is a way of creating a filter and assembling criteria as per your need then apply it.
+Filter event and transfer logs on the blockchain. Filter often works with `Connex.Thor.Account`, either creates a filter from an event or packs criteria and then assembles several criteria and sets to a filter. But also there is a way of creating a filter and assembling criteria as per your need then apply it.
 
 **Parameters**
 
@@ -509,7 +509,7 @@ filter.range({
 
 #### Filter criteria
 
-Filters support two different types of log: `event` and `transfer` so there are two type of `Thor.Filter.Criteria`.
+Filters support two different types of log: `event` and `transfer` so there are two types of `Thor.Filter.Criteria`.
 
 `Thor.Filter.Event.Criteria`:
 
@@ -528,7 +528,7 @@ Filters support two different types of log: `event` and `transfer` so there are 
 
 **Parameters**
 
-+ `set` - `Array<Thor.Filter.Criteria>`: Criteria set for the filter, either array of `Event.Criteria` or an array of `Transfer.Criteria`, items in the criteria array will be combined by `OR` operator to filter the events: e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
++ `set` - `Array<Thor.Filter.Criteria>`: Criteria set for the filter, either array of `Event.Criteria` or an array of `Transfer.Criteria`,items in the criteria array will be combined by `OR` operator to filter the events: e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
 
 ``` javascript
 const filter=connex.thor.filter('event')
@@ -547,7 +547,7 @@ filter.criteria([
         "topic2": "0x0000000000000000000000007567d83b7b8d80addcb281a71d54fc7b3364ffed"
     }
 ])
-// Next you can set other options or call apply to execute the filter
+// Next you can set other options or call apply to executes the filter
 ```
 
 #### Apply
@@ -754,8 +754,8 @@ origin
 ### Thor.Clause
 
 + `to` - `string|null`: The destination address of the message, null for a contract-creation transaction
-+ `value`- `string|number`: The value, with an unit of `wei`, transferred through the transaction. Specifically, it plays the role of endowment when the transaction is contract-creation type
-+ `data` - `string`: Either the [ABI byte string](http://solidity.readthedocs.io/en/latest/abi-spec.html) containing the data of the function call on a contract, or the initialization code of a contract-creation transaction
++ `value`- `string|number`: The value, with a unit of `wei`, transferred through the transaction. Specifically,it plays the role of endowment when the transaction is contract-creation type
++ `data` - `string`: Either the [ABI byte string](http://solidity.readthedocs.io/en/latest/abi-spec.html) containing the data of the function call on a contract or the initialization code of a contract-creation transaction
 
 ### Thor.Transaction.Meta
 
@@ -834,7 +834,7 @@ For example if a method's definition is `function name() public pure returns(str
 
 You can access the name by calling `decoded['name']` or `decoded['0']`(Number index is for non-named outputs).
 
-Another example if a event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after performing the filter `decoded` will be like following: 
+Another example if an event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after performing the filter `decoded` will be following: 
 
 ``` javascript
 {
