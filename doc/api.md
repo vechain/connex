@@ -76,7 +76,7 @@ ticker().next().then(()=>{
 })
 
 // Few seconds after
-> ticker triggered'
+> 'ticker triggered'
 ```
 
 ### Account visitor
@@ -114,7 +114,7 @@ acc.get().then(accInfo=>{
 
 Returns `Promise<Thor.Code>`
 
-- `code` - `string`: Contract code of account
++ `code` - `string`: Contract code of account
 
 ``` javascript
 const acc = connex.thor.account('0x0000000000000000000000000000456E65726779')
@@ -131,11 +131,11 @@ acc.getCode().then(code=>{
 
 **Parameters**
 
-- `key` - `string`: The key to access in  account storage
++ `key` - `string`: The key to access in  account storage
 
 Returns `Promise<Thor.Storage>`
 
-- `value` - `string`: The value to the key in account storage
++ `value` - `string`: The value to the key in account storage
 
 ``` javascript
 const acc = connex.thor.account('0x0000000000000000000000000000456E65726779')
@@ -154,22 +154,22 @@ With the ABI of contract,we can create an `Thor.Method` object that will be able
 
 **Parameters**
 
-- `abi` - `object`: ABI definition of contract method
++ `abi` - `object`: ABI definition of contract method
 
 Returns `Thor.Method`
 
-- `value` - `(val: string|number):this`: Set value for call and as Clause
-- `caller` - `(addr: string):this`: Set caller for call
-- `gas` - `(gas: string):this`: Set maximum gas allowed for call 
-- `gasPrice` - `(gp: string)`: Set gas price for call in wei
-- `call`: Simulate calling the method to obtain the output without 
-- `asClause`: Pack arguments and setted value into clause
++ `value` - `(val: string|number):this`: Set value for call and as Clause
++ `caller` - `(addr: string):this`: Set caller for call
++ `gas` - `(gas: string):this`: Set maximum gas allowed for call 
++ `gasPrice` - `(gp: string)`: Set gas price for call in wei
++ `call`: Simulate calling the method to obtain the output without 
++ `asClause`: Pack arguments and setted value into clause
 
 ##### Simulate contract call
 
 **Parameters**
 
-- `arguments` - `any`: Arguments defined in method ABI
++ `arguments` - `any`: Arguments defined in method ABI
 
 Returns [`Promise<Thor.VMOutput>`](#thorvmoutput)
 
@@ -251,7 +251,7 @@ convertForEnergyMethod.call('10000000000000000').then(output=>{
 
 **Parameters**
 
-- `arguments` - `any`: Arguments defined in method ABI
++ `arguments` - `any`: Arguments defined in method ABI
 
 Returns [`Thor.Clause`](#thorclause)
 
@@ -295,18 +295,18 @@ With the ABI of contract,we can create an `Thor.Event` object that will be able 
 
 **Parameters**
 
-- `abi` - `object`: ABI definition of contract event
++ `abi` - `object`: ABI definition of contract event
 
 Returns `Thor.Event`
 
-- `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#thorfilter)
-- `filter`: Create a event filter, only accept indexed arguments, see [`Thor.Filter`](#thorfilter)
++ `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#thorfilter)
++ `filter`: Create a event filter, only accept indexed arguments, see [`Thor.Filter`](#thorfilter)
 
 ##### Pack into criteria
 
 **Parameters**
 
-- `indexed` - `object`: Indexed arguments defined in event ABI needed to be filtered, the items in the object will be combined with `AND` operator. e.g. {"ConA": "A", "ConB": "B"} is '`ConA=A` AND `ConB=B`'
++ `indexed` - `object`: Indexed arguments defined in event ABI needed to be filtered, the items in the object will be combined with `AND` operator. e.g. {"ConA": "A", "ConB": "B"} is '`ConA=A` AND `ConB=B`'
 
 Returns `Thor.Criteria`
 
@@ -332,7 +332,7 @@ console.log(criteria)
 
 **Parameters**
 
-- `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, the items in the array will be combined by `OR` operator to filter the events. e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
++ `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, the items in the array will be combined by `OR` operator to filter the events. e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
 
 Returns [`Thor.Filter`](#filter)
 
@@ -354,11 +354,11 @@ const filter = transferEvent.filter([{
 
 **Parameters**
 
-- `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision(As long as the revision is set,it can't be changed again)
++ `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision(As long as the revision is set,it can't be changed again)
 
 Returns `Thor.BlockVisitor`
 
-- `revision` - `number|string`: Block number or ID to be visited
++ `revision` - `number|string`: Block number or ID to be visited
 
 #### Get block detail
 
@@ -393,11 +393,11 @@ blk.get().then(block=>{
 
 **Parameters**
 
-- `id` - `string`: Transaction ID to visit(As long as the revision is set,it can't be changed again)
++ `id` - `string`: Transaction ID to visit(As long as the revision is set,it can't be changed again)
 
 Returns `Thor.TransactionVisitor`
 
-- `id` - `number|string`: Block number or ID to be visited
++ `id` - `number|string`: Block number or ID to be visited
 
 #### Get transaction detail
 
@@ -474,7 +474,7 @@ Filter event and transfer logs on the blockchain.Filter often works with `Connex
 
 **Parameters**
 
-- `kind` - `'event'|'transfer'`: Which kind of filter that creates
++ `kind` - `'event'|'transfer'`: Which kind of filter that creates
 
 Returns `Thor.Filter`
 
@@ -489,9 +489,9 @@ Returns `Thor.Filter`
 
 `Thor.Filter.Range`:
 
-- `unit` - `'block'|'time'`: Range unit, can be filtered by block number or timestamp in second
-- `from` - `Number`: Filter start point in unit
-- `to` - `Number`: Filter stop point in unit
++ `unit` - `'block'|'time'`: Range unit, can be filtered by block number or timestamp in second
++ `from` - `Number`: Filter start point in unit
++ `to` - `Number`: Filter stop point in unit
 
 Returns `this`
 
@@ -513,7 +513,7 @@ Filters support two different type of log: `event` and `transfer` so there are t
 
 `Thor.Filter.Event.Criteria`:
 
-- `address` - `string(optional)`: An address to get logs from particular account
++ `address` - `string(optional)`: An address to get logs from particular account
 + `topic0` - `string(optional)`: Topic0 to match
 + `topic1` - `string(optional)`: Topic1 to match
 + `topic2` - `string(optional)`: Topic2 to match
@@ -528,7 +528,7 @@ Filters support two different type of log: `event` and `transfer` so there are t
 
 **Parameters**
 
-- `set` - `Array<Thor.Filter.Criteria>`: Criteria set for the filter,either array of `Event.Criteria` or array of `Transfer.Criteria`，items in the criteria array will be combined by `OR` operator to filter the events. e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
++ `set` - `Array<Thor.Filter.Criteria>`: Criteria set for the filter,either array of `Event.Criteria` or array of `Transfer.Criteria`，items in the criteria array will be combined by `OR` operator to filter the events. e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
 
 ``` javascript
 const filter=connex.thor.filter('event')
@@ -557,7 +557,7 @@ filter.criteria([
 + `offset` - `Number`: Start cursor in result 
 + `limit` - `Number`: Constrain the number of result returned
 
-Returns [`Promise<Thor.Filter.Result>`](#thorfilterresult)
+Returns [`Promise<Array<Thor.Filter.Result>>`](#thorfilterresult)
 
 ``` javascript
 // Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
@@ -640,10 +640,10 @@ Explainer gets what would be produced after blockchain execute a tx.
 
 Returns `Thor.Explainer`
 
-- `caller` - `(addr: string): this`: Set caller
-- `gas` - `(gas: number): this`: Set max allowed gas 
-- `gasPrice` - `(gp: string): this`: Set gas price in hex string
-- `execute`: execute the explainer
++ `caller` - `(addr: string): this`: Set caller
++ `gas` - `(gas: number): this`: Set max allowed gas 
++ `gasPrice` - `(gp: string): this`: Set gas price in hex string
++ `execute`: execute the explainer
 
 #### Execute
 
@@ -776,18 +776,18 @@ origin
 ### Thor.Receipt.Output
 
 + `contractAddress` - `string`: Deployed contract address, if the corresponding clause is a contract deployment clause
-+ `events` - [`Array<Thor.Event>`](#thorevent): Event log objects produced during clause execution
-+ `transfers` - [`Array<Thor.Transfer>`](#thortransfer) Transfer log produced during clause execution
++ `events` - [`Array<Thor.Log.Event>`](#thorlogevent): Event log objects produced during clause execution
++ `transfers` - [`Array<Thor.LOg.Transfer>`](#thorlogtransfer) Transfer log produced during clause execution
 
-### Thor.Event
+### Thor.Log.Event
 
 + `address` - `string`: The address of contract which produces the event (bytes20)
 + `topics` - `Array<string>`: an array with max 5 32 Byte topics, topic 1-4 contains indexed parameters of the log
 + `data` - `string`: The data containing non-indexed log parameter
 + `meta`  - [`Thor.Log.Meta`](#thorlog.meta)
-+ `decoded`  - [`Thor.Decoded(optional)`](#thordecoded)
++ `decoded`  - [`Thor.Decoded(optional)`](#thordecoded): Decoded event log based on the event ABI
 
-### Thor.Transfer
+### Thor.Log.Transfer
 
 + `sender` - `string`: Address that sends vet.
 + `recipient` - `string`: Address that receives vet.
@@ -804,8 +804,47 @@ origin
 
 ### Thor.VMOutput
 
++ `data` - `string`: The returned data of the operation(hex string), e.g. a smart contract function returned value
++ `vmError` - `string`: VM error that occurred during the execution
++ `reverted` - `boolean`: Indicated whether the execution is reverted by the VM
++ `events` - [`Array<Thor.Log.Event>`](#thorlogevent): Event logs that produced during the execution
++ `transfer` - [`Array<Thor.Log.Transfer`](#thorlogtransfer): Transfer logs that produced during the execution
++ `decoded`  - [`Thor.Decoded(optional)`](#thordecoded): Decoded returned data based on the method ABI
+
 ### Thor.Filter.Result
+
++ [`Thor.Filter.Event.Result`](#thorlogevent))
++ [`Thor.Filter.Transfer.Result`](#thorlogtransfer)
 
 ### Thor.Decoded
 
+`Decoded` is a mixed object that produced by `ABI.decode` with the ABI definition of `EVENT` or `METHOD`.Decoded will be present only at the ABI definition is provided.
+
++ `string` - `any`: Decoded property based on the ABI
+
+For example if a method's definition is `function name() public pure returns(string name)` after perform the simulate call `decoded` will be like following: 
+
+``` javascript
+{
+    "0": "VeThor",
+    "__length__": 1,
+    "name": "VeThor"
+}
+```
+
+You can access the name by calling `decoded['name']` or `decoded['0']`(Number index is for non-named outputs).
+
+Another example if a event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after perform the filter `decoded` will be like following: 
+
+``` javascript
+{
+    "0": "0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed",
+    "1": "0x00F34f4462c0f6a6f5E76Fb1b6D63F05A32eD2C6",
+    "2": "1000000000000000000",
+    "__length__": 3,
+    "_from": "0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed",
+    "_to": "0x00F34f4462c0f6a6f5E76Fb1b6D63F05A32eD2C6",
+    "_value": "1000000000000000000"
+}
+```
 
