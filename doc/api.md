@@ -2,7 +2,7 @@
 
 ## Connex.Version
 
-`connex.version` is a read-only property that indicates the implemented `connex` version in the client. For the differences you can check the [release note]().
+`connex.version` is a read-only property that indicates the implemented `connex` version in the current client. For the differences between versions you can check the [release note]().
 
 ``` javascript
 connex.version
@@ -11,7 +11,7 @@ connex.version
 
 ## Connex.Thor
 
-### Get genesis block info
+### Get Genesis Block Info
 
 Returns [`Thor.Block`](#thorblock)
 
@@ -36,16 +36,16 @@ console.log(connex.thor.genesis)
 }
 ```
 
-### Get get blockchain status
+### Get Blockchain Status
 
 Returns `Thor.Status`:
 
-+ `progress` - `number`: A number(0-1) indicates syncing progress of the current connected node
-+ `head`: Summary block info indicates the head block of the current connected node
-    + `id` - `string`: Identifier of the block(bytes32)
-    + `number` - `number`: Number of block
-    + `timestamp` - `number`: Unix timestamp of block
-    + `parentID` - `string`: ID of parent block(bytes32)
++ `progress` - `number`: A number [0-1] indicates the syncing progress of the currently connected node
++ `head`: Summarized block info that indicates the head block of the currently connected node
+    + `id` - `string`: Identifier of the block (bytes32)
+    + `number` - `number`: Number of the block
+    + `timestamp` - `number`: Unix timestamp of the block
+    + `parentID` - `string`: ID of the parent block (bytes32)
 
 ``` javascript
 console.log(connex.thor.status)
@@ -61,13 +61,13 @@ console.log(connex.thor.status)
 }
 ```
 
-### Create a ticker
+### Create a Ticker
 
-Ticker is an concept that describes chain increment, when there is new block added to the chain, tickers will be triggered.This API will create an ticker which has a function that creates an promise that will resolve when it's triggered, please be noted that it never rejects.
+`Ticker` is a concept that describes chain increment, when there is a new block added to the chain, tickers will be triggered. This API will create a ticker which has a function that creates a `Promise` that will resolve when a new block is truely added, please be advised that it never rejects.
 
 Returns `Thor.Ticker`
 
-+ `next` - `(): Promise<void>`: Call next will create a promise that resolves when there is a new block added
++ `next` - `(): Promise<void>`: Call `next` will create a promise that resolves when there is a new block added
 
 ``` javascript
 const ticker = connex.thor.ticker()
@@ -75,15 +75,15 @@ ticker().next().then(()=>{
     console.log('ticker triggered')
 })
 
-// Few seconds after
+// A few seconds after
 > 'ticker triggered'
 ```
 
-### Account visitor
+### Account Visitor
 
-Account visitor a bunch of APIs to get account details and interact with account methods.
+Account visitor is a bunch of APIs to get account details and interact with account methods.
 
-#### Create a account visitor
+#### Create an Account Visitor
 
 ``` javascript
 const acc = connex.thor.account('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed')
@@ -93,7 +93,7 @@ Returns `AccountVisitor`
 
 + `address` - `string`: Account to visit
 
-#### Get account detail
+#### Get Account Detail
 
 Returns [`Promise<Thor.Account>`](#thoraccount)
 
@@ -110,11 +110,11 @@ acc.get().then(accInfo=>{
 }
 ```
 
-#### Get account code
+#### Get Account Code
 
 Returns `Promise<Thor.Code>`
 
-+ `code` - `string`: Contract code of account
++ `code` - `string`: Contract code of an account
 
 ``` javascript
 const acc = connex.thor.account('0x0000000000000000000000000000456E65726779')
@@ -127,7 +127,7 @@ acc.getCode().then(code=>{
 }
 ```
 
-#### Get account storage
+#### Get Account Storage
 
 **Parameters**
 
@@ -148,13 +148,13 @@ acc.getStorage('0x00000000000000000000000000000000000000000000000000000000000000
 }
 ```
 
-#### Contract method
+#### Contract Method
 
-With the ABI of contract,we can create an `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to an clause that is ready to sign.
+Given the ABI of contract, we can create a `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to an clause that is ready to sign.
 
 **Parameters**
 
-+ `abi` - `object`: ABI definition of contract method
++ `abi` - `object`: ABI definition of contract methods
 
 Returns `Thor.Method`
 
@@ -165,7 +165,7 @@ Returns `Thor.Method`
 + `call`: Simulate calling the method to obtain the output without 
 + `asClause`: Pack arguments and setted value into clause
 
-##### Simulate contract call
+##### Simulate a Contract Call
 
 **Parameters**
 
@@ -247,7 +247,7 @@ convertForEnergyMethod.call('10000000000000000').then(output=>{
 > ...
 ```
 
-##### Create a clause for signing
+##### Create a Clause for Signing
 
 **Parameters**
 
@@ -291,7 +291,7 @@ console.log(clause)
 
 #### Contract Event
 
-With the ABI of contract,we can create an `Thor.Event` object that will be able to filter contracts events with arguments or pack the arguments to criteria for assemble combined filters.
+Given the ABI of a contract,we can create a `Thor.Event` object that will be able to filter contracts events with arguments or pack the arguments to criteria for assembling combined filters.
 
 **Parameters**
 
@@ -300,13 +300,13 @@ With the ABI of contract,we can create an `Thor.Event` object that will be able 
 Returns `Thor.Event`
 
 + `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#thorfilter)
-+ `filter`: Create a event filter, only accept indexed arguments, see [`Thor.Filter`](#thorfilter)
++ `filter`: Create an event filter, only accept indexed arguments, see [`Thor.Filter`](#thorfilter)
 
-##### Pack into criteria
+##### Pack into Criteria
 
 **Parameters**
 
-+ `indexed` - `object`: Indexed arguments defined in event ABI needed to be filtered, the items in the object will be combined with `AND` operator. e.g. {"ConA": "A", "ConB": "B"} is '`ConA=A` AND `ConB=B`'
++ `indexed` - `object`: Indexed arguments defined in event ABI that needs to be filtered, the items in the object will be combined with `AND` operator: e.g. {"ConA": "A", "ConB": "B"} is '`ConA=A` AND `ConB=B`'
 
 Returns `Thor.Criteria`
 
@@ -332,7 +332,7 @@ console.log(criteria)
 
 **Parameters**
 
-+ `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, the items in the array will be combined by `OR` operator to filter the events. e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
++ `indexed` - `Array<object>`: Array of filter conditions of indexed arguments, the items in the array will be combined by `OR` operator to filter the events: e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
 
 Returns [`Thor.Filter`](#filter)
 
@@ -350,17 +350,17 @@ const filter = transferEvent.filter([{
 // Next you can call the methods of Thor.Filter
 ```
 
-### Block visitor
+### Block Visitor
 
 **Parameters**
 
-+ `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision(As long as the revision is set,it can't be changed again)
++ `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision (As long as the revision is set,it can't be changed again)
 
 Returns `Thor.BlockVisitor`
 
-+ `revision` - `number|string`: Block number or ID to be visited
++ `revision` - `number|string`: Block number or ID to be visited.
 
-#### Get block detail
+#### Get Block Detail
 
 Returns [`Promise<Thor.Block>`](#thorblock)
 
@@ -389,17 +389,17 @@ blk.get().then(block=>{
 }
 ```
 
-### Transaction visitor
+### Transaction Visitor
 
 **Parameters**
 
-+ `id` - `string`: Transaction ID to visit(As long as the revision is set,it can't be changed again)
++ `id` - `string`: Transaction ID to be visited (As long as the revision is set, it can't be changed again)
 
 Returns `Thor.TransactionVisitor`
 
 + `id` - `number|string`: Block number or ID to be visited
 
-#### Get transaction detail
+#### Get Transaction Detail
 
 Returns [`Thor.Transaction`](#thortransaction)
 
@@ -435,7 +435,7 @@ transaction.get().then(tx=>{
 }
 ```
 
-#### Get transaction receipt
+#### Get Transaction Receipt
 
 Returns [`Thor.Receipt`](#thorreceipt)
 
@@ -470,11 +470,11 @@ transaction.getReceipt().then(tx=>{
 
 ### Filter
 
-Filter event and transfer logs on the blockchain.Filter often works with `Connex.Thor.Account`, either create a filter from a event or pack a criteria and then assemble several criteria and set to a filter.But also there is a way of create a filter and assemble criteria as your need then apply it.
+Filter event and transfer logs on the blockchain. Filter often works with `Connex.Thor.Account`, either creates a filter from a event or packs criteria and then assembles several criteria and sets to a filter. But also there is a way of creating a filter and assembling criteria as per your need then apply it.
 
 **Parameters**
 
-+ `kind` - `'event'|'transfer'`: Which kind of filter that creates
++ `kind` - `'event'|'transfer'`: Kind of filter
 
 Returns `Thor.Filter`
 
@@ -509,7 +509,7 @@ filter.range({
 
 #### Filter criteria
 
-Filters support two different type of log: `event` and `transfer` so there are two type of `Thor.Filter.Criteria`.
+Filters support two different types of log: `event` and `transfer` so there are two type of `Thor.Filter.Criteria`.
 
 `Thor.Filter.Event.Criteria`:
 
@@ -528,7 +528,7 @@ Filters support two different type of log: `event` and `transfer` so there are t
 
 **Parameters**
 
-+ `set` - `Array<Thor.Filter.Criteria>`: Criteria set for the filter,either array of `Event.Criteria` or array of `Transfer.Criteria`，items in the criteria array will be combined by `OR` operator to filter the events. e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
++ `set` - `Array<Thor.Filter.Criteria>`: Criteria set for the filter, either array of `Event.Criteria` or an array of `Transfer.Criteria`, items in the criteria array will be combined by `OR` operator to filter the events: e.g. [{"ConA": "A"}, {"ConB": "B", "ConC": "C"}] is '`ConA=A` OR (`ConB=B` AND `ConC=C`)'
 
 ``` javascript
 const filter=connex.thor.filter('event')
@@ -554,7 +554,7 @@ filter.criteria([
 
 **Parameters**
 
-+ `offset` - `Number`: Start cursor in result 
++ `offset` - `Number`: Start cursor in the result 
 + `limit` - `Number`: Constrain the number of result returned
 
 Returns [`Promise<Array<Thor.Filter.Result>>`](#thorfilterresult)
@@ -710,23 +710,23 @@ explainer.execute([
 
 ## Connex.Vendor
 
-### Acquire a sign service
+### Acquire a Sign Service
 
 ## Data Modals
 
 ### Thor.Block
 
-+ `id` - `string`: Identifier of the block(bytes32)
++ `id` - `string`: Identifier of the block (bytes32)
 + `number` - `number`: Number of block
-+ `parentID` - `string`: ID of parent block(bytes32)
++ `parentID` - `string`: ID of parent block (bytes32)
 + `timestamp` - `number`: Unix timestamp of block
 + `gasLimit` - `number`: Gas limit of the block
 + `beneficiary` - `string`: Address of account to receive block reward
 + `gasUsed` - `number`: Actual gas used of block
 + `totalScore` - `number`: Score of the main chain
-+ `txRoot` - `string`: Root hash of transaction in the block(bytes32)
-+ `stateRoot` - `string`: Root hash of state(bytes32)
-+ `singer` - `string`: Address of who signed the block(bytes20)
++ `txRoot` - `string`: Root hash of transaction in the block (bytes32)
++ `stateRoot` - `string`: Root hash of state (bytes32)
++ `singer` - `string`: Address of who signed the block (bytes20)
 + `transactions` - `Array<string>`: Array of transaction IDs
 + `isTrunk` - `bool`: Whether the block is in trunk
 
@@ -741,13 +741,13 @@ explainer.execute([
 + `id` - `string`: Identifier of the transaction
 + `chainTag` - `number`: Last byte of genesis block ID
 + `blockRef` - `string`: The BlockRef (an eight-byte array string) includes two parts: the first four bytes contains the block height (number) and the rest four bytes is part of the referred block’s ID. If the referred block is future block, blockNumber + "00000000" should be added
-+ `expiration` - `number` : Expiration relative to blockRef(in unit block)
++ `expiration` - `number` : Expiration relative to blockRef (in unit block)
 + `clauses` - [`Array<Thor.Clause>`](#thorclause)
 + `gasPriceCoef` - `number`: Coefficient used to calculate the final gas price
 + `gas`  - `number`: Maximum of gas can be consumed to execute this transaction
 origin
 + `nonce` - `string`: Transaction nonce
-+ `dependsOn` - `string|null`: ID of the transaction which the current transaction depends(bytes32)
++ `dependsOn` - `string|null`: ID of the transaction which the current transaction depends (bytes32)
 + `size` - `number`: Byte size of the transaction that is RLP encoded
 + `meta` - [`Thor.Transaction.Meta`](#thortransaction.meta)
 
@@ -834,7 +834,7 @@ For example if a method's definition is `function name() public pure returns(str
 
 You can access the name by calling `decoded['name']` or `decoded['0']`(Number index is for non-named outputs).
 
-Another example if a event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after perform the filter `decoded` will be like following: 
+Another example if a event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after performing the filter `decoded` will be like following: 
 
 ``` javascript
 {
