@@ -2,7 +2,7 @@
 
 ## Connex.Version
 
-`connex.version` is a read-only property that indicates the implemented `connex` version in the current client. For the differences between versions you can check the [release note]().
+`connex.version` is a read-only property that indicates the implemented `connex` version in the current client. For the differences between versions you can check the [release note](https://github.com/vechain/connex/releases).
 
 ``` javascript
 connex.version
@@ -154,7 +154,7 @@ Given the ABI of contract, we can create a `Thor.Method` object that will be abl
 
 **Parameters**
 
-+ `abi` - `object`: ABI definition of contract methods
++ `abi` - `object`: ABI definition of a contract method
 
 Returns `Thor.Method`
 
@@ -847,4 +847,3 @@ Another example if an event's definition is `event Transfer(address indexed _fro
     "_value": "1000000000000000000"
 }
 ```
-

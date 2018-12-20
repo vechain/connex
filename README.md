@@ -4,8 +4,6 @@
 
 ## Introduction
 
-> Connex is the standard interface to connect DApp with VeChain and user. Connex为dApp开发者们准备了一系列设计完备的API来与区块链交互。通过在网页中嵌入的connex API， 开发者们可以快速的构建去中心化应用。
-
 Connex is the standard interface to connect DApp with VeChain and user. `Connex` is a set of well-designed APIs for developers, with injected `Connex Object` in web applications they can  easily build decentralized applications.
 
 ## Get Started 
