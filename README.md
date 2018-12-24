@@ -4,11 +4,11 @@
 
 ## Introduction
 
-Connex is the standard interface to connect DApp with VeChain and user. `Connex` is a set of well-designed APIs for developers, with injected `Connex Object` in web applications they can  easily build decentralized applications.
+Connex is the standard interface to connect DApp with VeChain and user. `Connex` is a set of well-designed APIs for developers, with injected `Connex Object` in web applications they can easily build decentralized applications.
 
 ## Get Started 
 
-[Sync](https://github.com/vechain/thor-sync.electron/releases) or other compatible client will expose `connex` API by an injected object on `Window Object`.
+[Sync](https://github.com/vechain/thor-sync.electron/releases) or other compatible clients will expose `connex` API by an injected object on `Window Object`.
 
 ### TypeScript(Recommended)
 
@@ -20,7 +20,7 @@ Add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you ar
 
 ### Vanilla JS
 
-No need to setup, just code in your favorite way.
+No need to set up, just code in your favourite way.
 
 ## Usage
 
@@ -37,8 +37,7 @@ document.querySelector('body').append(el)
 
 ## Developers
 
-+ [API Reference]() for dApp developers
-+ [Implementation Guideline]() for developer who is interested in implementing `connex` in other client(eg. mobile, browser extension), please take a look atwe provided that should be followed by any clients for `connex` that can ensure all users can have same user experience when interacting with DApps on VeChain.
++ [API Reference]() for DApp developers
 
 ## Architecture explained
 
@@ -50,4 +49,4 @@ document.querySelector('body').append(el)
 
 Connex is licensed under the
 [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
-in *LICENSE* file in repository.
+in *LICENSE* file in the repository.

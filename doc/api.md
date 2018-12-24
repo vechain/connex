@@ -2,7 +2,7 @@
 
 ## Connex.Version
 
-`connex.version` is a read-only property that indicates the implemented `connex` version in the current client. For the differences between versions you can check the [release note](https://github.com/vechain/connex/releases).
+`connex.version` is a read-only property that indicates the implemented `connex` version in the current client. For the differences between versions, you can check the [release note](https://github.com/vechain/connex/releases).
 
 ``` javascript
 connex.version
@@ -131,7 +131,7 @@ acc.getCode().then(code=>{
 
 **Parameters**
 
-+ `key` - `string`: The key to access in  account storage
++ `key` - `string`: The key to accessing in  account storage
 
 Returns `Promise<Thor.Storage>`
 
@@ -150,7 +150,7 @@ acc.getStorage('0x00000000000000000000000000000000000000000000000000000000000000
 
 #### Contract Method
 
-Given the ABI of contract, we can create a `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to an clause that is ready to sign.
+Given the ABI of contract, we can create a `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to a clause that is ready to sign.
 
 **Parameters**
 
@@ -354,7 +354,7 @@ const filter = transferEvent.filter([{
 
 **Parameters**
 
-+ `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision (As long as the revision is set,it can't be changed again)
++ `revision` - `number|string|undefined`: Block number or ID to visit or leave it unset the function will get the latest block ID as the revision (As long as the revision is set, it can't be changed again)
 
 Returns `Thor.BlockVisitor`
 
@@ -636,7 +636,7 @@ filter.apply(0,1).then(logs=>{
 
 ### Explainer
 
-Explainer gets what would be produced after blockchain execute a tx.
+Explainer gets what would be produced after blockchain executes a tx.
 
 Returns `Thor.Explainer`
 
@@ -754,7 +754,7 @@ origin
 ### Thor.Clause
 
 + `to` - `string|null`: The destination address of the message, null for a contract-creation transaction
-+ `value`- `string|number`: The value, with a unit of `wei`, transferred through the transaction. Specifically,it plays the role of endowment when the transaction is contract-creation type
++ `value`- `string|number`: The value, with a unit of `wei`, transferred through the transaction. Specifically, it plays the role of endowment when the transaction is contract-creation type
 + `data` - `string`: Either the [ABI byte string](http://solidity.readthedocs.io/en/latest/abi-spec.html) containing the data of the function call on a contract or the initialization code of a contract-creation transaction
 
 ### Thor.Transaction.Meta
@@ -834,7 +834,7 @@ For example if a method's definition is `function name() public pure returns(str
 
 You can access the name by calling `decoded['name']` or `decoded['0']`(Number index is for non-named outputs).
 
-Another example if an event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after performing the filter `decoded` will be following: 
+Another example if an event's definition is `event Transfer(address indexed _from, address indexed _to, uint256 _value)` after performing the filter `decoded` will be the following: 
 
 ``` javascript
 {
