@@ -18,7 +18,7 @@ Returns [`Thor.Block`](#thorblock)
 ``` javascript
 console.log(connex.thor.genesis)
 
-> {
+>{
     "beneficiary": "0x0000000000000000000000000000000000000000",
     "gasLimit": 10000000,
     "gasUsed": 0,
@@ -281,7 +281,7 @@ convertForEnergyMethod
 // minReturn in wei(1e16 wei)
 const clause = convertForEnergyMethod.asClause('10000000000000000')
 console.log(clause)
-> {
+>{
     "to": "0x0000000000000000000000000000456E65726779",
     "value": "1000000000000000000",
     "data": "0xa9059cb......"
@@ -649,6 +649,8 @@ Returns `Thor.Explainer`
 
 **Parameters**
 
+- `Clauses`  - [`Array<Thor.Clause>`](#thorclause)
+
 Returns [`Promise<Array<Thor.VMOutput>>`](#thorvmoutput)
 
 ``` javascript
@@ -710,7 +712,84 @@ explainer.execute([
 
 ## Connex.Vendor
 
-### Acquire a Sign Service
+### Acquire a Signing Service
+
+
+**Parameters**
+
++ `kind` - `'tx'|'cert'`: Kind of singing service
+
+Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Vendor.CertSigningService`
+
+### Transaction Signing Service
+
+`Thor.Vendor.TXSigningService`:
+
++ `singer` - `(addr: string): this`: Enforces the specified address to sign the transaction
++ `gas` - `(gas: number): this`: Enforces the specified number as the maximum gas that can be consumed for the transaction
++ `link` - `(url: string): this`: Set the link to reveal transaction related information, the link will be used for connex to assemble a `callback url` by adding a url param `txid` to the link
++ `comment` - `(text: string): this`: Set the comment for the transaction that will be revealed to the user
++ `request`: Send the request
+
+#### Perform Transaction Signing Request
+
+**Parameters**
+
++ `msg` - `Array<TxMessage>`
+
+`TxMessage`:
++ `to`:  Same as [`Thor.Clause.To`](#thorclause)
++ `value`:  Same as [`Thor.Clause.Value`](#thorclause)
++ `data`:  Same as [`Thor.Clause.Data`](#thorclause)
++ `comment` - `string(optional)`: Comment to the clause
+
+Returns `Promise<Thor.Vendor.SigningService.TXResponse>`:
++ `txid` - `string`: Transaction identifier
++ `signer` - `string`: Signer address
+
+``` javascript
+const signingService = connex.vendor.sign('tx')
+
+signingService
+    .signer('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed') // Enforce signer
+    .gas(200000) // Set maximum gas
+    .link('https://vechain.github.io/connex/')
+    .comment('Donate 100 VET and 1000 VeThor to the author of connex')
+
+// Prepare energy transfer clause
+const transferABI = {}
+const transferMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
+// Connex author's address and amount in wei
+const energyClause = transferMethod.asClause('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', '1000000000000000000000')
+
+signingService.request([
+    {
+        to: '0xd3ae78222beadb038203be21ed5ce7c9b1bff602',
+        value: '100000000000000000000',
+        data: '0x',
+        comment: 'Transfer 100 VET'
+    },
+    {
+        comment: 'Transfer 1000 VeThor',
+        ...energyClause
+    }
+]).then(result=>{
+    console.log(result)
+})
+>{
+    "signer": "0x7567d83b7b8d80addcb281a71d54fc7b3364ffed",
+    "txId": "0x4e9a7eec33ef6cfff8ff5589211a94070a0284df17c2ead6267f1913169bd340"
+}
+```
+
+### Certificate Signing Service
+
+`Thor.Vendor.CertSigningService`:
+
++ `singer` - `(addr: string): this`: Enforces the specified address to sign the certificate
++ `request`: Send the request
+
+#### Perform Certificate Signing Request
 
 ## Data Modals
 
@@ -777,7 +856,7 @@ origin
 
 + `contractAddress` - `string`: Deployed contract address, if the corresponding clause is a contract deployment clause
 + `events` - [`Array<Thor.Log.Event>`](#thorlogevent): Event log objects produced during clause execution
-+ `transfers` - [`Array<Thor.LOg.Transfer>`](#thorlogtransfer) Transfer log produced during clause execution
++ `transfers` - [`Array<Thor.Log.Transfer>`](#thorlogtransfer) Transfer log produced during clause execution
 
 ### Thor.Log.Event
 
