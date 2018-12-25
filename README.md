@@ -41,6 +41,8 @@ document.querySelector('body').append(el)
 
 ## Architecture explained
 
+![Connex Architecture](./doc/architecture.png)
+
 ## Compatible clients
 
 + [VeChain Sync](https://github.com/vechain/thor-sync.electron)
