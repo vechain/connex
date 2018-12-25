@@ -531,7 +531,7 @@ declare namespace Connex {
             }
 
             type TxResponse = {
-                txId: string
+                txid: string
                 signer: string
             }
 
