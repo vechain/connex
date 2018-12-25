@@ -41,7 +41,7 @@ document.querySelector('body').append(el)
 
 ## Architecture explained
 
-![Connex Architecture](./doc/architecture.png)
+![Connex Architecture](./docs/architecture.png)
 
 ## Compatible clients
 
