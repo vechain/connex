@@ -791,7 +791,7 @@ signingService.request([
 
 #### Perform Certificate Signing Request
 
-## Data Modals
+## Types
 
 ### Thor.Block
 
@@ -892,8 +892,8 @@ origin
 
 ### Thor.Filter.Result
 
-+ [`Thor.Filter.Event.Result`](#thorlogevent))
-+ [`Thor.Filter.Transfer.Result`](#thorlogtransfer)
++ `Thor.Filter.Event.Result` - [`Thor.Log.Event`](#thorlogevent)
++ `Thor.Filter.Transfer.Result` - [`Thor.Log.Transfer`](#thorlogtransfer)
 
 ### Thor.Decoded
 
