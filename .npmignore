@@ -2,3 +2,4 @@ tslint.json
 /.vscode/
 *.tgz
 tsconfig.json
+/docs/

@@ -20,7 +20,12 @@
             repo: 'vechain/connex',
             homepage: 'api.md',
             search: 'auto',
-            auto2top: true
+            auto2top: true,
+            loadSidebar: true,
+            search: {
+                depth: 5,
+                paths: ['/']
+            },
         }
         if (typeof navigator.serviceWorker !== 'undefined') {
             navigator.serviceWorker.register('sw.js')

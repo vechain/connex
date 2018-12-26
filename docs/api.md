@@ -784,6 +784,8 @@ signingService.request([
 
 ### Certificate Signing Service
 
+The certificate is a message signing based mechanism which can easily "request a"  user's identifier(address) "or" a user to agree to your terms or agreements
+
 `Thor.Vendor.CertSigningService`:
 
 + `singer` - `(addr: string): this`: Enforces the specified address to sign the certificate
@@ -791,7 +793,67 @@ signingService.request([
 
 #### Perform Certificate Signing Request
 
-## Data Modals
+**Parameters**
+
+`CertMessage`: 
+
++ `purpose` - `'identification' | 'agreement'`:  Purpose of the request, `identification` means request the user to sign a random message to get the address and `agreement` means ask user to sign the agreement for using the DApp
++ `payload`:
+    + `type` - `'text'`: Payload type,only `text` is supported
+    + `content` - `string`: Content of of the request
+
+Returns  `Promise<Thor.Vendor.SigningService.CertResponse>`:
++ `annex`:
+    + `domain` - `string`: Domain of the DApp
+    + `timestamp` - `number`: Head block timestamp when user accepts the request
+    + `signer` - `string`: Signer address
++ `signature` - `string`: Signature
+
+``` javascript
+const signingService = connex.vendor.sign('cert')
+
+// Generate a random string and request the identification
+signingService.request({
+    purpose: 'identification',
+    payload: {
+        type: 'text',
+        content: 'random generated string'
+    }
+}).then(result=>{
+    console.log(result)
+})
+
+>{
+    "annex": {
+        "domain": "vechain.github.io",
+        "timestamp": 1545826680,
+        "signer": "0xf6e78a5584c06e2dec5c675d357f050a5402a730"
+    },
+    "signature": "0x30db85935f620f7c506462f3ec7552479a56db8cbd0c2a3f295a92ad4e2f37ae2d2b2a2a212c45c43eeaf6e5caa8b3348038c01192ed226d12a118f204c6729200"
+}
+
+// Ask user to sign the agreement
+signingService.request({
+    purpose: 'agreement',
+    payload: {
+        type: 'text',
+        content: 'agreement'
+    }
+}).then(result=>{
+    console.log(result)
+})
+
+>{
+    "annex": {
+        "domain": "vechain.github.io",
+        "timestamp": 1545826770,
+        "signer": "0xf6e78a5584c06e2dec5c675d357f050a5402a730"
+    },
+    "signature": "0x2078a8a2fdfa61df579516162d373cd18b889fc5cb5c5ab51f4e1d71b21742ec6a8072f645502c82bf997529a126bcaefd38df385a079c94f9b2fd03b546aa1400"
+}
+```
+
+## Types
 
 ### Thor.Block
 
@@ -813,7 +875,7 @@ signingService.request([
 
 + `balance` - `string`: Account balance in hex string
 + `energy` - `string`: Account energy in hex string
-+ `hasCode` - `bool`: Whether the is a smart contract
++ `hasCode` - `bool`: Whether the account is a smart contract
 
 ### Thor.Transaction
 
@@ -892,8 +954,8 @@ origin
 
 ### Thor.Filter.Result
 
-+ [`Thor.Filter.Event.Result`](#thorlogevent))
-+ [`Thor.Filter.Transfer.Result`](#thorlogtransfer)
++ `Thor.Filter.Event.Result` - [`Thor.Log.Event`](#thorlogevent)
++ `Thor.Filter.Transfer.Result` - [`Thor.Log.Transfer`](#thorlogtransfer)
 
 ### Thor.Decoded
 
