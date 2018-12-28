@@ -727,7 +727,7 @@ Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Ve
 
 + `singer` - `(addr: string): this`: Enforces the specified address to sign the transaction
 + `gas` - `(gas: number): this`: Enforces the specified number as the maximum gas that can be consumed for the transaction
-+ `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by adding a URL param `txid` to the link
++ `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by adding a URL query string param `txid` to the link
 + `comment` - `(text: string): this`: Set the comment for the transaction that will be revealed to the user
 + `request`: Send the request
 
