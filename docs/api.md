@@ -291,7 +291,7 @@ console.log(clause)
 
 #### Contract Event
 
-Given the ABI of a contract,we can create a `Thor.Event` object that will be able to filter contracts events with arguments or pack the arguments to criteria for assembling combined filters.
+Given the ABI of a contract, we can create a `Thor.Event` object that will be able to filter contracts events with arguments or pack the arguments to criteria for assembling combined filters.
 
 **Parameters**
 
@@ -727,7 +727,7 @@ Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Ve
 
 + `singer` - `(addr: string): this`: Enforces the specified address to sign the transaction
 + `gas` - `(gas: number): this`: Enforces the specified number as the maximum gas that can be consumed for the transaction
-+ `link` - `(url: string): this`: Set the link to reveal transaction related information, the link will be used for connex to assemble a `callback url` by adding a url param `txid` to the link
++ `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by adding a URL query string param `txid` to the link
 + `comment` - `(text: string): this`: Set the comment for the transaction that will be revealed to the user
 + `request`: Send the request
 
@@ -784,7 +784,7 @@ signingService.request([
 
 ### Certificate Signing Service
 
-The certificate is a message signing based mechanism which can easily "request a"  user's identifier(address) "or" a user to agree to your terms or agreements
+The certificate is a message signing based mechanism which can easily request user's identification(address) or user to agree to your terms or agreements.
 
 `Thor.Vendor.CertSigningService`:
 
