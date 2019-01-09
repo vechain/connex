@@ -725,7 +725,7 @@ Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Ve
 
 `Thor.Vendor.TXSigningService`:
 
-+ `singer` - `(addr: string): this`: Enforces the specified address to sign the transaction
++ `signer` - `(addr: string): this`: Enforces the specified address to sign the transaction
 + `gas` - `(gas: number): this`: Enforces the specified number as the maximum gas that can be consumed for the transaction
 + `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by adding a URL query string param `txid` to the link
 + `comment` - `(text: string): this`: Set the comment for the transaction that will be revealed to the user
@@ -788,7 +788,7 @@ The certificate is a message signing based mechanism which can easily request us
 
 `Thor.Vendor.CertSigningService`:
 
-+ `singer` - `(addr: string): this`: Enforces the specified address to sign the certificate
++ `signer` - `(addr: string): this`: Enforces the specified address to sign the certificate
 + `request`: Send the request
 
 #### Perform Certificate Signing Request
@@ -867,7 +867,7 @@ signingService.request({
 + `totalScore` - `number`: Score of the main chain
 + `txRoot` - `string`: Root hash of transaction in the block (bytes32)
 + `stateRoot` - `string`: Root hash of state (bytes32)
-+ `singer` - `string`: Address of who signed the block (bytes20)
++ `signer` - `string`: Address of who signed the block (bytes20)
 + `transactions` - `Array<string>`: Array of transaction IDs
 + `isTrunk` - `bool`: Whether the block is in trunk
 
@@ -911,8 +911,8 @@ origin
 + `paid` - `string`: Hex form of amount of paid energy
 + `reward` - `string`: Hex form of amount of reward
 + `reverted` - `boolean`: true means the transaction was reverted
-+ `outputs` - [`Array<Thor.Receipt.Output>`]('#thorreceiptoutput'): Clause's corresponding outputs
-+ `meta` - [`Thor.Transaction.Meta`](#thortransactionmeta)
++ `outputs` - [`Array<Thor.Receipt.Output>`](#thorreceiptoutput): Clause's corresponding outputs
++ `meta` - [`Thor.Log.Meta`](#thorlogmeta)
 
 ### Thor.Receipt.Output
 
