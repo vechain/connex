@@ -381,7 +381,7 @@ declare namespace Connex {
                 events: Event[]
                 transfers: Transfer[]
             }[]
-            meta: Transaction.Meta
+            meta: LogMeta
         }
 
         type Event = {
