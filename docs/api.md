@@ -162,7 +162,7 @@ Returns `Thor.Method`
 + `caller` - `(addr: string):this`: Set caller for call
 + `gas` - `(gas: string):this`: Set maximum gas allowed for call 
 + `gasPrice` - `(gp: string)`: Set gas price for call in wei
-+ `call`: Simulate calling the method to obtain the output without 
++ `call`: Simulate calling the method to obtain the output without altering the contract state
 + `asClause`: Pack arguments and setted value into clause
 
 ##### Simulate a Contract Call
