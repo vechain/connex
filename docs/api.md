@@ -71,7 +71,7 @@ Returns `Thor.Ticker`
 
 ``` javascript
 const ticker = connex.thor.ticker()
-ticker().next().then(()=>{
+ticker.next().then(()=>{
     console.log('ticker triggered')
 })
 
