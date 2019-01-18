@@ -727,7 +727,7 @@ Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Ve
 
 + `signer` - `(addr: string): this`: Enforces the specified address to sign the transaction
 + `gas` - `(gas: number): this`: Enforces the specified number as the maximum gas that can be consumed for the transaction
-+ `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by adding a URL query string param `txid` to the link
++ `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by replacing the placeholder `{txid}` to `txid`
 + `comment` - `(text: string): this`: Set the comment for the transaction that will be revealed to the user
 + `request`: Send the request
 
@@ -753,7 +753,7 @@ const signingService = connex.vendor.sign('tx')
 signingService
     .signer('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed') // Enforce signer
     .gas(200000) // Set maximum gas
-    .link('https://vechain.github.io/connex/')
+    .link('https://connex.vecha.in/{txid}') // User will be back to the app by the url https://connex.vecha.in/0xffff....
     .comment('Donate 100 VET and 1000 VeThor to the author of connex')
 
 // Prepare energy transfer clause

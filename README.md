@@ -37,7 +37,7 @@ document.querySelector('body').append(el)
 
 ## Developers
 
-+ [API Reference](https://vechain.github.io/connex) for DApp developers
++ [API Reference](https://connex.vecha.in) for DApp developers
 
 ## Architecture explained
 
