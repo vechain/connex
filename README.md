@@ -47,6 +47,10 @@ document.querySelector('body').append(el)
 
 + [VeChain Sync](https://github.com/vechain/thor-sync.electron)
 
+## Resource
+
++ [Connex Implementation Test](https://connex-impl-test.vecha.in)
+
 ## License
 
 Connex is licensed under the
