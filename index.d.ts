@@ -338,7 +338,7 @@ declare namespace Connex {
             receiptsRoot: string
             signer: string
             transactions: string[]
-            isTrunk?: boolean
+            isTrunk: boolean
         }
 
         type Clause = {
