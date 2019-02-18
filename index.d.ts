@@ -454,10 +454,16 @@ declare namespace Connex {
 
     interface Vendor {
         /**
-         *  Acquire the signing service
+         * Acquire the signing service
          * @param kind kind of target to be signed
          */
         sign<T extends 'tx' | 'cert'>(kind: T): Vendor.SigningService<T>
+
+        /**
+         * Returns whether an address is owned by user
+         * @param addr account address
+         */
+        owned(addr: string): boolean
     }
 
     namespace Vendor {
