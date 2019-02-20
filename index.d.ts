@@ -155,6 +155,13 @@ declare namespace Connex {
             gasPrice(gp: string): this
 
             /**
+             * Turn on caching for result of method call
+             * TODO: More detailed description
+             * @param ties a set of addresses, as the condition of cache invalidation
+             */
+            cache(ties: string[]) : this
+
+            /**
              * Pack arguments into {@link Clause}.
              * @param args method arguments
              */
