@@ -797,14 +797,14 @@ The certificate is a message signing based mechanism which can easily request us
 
 `CertMessage`: 
 
-+ `purpose` - `'identification' | 'agreement'`:  Purpose of the request, `identification` means request the user to sign a random message to get the address and `agreement` means ask user to sign the agreement for using the DApp
++ `purpose` - `'identification' | 'agreement'`:  Purpose of the request, `identification` means request the user to sign a random message to get the address and `agreement` means ask user to sign the agreement for using the VeChain apps
 + `payload`:
     + `type` - `'text'`: Payload type,only `text` is supported
     + `content` - `string`: Content of of the request
 
 Returns  `Promise<Thor.Vendor.SigningService.CertResponse>`:
 + `annex`:
-    + `domain` - `string`: Domain of the DApp
+    + `domain` - `string`: Domain of the VeChain apps
     + `timestamp` - `number`: Head block timestamp when user accepts the request
     + `signer` - `string`: Signer address
 + `signature` - `string`: Signature
