@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Connex is the standard interface to connect DApp with VeChain and user. `Connex` is a set of well-designed APIs for developers, with injected `Connex Object` in web applications they can easily build decentralized applications.
+Connex is the standard interface to connect VeChain apps with VeChain blockchain and user. `Connex` is a set of well-designed APIs for developers, with injected `Connex Object` in web applications they can easily build decentralized applications.
 
 ## Get Started 
 
@@ -37,7 +37,32 @@ document.querySelector('body').append(el)
 
 ## Developers
 
-+ [API Reference](https://connex.vecha.in) for DApp developers
++ [API Reference](https://connex.vecha.in) for VeChain app developers
+
+## Resource
+
++ [Connex Implementation Test](https://connex-impl-test.vecha.in)
+
+## VeChain App Bootstrapping
+
+VeChain apps are usually web apps. On app load, you always need to detect Connex component. If Connex is not available, you may instruct people to setup Connex environment.
+
+To simplify these steps, simply perform redirection: 
+
+```javascript
+if(!window.connex) {
+    location.href = 'https://env.vechain.org/#' + encodeURIComponent(location.href)
+}
+```
+
+Additionally, network can be specified:
+
+```javascript
+if(!window.connex) {
+    // the app prefers running on test net
+    location.href = 'https://env.vechain.org/#/test/' + encodeURIComponent(location.href)
+}
+```
 
 ## Architecture explained
 
@@ -46,10 +71,6 @@ document.querySelector('body').append(el)
 ## Compatible clients
 
 + [VeChain Sync](https://github.com/vechain/thor-sync.electron)
-
-## Resource
-
-+ [Connex Implementation Test](https://connex-impl-test.vecha.in)
 
 ## License
 
