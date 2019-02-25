@@ -10,44 +10,11 @@ Connex is the standard interface to connect VeChain apps with VeChain blockchain
 
 [Sync](https://github.com/vechain/thor-sync.electron/releases) or other compatible clients will expose `connex` API by an injected object on `Window Object`.
 
-### TypeScript(Recommended)
-
-``` bash
-npm install @vechain/connex --save-dev
-```
-
-Add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you are good to go!
-
-### Vanilla JS
-
-No need to set up, just code in your favourite way.
-
-## Usage
-
-``` javascript
-const el = document.createElement('h1')
-if(window.connex){
-    const status = connex.thor.status
-    el.innerText = 'You are \'connexed\' to vechain, the status is ' + (status.progress === 1 ? 'synced': 'syncing')
-}else{
-    el.innerText = ':( seems you don\'t have enough component to launch this app, please ......'
-}
-document.querySelector('body').append(el)
-```
-
-## Developers
-
-+ [API Reference](https://connex.vecha.in) for VeChain app developers
-
-## Resource
-
-+ [Connex Implementation Test](https://connex-impl-test.vecha.in)
-
-## VeChain App Bootstrapping
+### VeChain App Bootstrapping
 
 VeChain apps are usually web apps. On app load, you always need to detect Connex component. If Connex is not available, you may instruct people to setup Connex environment.
 
-To simplify these steps, simply perform redirection: 
+To simplify these steps, simply perform redirection:
 
 ```javascript
 if(!window.connex) {
@@ -63,6 +30,39 @@ if(!window.connex) {
     location.href = 'https://env.vechain.org/#/test/' + encodeURIComponent(location.href)
 }
 ```
+
+### Install
+
+#### TypeScript(Recommended)
+
+``` bash
+npm install @vechain/connex --save-dev
+```
+
+Add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you are good to go!
+
+#### Vanilla JS
+
+No need to set up, just code in your favourite way.
+
+### Usage
+
+``` javascript
+const el = document.createElement('h1')
+
+const status = connex.thor.status
+el.innerText = 'You are \'connexed\' to vechain, the status is ' + (status.progress === 1 ? 'synced': 'syncing')
+
+document.querySelector('body').append(el)
+```
+
+## Developers
+
++ [API Reference](https://connex.vecha.in) for VeChain app developers
+
+## Resource
+
++ [Connex Implementation Test](https://connex-impl-test.vecha.in)
 
 ## Architecture explained
 
