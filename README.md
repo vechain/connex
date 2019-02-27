@@ -18,7 +18,7 @@ To simplify these steps, simply perform redirection:
 
 ```javascript
 if(!window.connex) {
-    location.href = 'https://env.vechain.org/#' + encodeURIComponent(location.href)
+    location.href = 'https://env.vechain.org/r/#' + encodeURIComponent(location.href)
 }
 ```
 
@@ -27,7 +27,7 @@ Additionally, network can be specified:
 ```javascript
 if(!window.connex) {
     // the app prefers running on test net
-    location.href = 'https://env.vechain.org/#/test/' + encodeURIComponent(location.href)
+    location.href = 'https://env.vechain.org/r/#/test/' + encodeURIComponent(location.href)
 }
 ```
 
