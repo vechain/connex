@@ -159,7 +159,7 @@ declare namespace Connex {
              * TODO: More detailed description
              * @param ties a set of addresses, as the condition of cache invalidation
              */
-            cache(ties: string[]) : this
+            cache(ties: string[]): this
 
             /**
              * Pack arguments into {@link Clause}.
@@ -488,7 +488,8 @@ declare namespace Connex {
             gas(gas: number): this
 
             /**
-             * set the link to reveal tx related information
+             * set the link to reveal tx related information.
+             * first appearance of slice '{txid}' in the given link url will be replaced with txid.
              * @param url link url
              */
             link(url: string): this
@@ -512,6 +513,13 @@ declare namespace Connex {
              * @param addr signer address
              */
             signer(addr: string): this
+
+            /**
+             * set the link to reveal cert related information.
+             * first appearance of slice '{certid}' in the given link url will be replaced with cert id.
+             * @param url link url
+             */
+            link(url: string): this
 
             /**
              * send request
