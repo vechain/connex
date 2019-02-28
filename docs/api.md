@@ -176,7 +176,7 @@ Returns [`Promise<Thor.VMOutput>`](#thorvmoutput)
 ``` javascript
 // Simulate get name from a VIP-180 compatible contract
 // Solidity: function name() public pure returns(string)
-const nameABI = {}
+const nameABI = {"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"}
 const nameMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(nameABI)
 nameMethod.call().then(output=>{
     console.log(output)
@@ -196,7 +196,7 @@ nameMethod.call().then(output=>{
 
 // Simulate the VIP-180 transfer 1 wei token from Alex to Bob
 // Solidity: function transfer(address _to, uint256 _amount) public returns(bool success)
-const transferABI = {}
+const transferABI = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}
 const transferMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
 // Set the args for simulate call
 transferMethod
@@ -234,7 +234,7 @@ transferMethod.call('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', 1).then(output
 
 // Simulate EnergyStation convertForEnergy call
 // Solidity:  function convertForEnergy(uint256 _minReturn) public payable
-const convertForEnergyABI = {}
+const convertForEnergyABI = {"constant":false,"inputs":[{"name":"_minReturn","type":"uint256"}],"name":"convertForEnergy","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"}
 const convertForEnergyMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(convertForEnergyABI)
 // Set value, leave other arguments unset
 convertForEnergyMethod
@@ -258,7 +258,7 @@ Returns [`Thor.Clause`](#thorclause)
 ``` javascript
 // Pack a clause that perform the VIP-180 transfer 1 wei token from Alex to Bob
 // Solidity: function transfer(address _to, uint256 _amount) public returns(bool success)
-const transferABI = {}
+const transferABI = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}
 const transferMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
 
 // Alice's address and amount in wei
@@ -272,7 +272,7 @@ console.log(clause)
 
 // Pack a clause that convents 1 VET to VeThor
 // Solidity: function convertForEnergy(uint256 _minReturn) public payable
-const convertForEnergyABI = {}
+const convertForEnergyABI = {"constant":false,"inputs":[{"name":"_minReturn","type":"uint256"}],"name":"convertForEnergy","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"}
 const convertForEnergyMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(convertForEnergyABI)
 // Set value, leave other arguments unset
 convertForEnergyMethod
@@ -312,7 +312,7 @@ Returns `Thor.Criteria`
 
 ``` javascript
 // Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
-const transferEventABI = {}
+const transferEventABI = {"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"}
 const transferEvent = connex.thor.account('0x0000000000000000000000000000456E65726779').event(transferEventABI)
 
 // Pack into criteria filters events that the '_to' is Bob's address
@@ -338,7 +338,7 @@ Returns [`Thor.Filter`](#filter)
 
 ``` javascript
 // Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
-const transferEventABI = {}
+const transferEventABI = {"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"}
 const transferEvent = connex.thor.account('0x0000000000000000000000000000456E65726779').event(transferEventABI)
 
 // Filter the events whether '_to' is Bob's address or '_from' is Alice's address
@@ -561,7 +561,7 @@ Returns [`Promise<Array<Thor.Filter.Result>>`](#thorfilterresult)
 
 ``` javascript
 // Solidity: event Transfer(address indexed _from, address indexed _to, uint256 _value)
-const transferEventABI = {}
+const transferEventABI = {"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"}
 const transferEvent = connex.thor.account('0x0000000000000000000000000000456E65726779').event(transferEventABI)
 
 // Create a filter from eventABI
@@ -660,7 +660,7 @@ explainer
     .caller('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed') // Set caller
 
 // Prepare energy transfer clause
-const transferABI = {}
+const transferABI = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}
 const transferMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
 // Alice's address and amount in wei
 const energyClause = transferMethod.asClause('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', 1)
@@ -757,7 +757,7 @@ signingService
     .comment('Donate 100 VET and 1000 VeThor to the author of connex')
 
 // Prepare energy transfer clause
-const transferABI = {}
+const transferABI = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"}
 const transferMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(transferABI)
 // Connex author's address and amount in wei
 const energyClause = transferMethod.asClause('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', '1000000000000000000000')
