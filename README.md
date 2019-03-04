@@ -72,6 +72,12 @@ document.querySelector('body').append(el)
 
 + [VeChain Sync](https://github.com/vechain/thor-sync.electron)
 
+## FAQ
+
+#### Angular does not find Connex
+I am using angular, have done all of the above and my IDE recognizes the Connex namespace however when I run or compile, i get the errors `Cannot find namespace 'Connex'` and / or `Property 'connex' does not exist on type 'Window'.` What is going wrong?<br>
+You are probably using a larger project with multiple project roots, just adding `@vechain/connex` to the root config is not enough in this case. You also have to find all `tsconfig.app.ts` and `tsconfig.spec.ts` files in your subprojects. While these inherrit from the main `tsconfig.json` you have to make sure it does not override the types with for example `"types": []` and that there is no confict with `typesRoots`
+
 ## License
 
 Connex is licensed under the
