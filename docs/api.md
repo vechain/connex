@@ -959,9 +959,11 @@ origin
 
 ### Thor.Decoded
 
-`Decoded` is a mixed object that produced by `ABI.decode` with the ABI definition of `EVENT` or `METHOD`.Decoded will be present only at the ABI definition is provided.
+`Decoded` is a mixed object that produced by `ABI.decode` with the ABI definition of `EVENT` or `METHOD`. Decoded will be present only at the ABI definition is provided.
 
++ `__length__` - `number(optional)`: Count of decoded properties, not available when method call reverted
 + `string` - `any`: Decoded property based on the ABI
++ `revertReason` - `string(optional)`: Reason message when method call reverted. It's usually the second argument of `require` statement in Solidity, and helpful to diagnose contract code.
 
 For example if a method's definition is `function name() public pure returns(string name)` after perform the simulate call `decoded` will be like following: 
 
