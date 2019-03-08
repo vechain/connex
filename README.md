@@ -2,13 +2,18 @@
 
 [![npm version](https://badge.fury.io/js/%40vechain%2Fconnex.svg)](https://badge.fury.io/js/%40vechain%2Fconnex)
 
+[Connex Powered VeChain Wallets](https://env.vechain.org/)
+
+[API Reference](https://connex.vecha.in)
+
 ## Introduction
 
 Connex is the standard interface to connect VeChain apps with VeChain blockchain and user. `Connex` is a set of well-designed APIs for developers, with injected `Connex Object` in web applications they can easily build decentralized applications.
 
+
 ## Get Started 
 
-[Sync](https://github.com/vechain/thor-sync.electron/releases) or other compatible clients will expose `connex` API by an injected object on `Window Object`.
+[Sync](https://env.vechain.org/#sync) or other compatible clients will expose `connex` API by an injected object on `Window Object`.
 
 ### VeChain App Bootstrapping
 
@@ -56,10 +61,6 @@ el.innerText = 'You are \'connexed\' to vechain, the status is ' + (status.progr
 document.querySelector('body').append(el)
 ```
 
-## Developers
-
-+ [API Reference](https://connex.vecha.in) for VeChain app developers
-
 ## Resource
 
 + [Connex Implementation Test](https://connex-impl-test.vecha.in)
@@ -68,9 +69,6 @@ document.querySelector('body').append(el)
 
 ![Connex Architecture](./docs/architecture.png)
 
-## Compatible clients
-
-+ [VeChain Sync](https://github.com/vechain/thor-sync.electron)
 
 ## FAQ
 
