@@ -396,7 +396,7 @@ declare namespace Connex {
             topics: string[]
             data: string
             meta?: LogMeta
-            decoded?: object
+            decoded?: Decoded
         }
 
         namespace Event {
@@ -455,8 +455,10 @@ declare namespace Connex {
             reverted: boolean
             events: Event[]
             transfers: Transfer[]
-            decoded?: object
+            decoded?: Decoded | { revertReason: string }
         }
+
+        type Decoded = { __length__: number } & { [field: string]: string }
     }
 
     interface Vendor {
