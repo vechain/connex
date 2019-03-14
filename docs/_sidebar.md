@@ -1,4 +1,5 @@
-* [connex.version](#connexversion)
+* [INTRODUCTION](#introduction)
+* [GET STARTED](#get-strated)
 * [connex.thor](#connexthor)
     * [thor.genesis](#get-genesis-block-info)
     * [thor.status](#get-blockchain-status)

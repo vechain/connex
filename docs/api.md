@@ -1,3 +1,51 @@
+# Connex&nbsp;&nbsp;[![npm version](https://badge.fury.io/js/%40vechain%2Fconnex.svg)](https://badge.fury.io/js/%40vechain%2Fconnex)
+
+## [Connex Powered VeChain Wallets](https://env.vechain.org/)
+
+## Introduction
+
+Connex is the standard interface to connect VeChain apps with VeChain blockchain and user. `Connex` is a set of well-designed APIs for developers, with injected `Connex Object` in web applications they can easily build decentralized applications.
+
+
+## Get Started 
+
+[Sync](https://env.vechain.org/#sync) or other compatible clients will expose `connex` API by an injected object on `Window Object`.
+
+### VeChain App Bootstrapping
+
+VeChain apps are usually web apps. On app load, you always need to detect Connex component. If Connex is not available, you may instruct people to setup Connex environment.
+
+To simplify these steps, simply perform redirection:
+
+```javascript
+if(!window.connex) {
+    location.href = 'https://env.vechain.org/r/#' + encodeURIComponent(location.href)
+}
+```
+
+Additionally, network can be specified:
+
+```javascript
+if(!window.connex) {
+    // the app prefers running on test net
+    location.href = 'https://env.vechain.org/r/#/test/' + encodeURIComponent(location.href)
+}
+```
+
+### Install
+
+#### TypeScript(Recommended)
+
+``` bash
+npm install @vechain/connex --save-dev
+```
+
+Add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you are good to go!
+
+#### Vanilla JS
+
+No need to set up, just code in your favourite way.
+
 # API Reference
 
 ## Connex.Version
@@ -299,8 +347,8 @@ Given the ABI of a contract, we can create a `Thor.Event` object that will be ab
 
 Returns `Thor.Event`
 
-+ `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#thorfilter)
-+ `filter`: Create an event filter, only accept indexed arguments, see [`Thor.Filter`](#thorfilter)
++ `asCriteria`: Pack indexed arguments into criteria for future use, see [`Thor.Filter`](#filter)
++ `filter`: Create an event filter, only accept indexed arguments, see [`Thor.Filter`](#filter)
 
 ##### Pack into Criteria
 
