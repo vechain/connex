@@ -137,9 +137,11 @@ Account visitor is a bunch of APIs to get account details and interact with acco
 const acc = connex.thor.account('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed')
 ```
 
-Returns `AccountVisitor`
+**Parameters**
 
 + `address` - `string`: Account to visit
+
+Returns `AccountVisitor`
 
 #### Get Account Detail
 
@@ -760,6 +762,22 @@ explainer.execute([
 
 ## Connex.Vendor
 
+### Owned
+
+Owned checks if the provided address is owned by the vendor(user).
+
+**Parameters**
+
++ `addr` - `string`: Address to check
+
+Returns `boolean`
+
+``` javascript
+const owned = connex.vendor.owned('0x0000000000000000000000000000000000000001')
+console.log(owned)
+>false 
+```
+
 ### Acquire a Signing Service
 
 
@@ -775,7 +793,7 @@ Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Ve
 
 + `signer` - `(addr: string): this`: Enforces the specified address to sign the transaction
 + `gas` - `(gas: number): this`: Enforces the specified number as the maximum gas that can be consumed for the transaction
-+ `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by replacing the placeholder `{txid}` to `txid`
++ `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by replacing the placeholder `{txid}` by `Transaction ID`
 + `comment` - `(text: string): this`: Set the comment for the transaction that will be revealed to the user
 + `request`: Send the request
 
@@ -837,6 +855,7 @@ The certificate is a message signing based mechanism which can easily request us
 `Thor.Vendor.CertSigningService`:
 
 + `signer` - `(addr: string): this`: Enforces the specified address to sign the certificate
++ `link` - `(url: string): this`: Set the link to reveal certificate-related information, the link will be used for connex to assemble a `callback url` by replacing the placeholder `{certid}` by `Certificate ID`
 + `request`: Send the request
 
 #### Perform Certificate Signing Request
@@ -859,6 +878,10 @@ Returns  `Promise<Thor.Vendor.SigningService.CertResponse>`:
 
 ``` javascript
 const signingService = connex.vendor.sign('cert')
+
+signingService
+    .link('https://connex.vecha.in/{certid}') // User will be back to the app by the url https://connex.vecha.in/0xffff....
+
 
 // Generate a random string and request the identification
 signingService.request({
