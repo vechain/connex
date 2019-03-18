@@ -285,7 +285,7 @@ transferMethod.call('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', 1).then(output
 // Simulate EnergyStation convertForEnergy call
 // Solidity:  function convertForEnergy(uint256 _minReturn) public payable
 const convertForEnergyABI = {"constant":false,"inputs":[{"name":"_minReturn","type":"uint256"}],"name":"convertForEnergy","outputs":[{"name":"","type":"uint256"}],"payable":true,"stateMutability":"payable","type":"function"}
-const convertForEnergyMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(convertForEnergyABI)
+const convertForEnergyMethod = connex.thor.account('0xd015d91b42bed5feaf242082b11b83b431abbf4f').method(convertForEnergyABI)
 // Set value, leave other arguments unset
 convertForEnergyMethod
     .value('1000000000000000000') // 1e18 wei
@@ -295,6 +295,68 @@ convertForEnergyMethod.call('10000000000000000').then(output=>{
     console.log(output)
 })
 > ...
+```
+
+##### Caching a Contract Call
+
+> There are two hard things in computer science: **cache invalidation** and **naming things**. 
+>
+>  -- Phil Karlton
+
+Caching method call would help developers a lot when building applications. As addresses are the basic unit on the blockchain, so addresses will be the condition of cache invalidation. Since this caching mechanism is primitive, we recommend developers use this carefully. 
+
+!> We assume developers know the best of what they are doing.
+
+`cache` - `(ties: string[]):this`: Turn caching on for the method and set the condition of cache invalidation.
+
+After turning cache on, connex will check everything on the blockchain that can be treated as address(included but not limited):
+
++ `Block.Signer`
++ `Block.Beneficiary`
++ `Transaction.Signer`
++ `Receipt.GasPayer`
++ `Receipt.Output.Event.Address`
++ `Receipt.Output.Event.ContractAddress`
++ `Receipt.Output.Event.Topics`
++ `Receipt.Output.Transfer.Sender`
++ `Receipt.Output.Transfer.Recipient`
+
+Any address in the set being seen by connex, the cache would be expired.
+
+``` javascript
+// Caching for method name, return value should never expire
+// Solidity: function name() public pure returns(string)
+const nameABI = {"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"}
+const nameMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(nameABI)
+name.cache([])  // Set this method to never expire
+nameMethod.call().then(output=>{
+    console.log(output)
+}) // This will hit cache forever
+
+// Caching for method balanceOf, for my addresses
+// Solidity function balanceOf(address _owner) public view returns(uint256 balance) 
+const balanceOfABI = {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
+const balanceOfMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(balanceOfABI)
+// Set this method to expire when any of my accounts being seen
+balanceOfMethod.cache(['0x7567d83b7b8d80addcb281a71d54fc7b3364ffed', '0xd3ae78222beadb038203be21ed5ce7c9b1bff602'])
+// Get balance of my account, we will get cached result on most blocks
+// Event Transfer(_from = '0x7567d83b7b8d80addcb281a71d54fc7b3364ffed', ....) would make cache expired
+balanceOfMethod.call('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed').then(output=>{
+    console.log(output)
+})
+
+// Caching a dex market's vet balance
+// Solidity: function vetVirtualBalance() public returns(bool uint104)
+const vetBalanceABI = {"constant":true,"inputs":[],"name":"vetVirtualBalance","outputs":[{"name":"","type":"uint104"}],"payable":false,"stateMutability":"view","type":"function"}
+const vetBalanceMethod = connex.thor.account('0xD015D91B42BEd5FeaF242082b11B83B431abBf4f').method(vetBalanceABI)
+// Set this method to expire when the contract address being seen
+// Why? Because I am the developer of EnergyStation and I know the detail of the contract
+// vetVirtualBalance changes when there is any conversion executed and every conversion would trigger an event
+// and every event's output will contain contractAddress, so I set the contractAddress to the condition
+vetBalanceMethod.cache(['0x7567d83b7b8d80addcb281a71d54fc7b3364ffed'])
+vetBalanceMethod.call('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed').then(output=>{
+    console.log(output)
+})// This will get the vetVirtualBalance efficiently
 ```
 
 ##### Create a Clause for Signing
