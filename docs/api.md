@@ -200,7 +200,7 @@ acc.getStorage('0x00000000000000000000000000000000000000000000000000000000000000
 
 #### Contract Method
 
-Given the ABI of contract, we can create a `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to a clause that is ready to sign.
+Given the ABI of a contract, we can create a `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to a clause that is ready to sign.
 
 **Parameters**
 
@@ -307,7 +307,7 @@ Caching method call would help developers a lot when building applications. As a
 
 !> We assume developers know the best of what they are doing.
 
-`cache` - `(ties: string[]):this`: Turn caching on for the method and set the condition of cache invalidation.
+`cache` - `(ties: string[]): this`: Turn on caching for the method and set the condition of cache invalidation.
 
 After turning cache on, connex will check everything on the blockchain that can be treated as address(included but not limited):
 
