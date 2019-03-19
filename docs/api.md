@@ -199,8 +199,8 @@ acc.getStorage('0x00000000000000000000000000000000000000000000000000000000000000
 ```
 
 #### Contract Method
-
-Given the ABI of a contract, we can create a `Thor.Method` object that will be able to simulate a contract call without altering contract state or pack method with arguments to a clause that is ready to sign.
+`
+Given the ABI of a contract, a `Thor.Method` object can be created to simulate a contract all without altering the contract state as well as pack a method with arguments to a clause that is ready to be signed.
 
 **Parameters**
 
@@ -299,17 +299,17 @@ convertForEnergyMethod.call('10000000000000000').then(output=>{
 
 ##### Caching a Contract Call
 
-> There are two hard things in computer science: **cache invalidation** and **naming things**. 
+> There are only two hard things in Computer Science: **cache invalidation** and **naming things**. 
 >
 >  -- Phil Karlton
 
-Caching method call would help developers a lot when building applications. As addresses are the basic unit on the blockchain, so addresses will be the condition of cache invalidation. Since this caching mechanism is primitive, we recommend developers use this carefully. 
+Caching method calls would help developers to speed up their applications. Addresses are ideal to be the conditions of the cache invalidation because they are building blocks in smart contracts. We recommend developers use this caching mechanism carefully since it is primitive. 
 
 !> We assume developers know the best of what they are doing.
 
 `cache` - `(ties: string[]): this`: Turn on caching for the method and set the condition of cache invalidation.
 
-After turning cache on, connex will check everything on the blockchain that can be treated as address(included but not limited):
+After turning cache on, connex will check everything on the blockchain that can be treated as address(included but not limited to):
 
 + `Block.Signer`
 + `Block.Beneficiary`
@@ -321,7 +321,7 @@ After turning cache on, connex will check everything on the blockchain that can 
 + `Receipt.Output.Transfer.Sender`
 + `Receipt.Output.Transfer.Recipient`
 
-Any address in the set being seen by connex, the cache would be expired.
+Once any address in the set is observed by connex, the cache would be expired.
 
 ``` javascript
 // Caching for method name, return value should never expire
