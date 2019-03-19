@@ -199,7 +199,7 @@ acc.getStorage('0x00000000000000000000000000000000000000000000000000000000000000
 ```
 
 #### Contract Method
-`
+
 Given the ABI of a contract, a `Thor.Method` object can be created to simulate a contract all without altering the contract state as well as pack a method with arguments to a clause that is ready to be signed.
 
 **Parameters**
@@ -303,7 +303,7 @@ convertForEnergyMethod.call('10000000000000000').then(output=>{
 >
 >  -- Phil Karlton
 
-Caching method calls would help developers to speed up their applications. Addresses are ideal to be the conditions of the cache invalidation because they are building blocks in smart contracts. We recommend developers use this caching mechanism carefully since it is primitive. 
+Caching method calls would help developers to speed up their applications. Addresses are ideal to be the conditions of the cache invalidation because they are building states in smart contracts. We recommend developers use this caching mechanism carefully since it is primitive. 
 
 !> We assume developers know the best of what they are doing.
 
