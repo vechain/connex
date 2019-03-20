@@ -239,8 +239,7 @@ nameMethod.call().then(output=>{
     "reverted": false,
     "vmError": "",
     "decoded": {
-        "0": "VeThor",
-         "__length__": 1
+        "0": "VeThor"
     }
 }
 
@@ -277,7 +276,6 @@ transferMethod.call('0xd3ae78222beadb038203be21ed5ce7c9b1bff602', 1).then(output
     "vmError": "",
     "decoded": {
         "0": true,
-        "__length__": 1,
         "success": true
     }
 }
@@ -712,7 +710,6 @@ filter.apply(0, 1).then(logs=>{
             "0": "0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed",
             "1": "0x00F34f4462c0f6a6f5E76Fb1b6D63F05A32eD2C6",
             "2": "1000000000000000000",
-            "__length__": 3,
             "_from": "0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed",
             "_to": "0x00F34f4462c0f6a6f5E76Fb1b6D63F05A32eD2C6",
             "_value": "1000000000000000000"
@@ -1094,8 +1091,8 @@ origin
 
 `Decoded` is a mixed object that produced by `ABI.decode` with the ABI definition of `EVENT` or `METHOD`. Decoded will be present only at the ABI definition is provided.
 
-+ `__length__` - `number(optional)`: Count of decoded properties, not available when method call reverted
-+ `string` - `any`: Decoded property based on the ABI
++ {index} - `number`: Decoded property by parameter index
++ {name} - `string`: Decoded property by parameter name if any
 + `revertReason` - `string(optional)`: Reason message when method call reverted. It's usually the second argument of `require` statement in Solidity, and helpful to diagnose contract code.
 
 For example if a method's definition is `function name() public pure returns(string name)` after perform the simulate call `decoded` will be like following: 
@@ -1103,7 +1100,6 @@ For example if a method's definition is `function name() public pure returns(str
 ``` javascript
 {
     "0": "VeThor",
-    "__length__": 1,
     "name": "VeThor"
 }
 ```
@@ -1117,7 +1113,6 @@ Another example if an event's definition is `event Transfer(address indexed _fro
     "0": "0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed",
     "1": "0x00F34f4462c0f6a6f5E76Fb1b6D63F05A32eD2C6",
     "2": "1000000000000000000",
-    "__length__": 3,
     "_from": "0x7567D83b7b8d80ADdCb281A71d54Fc7B3364ffed",
     "_to": "0x00F34f4462c0f6a6f5E76Fb1b6D63F05A32eD2C6",
     "_value": "1000000000000000000"

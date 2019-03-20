@@ -455,10 +455,10 @@ declare namespace Connex {
             reverted: boolean
             events: Event[]
             transfers: Transfer[]
-            decoded?: Decoded | { revertReason: string }
+            decoded?: Decoded & { revertReason?: string }
         }
 
-        type Decoded = { __length__: number } & { [field: string]: string }
+        type Decoded = { [name: string]: any } & { [index: number]: any }
     }
 
     interface Vendor {
