@@ -490,6 +490,12 @@ declare namespace Connex {
             gas(gas: number): this
 
             /**
+             * set another txid as dependency
+             * @param txid 
+             */
+            dependsOn(txid: string): this
+
+            /**
              * set the link to reveal tx related information.
              * first appearance of slice '{txid}' in the given link url will be replaced with txid.
              * @param url link url
