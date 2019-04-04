@@ -842,7 +842,7 @@ console.log(owned)
 
 **Parameters**
 
-+ `kind` - `'tx'|'cert'`: Kind of singing service
++ `kind` - `'tx'|'cert'`: Kind of signing service
 
 Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Vendor.CertSigningService`
 
