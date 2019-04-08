@@ -326,7 +326,7 @@ Once any address in the set is observed by connex, the cache would be expired.
 // Solidity: function name() public pure returns(string)
 const nameABI = {"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"}
 const nameMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(nameABI)
-name.cache([])  // Set this method to never expire
+nameMethod.cache([])  // Set this method to never expire
 nameMethod.call().then(output=>{
     console.log(output)
 }) // This will hit cache forever
@@ -335,15 +335,15 @@ nameMethod.call().then(output=>{
 // Solidity function balanceOf(address _owner) public view returns(uint256 balance) 
 const balanceOfABI = {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
 const balanceOfMethod = connex.thor.account('0x0000000000000000000000000000456E65726779').method(balanceOfABI)
-// Set this method to expire when any of my accounts being seen
-balanceOfMethod.cache(['0x7567d83b7b8d80addcb281a71d54fc7b3364ffed', '0xd3ae78222beadb038203be21ed5ce7c9b1bff602'])
+// Set this method to expire when my account being seen
+balanceOfMethod.cache(['0x7567d83b7b8d80addcb281a71d54fc7b3364ffed'])
 // Get balance of my account, we will get cached result on most blocks
 // Event Transfer(_from = '0x7567d83b7b8d80addcb281a71d54fc7b3364ffed', ....) would make cache expired
 balanceOfMethod.call('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed').then(output=>{
     console.log(output)
 })
 
-// Caching a dex market's vet balance
+// Caching a DEX market's vet balance
 // Solidity: function vetVirtualBalance() public returns(bool uint104)
 const vetBalanceABI = {"constant":true,"inputs":[],"name":"vetVirtualBalance","outputs":[{"name":"","type":"uint104"}],"payable":false,"stateMutability":"view","type":"function"}
 const vetBalanceMethod = connex.thor.account('0xD015D91B42BEd5FeaF242082b11B83B431abBf4f').method(vetBalanceABI)
@@ -351,8 +351,8 @@ const vetBalanceMethod = connex.thor.account('0xD015D91B42BEd5FeaF242082b11B83B4
 // Why? Because I am the developer of EnergyStation and I know the detail of the contract
 // vetVirtualBalance changes when there is any conversion executed and every conversion would trigger an event
 // and every event's output will contain contractAddress, so I set the contractAddress to the condition
-vetBalanceMethod.cache(['0x7567d83b7b8d80addcb281a71d54fc7b3364ffed'])
-vetBalanceMethod.call('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed').then(output=>{
+vetBalanceMethod.cache(['0xD015D91B42BEd5FeaF242082b11B83B431abBf4f'])
+vetBalanceMethod.call('0xD015D91B42BEd5FeaF242082b11B83B431abBf4f').then(output=>{
     console.log(output)
 })// This will get the vetVirtualBalance efficiently
 ```
