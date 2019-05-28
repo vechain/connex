@@ -341,6 +341,7 @@ declare namespace Connex {
             gasUsed: number
             totalScore: number
             txsRoot: string
+            txsFeatures?: number
             stateRoot: string
             receiptsRoot: string
             signer: string
@@ -371,6 +372,7 @@ declare namespace Connex {
             gasPriceCoef: number
             gas: number
             origin: string
+            delegator?: string
             nonce: string
             dependsOn: string | null
             size: number
