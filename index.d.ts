@@ -514,6 +514,12 @@ declare namespace Connex {
             comment(text: string): this
 
             /**
+             * enable VIP-191 by providing delegation handler
+             * @param handler to sign tx as fee delegator
+             */
+            delegate(handler: SigningService.DelegationHandler): this
+
+            /**
              * send request
              * @param msg clauses with comments
              */
@@ -577,6 +583,14 @@ declare namespace Connex {
                 }
                 signature: string
             }
+
+
+            /** 
+            * returns object contains signature of fee delegator 
+            * @param unsignedTx.raw RLP-encoded unsigned tx in hex form
+            * @param unsignedTx.origin address of intended tx origin
+            */
+            type DelegationHandler = (unsignedTx: { raw: string, origin: string }) => Promise<{ signature: string }>
         }
     }
     type ErrorType = 'BadParameter' | 'Rejected'
