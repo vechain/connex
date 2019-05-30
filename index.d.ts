@@ -388,7 +388,14 @@ declare namespace Connex {
                 events: Event[]
                 transfers: Transfer[]
             }[]
-            meta: LogMeta
+            meta: Receipt.Meta
+        }
+
+        namespace Receipt {
+            type Meta = Transaction.Meta & {
+                txID: string
+                txOrigin: string
+            }
         }
 
         type Event = {
@@ -425,12 +432,8 @@ declare namespace Connex {
             }
         }
 
-        type LogMeta = {
-            blockID: string
-            blockNumber: number
-            blockTimestamp: number
-            txID: string
-            txOrigin: string
+        type LogMeta = Receipt.Meta & {
+            clauseIndex: number
         }
 
         namespace Filter {
