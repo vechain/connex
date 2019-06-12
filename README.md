@@ -44,7 +44,13 @@ if(!window.connex) {
 npm install @vechain/connex --save-dev
 ```
 
-Add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you are good to go!
+Place following line in any .ts file of your project
+```typescript
+import '@vechain/connex'
+```
+or
+
+add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you are good to go!
 
 #### Vanilla JS
 
