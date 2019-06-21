@@ -150,9 +150,9 @@ declare namespace Connex {
 
             /**
              * set gas price
-             * @param gp gas price in hex string
+             * @param gp gas price in number or hex/dec string
              */
-            gasPrice(gp: string): this
+            gasPrice(gp: string | number): this
 
             /**
              * Turn on caching for result of method call
@@ -261,9 +261,9 @@ declare namespace Connex {
 
             /**
              * set gas price
-             * @param gp gas price in hex string
+             * @param gp gas price in number or hex/dec string
              */
-            gasPrice(gp: string): this
+            gasPrice(gp: string | number): this
 
             /**
              * execute clauses
@@ -352,7 +352,7 @@ declare namespace Connex {
         type Clause = {
             to: string | null
             value: string | number
-            data: string
+            data?: string
         }
 
         namespace Transaction {
@@ -368,7 +368,11 @@ declare namespace Connex {
             chainTag: number
             blockRef: string
             expiration: number
-            clauses: Clause[]
+            clauses: Array<{
+                to: string | null
+                value: string
+                data: string
+            }>
             gasPriceCoef: number
             gas: number
             origin: string
@@ -555,7 +559,7 @@ declare namespace Connex {
             type TxMessage = Array<{
                 to: string | null
                 value: string | number
-                data: string
+                data?: string
                 /**
                  * comment to the clause
                  */
