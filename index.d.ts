@@ -368,7 +368,11 @@ declare namespace Connex {
             chainTag: number
             blockRef: string
             expiration: number
-            clauses: Required<Clause>[]
+            clauses: Array<{
+                to: string | null
+                value: string
+                data: string
+            }>
             gasPriceCoef: number
             gas: number
             origin: string
