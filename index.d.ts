@@ -150,9 +150,9 @@ declare namespace Connex {
 
             /**
              * set gas price
-             * @param gp gas price in hex string
+             * @param gp gas price in number or hex/dec string
              */
-            gasPrice(gp: string): this
+            gasPrice(gp: string | number): this
 
             /**
              * Turn on caching for result of method call
@@ -261,9 +261,9 @@ declare namespace Connex {
 
             /**
              * set gas price
-             * @param gp gas price in hex string
+             * @param gp gas price in number or hex/dec string
              */
-            gasPrice(gp: string): this
+            gasPrice(gp: string | number): this
 
             /**
              * execute clauses
