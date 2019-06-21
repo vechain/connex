@@ -352,7 +352,7 @@ declare namespace Connex {
         type Clause = {
             to: string | null
             value: string | number
-            data: string
+            data?: string
         }
 
         namespace Transaction {
@@ -368,7 +368,7 @@ declare namespace Connex {
             chainTag: number
             blockRef: string
             expiration: number
-            clauses: Clause[]
+            clauses: Required<Clause>[]
             gasPriceCoef: number
             gas: number
             origin: string
@@ -555,7 +555,7 @@ declare namespace Connex {
             type TxMessage = Array<{
                 to: string | null
                 value: string | number
-                data: string
+                data?: string
                 /**
                  * comment to the clause
                  */
