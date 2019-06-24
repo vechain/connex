@@ -305,6 +305,11 @@ declare namespace Connex {
                  * parent block id
                  */
                 parentID: string
+
+                /**
+                 * supported txs features
+                 */
+                txsFeatures?: number
             }
         }
 
