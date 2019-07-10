@@ -3,3 +3,4 @@ tslint.json
 *.tgz
 tsconfig.json
 /docs/
+.gitattributes
