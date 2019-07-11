@@ -142,6 +142,13 @@ const acc = connex.thor.account('0x7567d83b7b8d80addcb281a71d54fc7b3364ffed')
 + `address` - `string`: Account to visit
 
 Returns `AccountVisitor`
+    
++ `address` - `string(readonly)`: The address of account to be visited
++ `get` - `(): Promise<Thor.Account>`: Get the account detail
++ `getCode` - `(): Promise<Thor.Account>`: Get the account code
++ `getStorage` - `(key: string): Promise<Thor.Account>`: Get the account storage
++ `method` - `(abi: object): Method`: Create a method object, to perform contract call, or build transaction clause
++ `event` - `(abi: object): EventVisitor`: Create an event visitor
 
 #### Get Account Detail
 
@@ -219,7 +226,7 @@ Returns `Thor.Method`
 
 **Parameters**
 
-+ `arguments` - `any`: Arguments defined in method ABI
++ `...arguments` - `Array<any>`: Arguments defined in method ABI
 
 Returns [`Promise<Thor.VMOutput>`](#thorvmoutput)
 
@@ -361,7 +368,7 @@ vetBalanceMethod.call('0xD015D91B42BEd5FeaF242082b11B83B431abBf4f').then(output=
 
 **Parameters**
 
-+ `arguments` - `any`: Arguments defined in method ABI
++ `...arguments` - `Array<any>`: Arguments defined in method ABI
 
 Returns [`Thor.Clause`](#thorclause)
 
@@ -468,7 +475,7 @@ const filter = transferEvent.filter([{
 
 Returns `Thor.BlockVisitor`
 
-+ `revision` - `number|string`: Block number or ID to be visited.
++ `revision` - `number|string(readonly)`: Block number or ID to be visited.
 
 #### Get Block Detail
 
@@ -507,7 +514,9 @@ blk.get().then(block=>{
 
 Returns `Thor.TransactionVisitor`
 
-+ `id` - `number|string`: Block number or ID to be visited
++ `id` - `number|string(readonly)`: Block number or ID to be visited
++ `get` - `(): Promise<Thor.Transaction>`: Get the transaction detail
++ `getReceipt` - `(): Promise<Thor.Receipt>`: Get the transaction receipt
 
 #### Get Transaction Detail
 
