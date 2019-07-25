@@ -381,7 +381,7 @@ declare namespace Connex {
             gasPriceCoef: number
             gas: number
             origin: string
-            delegator?: string
+            delegator?: string | null
             nonce: string
             dependsOn: string | null
             size: number
@@ -561,13 +561,8 @@ declare namespace Connex {
             T extends 'cert' ? CertSigningService : never
 
         namespace SigningService {
-            type TxMessage = Array<{
-                to: string | null
-                value: string | number
-                data?: string
-                /**
-                 * comment to the clause
-                 */
+            type TxMessage = Array<Thor.Clause & {
+                /** comment to the clause */
                 comment?: string
             }>
 
