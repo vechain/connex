@@ -526,13 +526,13 @@ declare namespace Connex {
              * enable VIP-191 by providing delegation handler
              * @param handler to sign tx as fee delegator
              */
-            delegate(handler: SigningService.DelegationHandler): this
+            delegate(handler: DelegationHandler): this
 
             /**
              * send request
              * @param msg clauses with comments
              */
-            request(msg: SigningService.TxMessage): Promise<SigningService.TxResponse>
+            request(msg: TxMessage): Promise<TxResponse>
         }
 
         interface CertSigningService {
@@ -553,51 +553,49 @@ declare namespace Connex {
              * send request
              * @param msg 
              */
-            request(msg: SigningService.CertMessage): Promise<SigningService.CertResponse>
+            request(msg: CertMessage): Promise<CertResponse>
         }
 
         type SigningService<T extends 'tx' | 'cert'> =
             T extends 'tx' ? TxSigningService :
             T extends 'cert' ? CertSigningService : never
 
-        namespace SigningService {
-            type TxMessage = Array<Thor.Clause & {
-                /** comment to the clause */
-                comment?: string
-                /** as the hint for wallet to decode clause data */
-                abi?: object
-            }>
+        type TxMessage = Array<Thor.Clause & {
+            /** comment to the clause */
+            comment?: string
+            /** as the hint for wallet to decode clause data */
+            abi?: object
+        }>
 
-            type CertMessage = {
-                purpose: 'identification' | 'agreement'
-                payload: {
-                    type: 'text'
-                    content: string
-                }
+        type CertMessage = {
+            purpose: 'identification' | 'agreement'
+            payload: {
+                type: 'text'
+                content: string
             }
+        }
 
-            type TxResponse = {
-                txid: string
+        type TxResponse = {
+            txid: string
+            signer: string
+        }
+
+        type CertResponse = {
+            annex: {
+                domain: string
+                timestamp: number
                 signer: string
             }
-
-            type CertResponse = {
-                annex: {
-                    domain: string
-                    timestamp: number
-                    signer: string
-                }
-                signature: string
-            }
-
-
-            /** 
-            * returns object contains signature of fee delegator 
-            * @param unsignedTx.raw RLP-encoded unsigned tx in hex form
-            * @param unsignedTx.origin address of intended tx origin
-            */
-            type DelegationHandler = (unsignedTx: { raw: string, origin: string }) => Promise<{ signature: string }>
+            signature: string
         }
+
+
+        /** 
+        * returns object contains signature of fee delegator 
+        * @param unsignedTx.raw RLP-encoded unsigned tx in hex form
+        * @param unsignedTx.origin address of intended tx origin
+        */
+        type DelegationHandler = (unsignedTx: { raw: string, origin: string }) => Promise<{ signature: string }>
     }
     type ErrorType = 'BadParameter' | 'Rejected'
 }
