@@ -564,6 +564,8 @@ declare namespace Connex {
             type TxMessage = Array<Thor.Clause & {
                 /** comment to the clause */
                 comment?: string
+                /** as the hint for wallet to decode clause data */
+                abi?: object
             }>
 
             type CertMessage = {
