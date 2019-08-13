@@ -486,7 +486,7 @@ declare namespace Connex {
          * Returns whether an address is owned by user
          * @param addr account address
          */
-        owned(addr: string): boolean
+        owned(addr: string): Promise<boolean>
     }
 
     namespace Vendor {
