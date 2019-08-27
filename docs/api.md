@@ -86,14 +86,7 @@ console.log(connex.thor.genesis)
 
 ### Get Blockchain Status
 
-Returns `Thor.Status`:
-
-+ `progress` - `number`: A number [0-1] indicates the syncing progress of the currently connected node
-+ `head`: Summarized block info that indicates the head block of the currently connected node
-    + `id` - `string`: Identifier of the block (bytes32)
-    + `number` - `number`: Number of the block
-    + `timestamp` - `number`: Unix timestamp of the block
-    + `parentID` - `string`: ID of the parent block (bytes32)
+Returns [`Thor.Status`](#thorstatus)
 
 ``` javascript
 console.log(connex.thor.status)
@@ -115,16 +108,24 @@ console.log(connex.thor.status)
 
 Returns `Thor.Ticker`
 
-+ `next` - `(): Promise<void>`: Call `next` will create a promise that resolves when there is a new block added
++ `next` - [`(): Promise<Thor.Status['head']>`](#thorstatus): Call `next` will create a promise that resolves with the summary of head block when there is a new block added
+
+?> Before [1.4.0](https://github.com/vechain/connex/releases/tag/v1.4.0), `next` returns `Promise<void>`
 
 ``` javascript
 const ticker = connex.thor.ticker()
-ticker.next().then(()=>{
-    console.log('ticker triggered')
+ticker.next().then((head)=>{
+    console.log(head)
 })
 
 // A few seconds after
-> 'ticker triggered'
+> {
+    "id": "0x00379f79ce016975dab2aa6ee21669b6ad4f4aa3fbb1ef1dfb151c52e13a8437",
+    "number": 3645305,
+    "parentID": "0x00379f781a0035250669e6f5e5170b8cb384decbbb6a83917f823d920de5eed1",
+    "timestamp": 1566874740,
+    "txsFeatures": 1
+}
 ```
 
 ### Account Visitor
@@ -838,11 +839,14 @@ Owned checks if the provided address is owned by the vendor(user).
 
 + `addr` - `string`: Address to check
 
-Returns `boolean`
+Returns `Promise<boolean>`
+
+!> Before [1.4.0](https://github.com/vechain/connex/releases/tag/v1.4.0), `owned` returns `boolean`, be caution about this breaking change.
 
 ``` javascript
-const owned = connex.vendor.owned('0x0000000000000000000000000000000000000001')
-console.log(owned)
+connex.vendor.owned('0x0000000000000000000000000000000000000001').then(owned =>{ 
+    console.log(owned)
+})
 >false 
 ```
 
@@ -994,6 +998,15 @@ signingService.request({
 ```
 
 ## Types
+
+### Thor.Status
+
++ `progress` - `number`: A number [0-1] indicates the syncing progress of the currently connected node
++ `head`: Summarized block info that indicates the head block of the currently connected node
+    + `id` - `string`: Identifier of the block (bytes32)
+    + `number` - `number`: Number of the block
+    + `timestamp` - `number`: Unix timestamp of the block
+    + `parentID` - `string`: ID of the parent block (bytes32)
 
 ### Thor.Block
 
