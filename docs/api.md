@@ -857,17 +857,18 @@ connex.vendor.owned('0x0000000000000000000000000000000000000001').then(owned =>{
 
 + `kind` - `'tx'|'cert'`: Kind of signing service
 
-Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Vendor.CertSigningService`
+Returns `Connex.Vendor`: `Connex.Vendor.TXSigningService` or `Connex.Vendor.CertSigningService`
 
 ### Transaction Signing Service
 
-`Thor.Vendor.TXSigningService`:
+`Connex.Vendor.TXSigningService`:
 
 + `signer` - `(addr: string): this`: Enforces the specified address to sign the transaction
 + `gas` - `(gas: number): this`: Enforces the specified number as the maximum gas that can be consumed for the transaction
 + `dependsOn` - `(txid: string): this`: Set another txid as dependency ([Reference](https://github.com/vechain/thor/wiki/Transaction-Model#other-new-features))
 + `link` - `(url: string): this`: Set the link to reveal transaction-related information, the link will be used for connex to assemble a `callback url` by replacing the placeholder `{txid}` by `Transaction ID`
 + `comment` - `(text: string): this`: Set the comment for the transaction that will be revealed to the user
++ `delegate` - `(handler: function): this`: Enable VIP-191 for this request by setting the delegation handler
 + `request`: Send the request
 
 #### Perform Transaction Signing Request
@@ -881,8 +882,9 @@ Returns `Thor.Vendor.SigningService`: `Thor.Vendor.TXSigningService` or `Thor.Ve
 + `value`:  Same as [`Thor.Clause.Value`](#thorclause)
 + `data`:  Same as [`Thor.Clause.Data`](#thorclause)
 + `comment` - `string(optional)`: Comment to the clause
++ `abi` - `object(optional)`: ABI definition of this clause, for User-Agent decoding the data
 
-Returns `Promise<Thor.Vendor.SigningService.TXResponse>`:
+Returns `Promise<Connex.Vendor.TXResponse>`:
 + `txid` - `string`: Transaction identifier
 + `signer` - `string`: Signer address
 
@@ -921,11 +923,51 @@ signingService.request([
 }
 ```
 
+#### Perform a VIP-191 enabled request
+
+For VIP-191 enabled request, `Delegation Handler` needs to be set to the request. `Delegation Handler` is an asynchronous function which accepts unsigned transaction and intended tx origin as parameter and the signature of delegator required to be the returned value.
+
+`Connex.Vendor.DelegationHandler`:
+
+**Parameters**
+
+`unsignedTx`:
++ `raw` - `string`: RLP-encoded unsigned tx in hex
++ `origin` - `string`: The address going to sign the tx
+
+Returns `Promise<{ signature:string }>`
+
+``` javascript
+const signingService = connex.vendor.sign('tx')
+
+const delegationHandler = async ( unsignedTx )=>{
+    ...
+    const sig = await requestDelegatorSignatureFromRemote(unsignedTx.raw, unsignedTx.origin)
+    return { signature: sig }
+}
+
+signingService
+    .delegate(delegationHandler)
+    .request([{
+            to: '0xd3ae78222beadb038203be21ed5ce7c9b1bff602',
+            value: '100000000000000000000',
+            data: '0x',
+            comment: 'Transfer 100 VET'
+        }
+    ]).then(result=>{
+        console.log(result)
+    })
+>{
+    "signer": "0x7567d83b7b8d80addcb281a71d54fc7b3364ffed",
+    "txId": "0x4e9a7eec33ef6cfff8ff5589211a94070a0284df17c2ead6267f1913169bd340"
+}
+```
+
 ### Certificate Signing Service
 
 The certificate is a message signing based mechanism which can easily request user's identification(address) or user to agree to your terms or agreements.
 
-`Thor.Vendor.CertSigningService`:
+`Connex.Vendor.CertSigningService`:
 
 + `signer` - `(addr: string): this`: Enforces the specified address to sign the certificate
 + `link` - `(url: string): this`: Set the link to reveal certificate-related information, the link will be used for connex to assemble a `callback url` by replacing the placeholder `{certid}` by `Certificate ID`
@@ -942,7 +984,7 @@ The certificate is a message signing based mechanism which can easily request us
     + `type` - `'text'`: Payload type,only `text` is supported
     + `content` - `string`: Content of of the request
 
-Returns  `Promise<Thor.Vendor.SigningService.CertResponse>`:
+Returns `Promise<Connex.Vendor.CertResponse>`:
 + `annex`:
     + `domain` - `string`: Domain of the VeChain apps
     + `timestamp` - `number`: Head block timestamp when user accepts the request
