@@ -523,6 +523,12 @@ declare namespace Connex {
             comment(text: string): this
 
             /**
+             * alias of comment: set comment for the message
+             * @param text
+             */
+            summary(text: string): this
+
+            /**
              * enable VIP-191 by providing delegation handler
              * @param handler to sign tx as fee delegator
              */
