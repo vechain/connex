@@ -1066,6 +1066,7 @@ signingService.request({
 + `signer` - `string`: Address of who signed the block (bytes20)
 + `transactions` - `Array<string>`: Array of transaction IDs
 + `isTrunk` - `bool`: Whether the block is in trunk
++ `txFeatures` - `number`: Supported tx features bitset
 
 ### Thor.Account
 
@@ -1084,6 +1085,8 @@ signingService.request({
 + `gas`  - `number`: Maximum of gas can be consumed to execute this transaction
 origin
 + `nonce` - `string`: Transaction nonce
++ `origin` - `string`: The one who signed the transaction
++ `delegator` - `string`: The delegator who paid the gas fee
 + `dependsOn` - `string|null`: ID of the transaction which the current transaction depends (bytes32)
 + `size` - `number`: Byte size of the transaction that is RLP encoded
 + `meta` - [`Thor.Transaction.Meta`](#thortransaction.meta)
