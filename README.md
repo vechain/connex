@@ -4,7 +4,7 @@
 
 [Connex Powered VeChain Wallets](https://env.vechain.org/)
 
-[API Reference](https://connex.vecha.in)
+[API Reference](https://docs.vechain.org/connex/)
 
 ## Introduction
 
