@@ -11,6 +11,9 @@
 
 Connex is the standard interface to connect VeChain apps with VeChain blockchain and users. Aiming to help developers building decentralized applications.
 [Sync](https://env.vechain.org/#sync) or other connex compatible [clients](https://env.vechain.org/) will expose `connex` API by an injected object on [`Window Object`](https://developer.mozilla.org/en-US/docs/Glossary/Global_object).
+<p align="center">
+<img src="./docs/connex.jpg" alt="Connex Overview">
+</p>
 
 ## How To
 
@@ -27,7 +30,7 @@ document.querySelector('body').append(el)
 
 ### TypeScript(Recommended)
 
-This project is type definition of `Connex` API which can be used to in typescript projects. Install by the following command:
+This project is the type definition of `Connex` API which can be used to in typescript projects. Install by the following command:
 
 ``` bash
 npm install @vechain/connex --save-dev
@@ -43,7 +46,7 @@ add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you ar
 
 ### Bootstrap Your APP
 
-VeChain apps are usually web apps. On app load, you always need to detect `Connex` component in the environment. If `Connex` is not available, you may instruct user to setup `Connex` environment.
+VeChain apps are usually web apps. On app load, you always need to detect `Connex` component in the environment. If `Connex` is not available, you may instruct users to setup `Connex` environment.
 
 To simplify these steps, simply perform redirection:
 
@@ -67,6 +70,16 @@ if(!window.connex) {
 + [Connex Framework](https://github.com/vechain/connex-framework)
 + [Connex Driver In NodeJS](https://github.com/vechain/connex.driver-nodejs)
 + [Connex REPL](https://github.com/vechain/connex-repl)
+
+<details><summary></summary>
+<p>
+
+## Implementation Architecture(SYNC)
+
+<img src="./docs/architecture.png" alt="Connex Architecture" width=400/>
+
+</p>
+</details>
 
 ## License
 
