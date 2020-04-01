@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "@vechain/connex": "^1.4.0",
-    "@vechain/connex.driver": "^1.1.0",
     "thor-devkit": "^1.2.3",
     "validator-ts": "^0.9.1"
   }
