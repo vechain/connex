@@ -9,16 +9,44 @@
 
 ## Introduction
 
-Connex is the standard interface to connect VeChain apps with VeChain blockchain and user. `Connex` is a set of well-designed APIs for developers, with injected `Connex Object` in web applications they can easily build decentralized applications.
+Connex is the standard interface to connect VeChain apps with VeChain blockchain and users. Aiming to help developers building decentralized applications.
+[Sync](https://env.vechain.org/#sync) or other connex compatible [clients](https://env.vechain.org/) will expose `connex` API by an injected object on [`Window Object`](https://developer.mozilla.org/en-US/docs/Glossary/Global_object).
+<p align="center">
+<img src="./docs/connex.jpg" alt="Connex Overview">
+</p>
 
+## How To
 
-## Get Started 
+As `Connex` is already attached to the `Window Object`, just use it in your favourite way. Below is a sample of getting network status,
 
-[Sync](https://env.vechain.org/#sync) or other compatible clients will expose `connex` API by an injected object on `Window Object`.
+``` javascript
+const el = document.createElement('h1')
 
-### VeChain App Bootstrapping
+const status = connex.thor.status
+el.innerText = 'You are \'connexed\' to vechain, the status is ' + (status.progress === 1 ? 'synced': 'syncing')
 
-VeChain apps are usually web apps. On app load, you always need to detect Connex component. If Connex is not available, you may instruct people to setup Connex environment.
+document.querySelector('body').append(el)
+```
+
+### TypeScript(Recommended)
+
+This project is the type definition of `Connex` API which can be used to in typescript projects. Install by the following command:
+
+``` bash
+npm install @vechain/connex --save-dev
+```
+
+Place following line in any .ts file of your project
+```typescript
+import '@vechain/connex'
+```
+or
+
+add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you are good to go!
+
+### Bootstrap Your APP
+
+VeChain apps are usually web apps. On app load, you always need to detect `Connex` component in the environment. If `Connex` is not available, you may instruct users to setup `Connex` environment.
 
 To simplify these steps, simply perform redirection:
 
@@ -37,51 +65,21 @@ if(!window.connex) {
 }
 ```
 
-### Install
-
-#### TypeScript(Recommended)
-
-``` bash
-npm install @vechain/connex --save-dev
-```
-
-Place following line in any .ts file of your project
-```typescript
-import '@vechain/connex'
-```
-or
-
-add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you are good to go!
-
-#### Vanilla JS
-
-No need to set up, just code in your favourite way.
-
-### Usage
-
-``` javascript
-const el = document.createElement('h1')
-
-const status = connex.thor.status
-el.innerText = 'You are \'connexed\' to vechain, the status is ' + (status.progress === 1 ? 'synced': 'syncing')
-
-document.querySelector('body').append(el)
-```
-
 ## Resource
 
-+ [Connex Implementation Test](https://connex-impl-test.vecha.in)
++ [Connex Framework](https://github.com/vechain/connex-framework)
++ [Connex Driver In NodeJS](https://github.com/vechain/connex.driver-nodejs)
++ [Connex REPL](https://github.com/vechain/connex-repl)
 
-## Architecture explained
+<details><summary></summary>
+<p>
 
-![Connex Architecture](./docs/architecture.png)
+## Implementation Architecture(SYNC)
 
+<img src="./docs/architecture.png" alt="Connex Architecture" width=400/>
 
-## FAQ
-
-#### TypeScript complier does not find Connex
-
-First, check `tsconfig.json` and make sure  `@vechain/connex` is present in `compilerOptions.types`. Furthermore if you are doing an angular project and still get the error, you are probably using a larger project with multiple project roots, just adding `@vechain/connex` to the root config is not enough in this case. You also have to find all `tsconfig.app.ts` and `tsconfig.spec.ts` files in your sub-projects. While these inherit from the main `tsconfig.json` you have to make sure it does not override the types with for example `"types": []` and that there is no conflict with `typesRoots`
+</p>
+</details>
 
 ## License
 
