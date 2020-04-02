@@ -65,16 +65,14 @@ if(!window.connex) {
 }
 ```
 
-## Resource
+## Resources
 
 + [Connex Framework](https://github.com/vechain/connex-framework)
 + [Connex Driver In NodeJS](https://github.com/vechain/connex.driver-nodejs)
 + [Connex REPL](https://github.com/vechain/connex-repl)
 
-<details><summary></summary>
-<p>
-
-## Implementation Architecture(SYNC)
+<details><summary>Implementation Architecture(SYNC)</summary>
+<p align="center">
 
 <img src="./docs/architecture.png" alt="Connex Architecture" width=400/>
 
