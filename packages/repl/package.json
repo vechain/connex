@@ -17,6 +17,14 @@
   },
   "author": "qianbin",
   "license": "LGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vechain/connex.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vechain/connex/issues"
+  },
+  "homepage": "https://github.com/vechain/connex/tree/master/packages/repl#readme",
   "dependencies": {
     "@vechain/connex-framework": "^1.1.2",
     "@vechain/connex-driver": "^1.2.0-beta5",

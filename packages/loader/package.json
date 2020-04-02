@@ -1,0 +1,27 @@
+{
+  "name": "@vechain/connex-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist/;../../node_modules/.bin/tsc -p .",
+    "lint": "../../node_modules/.bin/tslint -p .",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vechain/connex.git"
+  },
+  "author": "qianbin",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/vechain/connex/issues"
+  },
+  "homepage": "https://github.com/vechain/connex/tree/master/packages/loader#readme",
+  "dependencies": {
+    "@vechain/connex-framework": "^1.1.2",
+    "@vechain/connex-driver": "^1.2.0-beta5"
+  }
+}
