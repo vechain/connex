@@ -4,9 +4,10 @@ import { Cache } from './cache'
 import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
 import { sleep } from './common'
 import { options } from './options'
+import { DriverInterface } from './driver-interface'
 
 /** class implements Connex.Driver leaves out Vendor related methods */
-export class DriverNoVendor implements Connex.Driver {
+export class DriverNoVendor implements DriverInterface {
     public head: Connex.Thor.Status['head']
 
     private headResolvers = [] as Array<() => void>
@@ -69,31 +70,31 @@ export class DriverNoVendor implements Connex.Driver {
         return this.cache.getTied(`storage-${addr}-${key}`, revision, () =>
             this.httpGet(`accounts/${addr}/storage/${key}`, { revision }))
     }
-    public explain(arg: Connex.Driver.ExplainArg, revision: string, cacheTies?: string[]) {
+    public explain(arg: DriverInterface.ExplainArg, revision: string, cacheTies?: string[]) {
         const cacheKey = `explain-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, revision, () =>
             this.httpPost('accounts/*', arg, { revision }), cacheTies)
     }
-    public filterEventLogs(arg: Connex.Driver.FilterEventLogsArg) {
+    public filterEventLogs(arg: DriverInterface.FilterEventLogsArg) {
         const cacheKey = `event-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
             this.httpPost('logs/event', arg))
     }
-    public filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg) {
+    public filterTransferLogs(arg: DriverInterface.FilterTransferLogsArg) {
         const cacheKey = `transfer-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
             this.httpPost('logs/transfer', arg))
     }
     public signTx(
-        msg: Connex.Driver.SignTxArg,
-        option: Connex.Driver.SignTxOption
-    ): Promise<Connex.Driver.SignTxResult> {
+        msg: DriverInterface.SignTxArg,
+        option: DriverInterface.SignTxOption
+    ): Promise<DriverInterface.SignTxResult> {
         throw new Error('not implemented')
     }
     public signCert(
-        msg: Connex.Driver.SignCertArg,
-        options: Connex.Driver.SignCertOption
-    ): Promise<Connex.Driver.SignCertResult> {
+        msg: DriverInterface.SignCertArg,
+        options: DriverInterface.SignCertOption
+    ): Promise<DriverInterface.SignCertResult> {
         throw new Error(' not implemented')
     }
     public isAddressOwned(addr: string): Promise<boolean> {

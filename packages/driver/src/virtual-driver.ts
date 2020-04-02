@@ -2,6 +2,7 @@ import { JSONRPC } from '@vechain/json-rpc'
 import * as WebSocket from 'isomorphic-ws'
 import { sleep } from './common'
 import { options } from './options'
+import { DriverInterface } from './driver-interface'
 
 function openWebSocket(url: string) {
     return new Promise<WebSocket>((resolve, reject) => {
@@ -76,7 +77,7 @@ async function _connect(url: string, genesisId?: string) {
     }
 }
 
-export async function connect(url: string): Promise<Connex.Driver> {
+export async function connect(url: string): Promise<DriverInterface> {
     let conn = await _connect(url)
     const genesisId = conn.genesis.id
 

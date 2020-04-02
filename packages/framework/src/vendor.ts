@@ -1,8 +1,9 @@
 import * as R from './rules'
 import * as V from 'validator-ts'
 import { abi } from 'thor-devkit/dist/abi'
+import { DriverInterface } from './driver-interface'
 
-export function newVendor(driver: Connex.Driver): Connex.Vendor {
+export function newVendor(driver: DriverInterface): Connex.Vendor {
     return {
         sign: (kind) => {
             if (kind === 'tx') {
@@ -20,8 +21,8 @@ export function newVendor(driver: Connex.Driver): Connex.Vendor {
     }
 }
 
-function newTxSigningService(driver: Connex.Driver): Connex.Vendor.TxSigningService {
-    const opts: Connex.Driver.SignTxOption = {}
+function newTxSigningService(driver: DriverInterface): Connex.Vendor.TxSigningService {
+    const opts: DriverInterface.SignTxOption = {}
 
     return {
         signer(addr) {
@@ -79,8 +80,8 @@ function newTxSigningService(driver: Connex.Driver): Connex.Vendor.TxSigningServ
     }
 }
 
-function newCertSigningService(driver: Connex.Driver): Connex.Vendor.CertSigningService {
-    const opts: Connex.Driver.SignCertOption = {}
+function newCertSigningService(driver: DriverInterface): Connex.Vendor.CertSigningService {
+    const opts: DriverInterface.SignCertOption = {}
 
     return {
         signer(addr) {

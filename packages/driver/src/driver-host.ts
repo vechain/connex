@@ -3,8 +3,9 @@ import { JSONRPC } from '@vechain/json-rpc'
 import * as Http from 'http'
 import * as Https from 'https'
 import { options } from './options'
+import { DriverInterface } from './driver-interface'
 
-const methods: Array<keyof Connex.Driver> = [
+const methods: Array<keyof DriverInterface> = [
     'pollHead',
     'getBlock',
     'getTransaction',
@@ -59,7 +60,7 @@ export class DriverHost {
                 }
             })
         })
-        let driver: Connex.Driver | undefined
+        let driver: DriverInterface | undefined
 
         rpc.serve(method => {
             if (method === 'connect') {
@@ -87,5 +88,5 @@ export class DriverHost {
 }
 
 export namespace DriverHost {
-    export type Acceptor = (ws: WebSocket, request: Http.IncomingMessage, genesisId?: string) => Promise<Connex.Driver>
+    export type Acceptor = (ws: WebSocket, request: Http.IncomingMessage, genesisId?: string) => Promise<DriverInterface>
 }

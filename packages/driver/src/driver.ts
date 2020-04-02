@@ -6,6 +6,7 @@ import { Certificate } from 'thor-devkit/dist/certificate'
 import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
 import { randomBytes } from 'crypto'
 import { options } from './options'
+import { DriverInterface } from './driver-interface'
 
 /** class fully implements Connex.Driver */
 export class Driver extends DriverNoVendor {
@@ -29,12 +30,12 @@ export class Driver extends DriverNoVendor {
         return new Driver(
             net,
             genesis, {
-                id: best.id,
-                number: best.number,
-                timestamp: best.timestamp,
-                parentID: best.parentID,
-                txsFeatures: best.txsFeatures
-            },
+            id: best.id,
+            number: best.number,
+            timestamp: best.timestamp,
+            parentID: best.parentID,
+            txsFeatures: best.txsFeatures
+        },
             wallet)
     }
 
@@ -57,9 +58,9 @@ export class Driver extends DriverNoVendor {
     }
 
     public async signTx(
-        msg: Connex.Driver.SignTxArg,
-        option: Connex.Driver.SignTxOption,
-    ): Promise<Connex.Driver.SignTxResult> {
+        msg: DriverInterface.SignTxArg,
+        option: DriverInterface.SignTxOption,
+    ): Promise<DriverInterface.SignTxResult> {
         const key = this.findKey(option.signer)
         const clauses = msg.map(c => ({ to: c.to, value: c.value, data: c.data }))
         const gas = option.gas ||
@@ -119,9 +120,9 @@ export class Driver extends DriverNoVendor {
     }
 
     public async signCert(
-        msg: Connex.Driver.SignCertArg,
-        options: Connex.Driver.SignCertOption
-    ): Promise<Connex.Driver.SignCertResult> {
+        msg: DriverInterface.SignCertArg,
+        options: DriverInterface.SignCertOption
+    ): Promise<DriverInterface.SignCertResult> {
         const key = this.findKey(options.signer)
 
         const annex = {

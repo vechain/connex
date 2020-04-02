@@ -1,4 +1,7 @@
-export function newHeadTracker(driver: Connex.Driver) {
+
+import { DriverInterface } from './driver-interface'
+
+export function newHeadTracker(driver: DriverInterface) {
     let head = { ...driver.head }
     let resolvers: Array<(head: Connex.Thor.Status['head']) => void> = [];
 

@@ -1,10 +1,11 @@
 import * as V from 'validator-ts'
 import * as R from './rules'
+import { DriverInterface } from './driver-interface'
 
 export function newDriverGuard(
-    driver: Connex.Driver,
+    driver: DriverInterface,
     errHandler?: (err: Error) => void
-): Connex.Driver {
+): DriverInterface {
 
     const test = <T>(obj: T, scheme: V.Scheme<T>, path: string) => {
         try {

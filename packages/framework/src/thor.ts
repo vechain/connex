@@ -5,8 +5,9 @@ import { newFilter } from './filter'
 import { newHeadTracker } from './head-tracker'
 import { newExplainer } from './explainer'
 import * as R from './rules'
+import { DriverInterface } from './driver-interface'
 
-export function newThor(driver: Connex.Driver): Connex.Thor {
+export function newThor(driver: DriverInterface): Connex.Thor {
     const headTracker = newHeadTracker(driver)
 
     const ctx: Context = {
