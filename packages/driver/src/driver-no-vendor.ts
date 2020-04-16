@@ -6,7 +6,7 @@ import { sleep } from './common'
 import { options } from './options'
 import { DriverInterface } from './driver-interface'
 
-/** class implements Connex.Driver leaves out Vendor related methods */
+/** class implements DriverInterface leaves out Vendor related methods */
 export class DriverNoVendor implements DriverInterface {
     public head: Connex.Thor.Status['head']
 

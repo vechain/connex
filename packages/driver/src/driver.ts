@@ -8,7 +8,7 @@ import { randomBytes } from 'crypto'
 import { options } from './options'
 import { DriverInterface } from './driver-interface'
 
-/** class fully implements Connex.Driver */
+/** class fully implements DriverInterface */
 export class Driver extends DriverNoVendor {
     /**
      * create driver instance

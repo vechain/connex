@@ -13,13 +13,13 @@ npm i @vechain/connex-framework
 
 ## Usage
 
-To create framework instance, Connex.Driver needs to be implemented
+To create framework instance, DriverInterface needs to be implemented
 
 ```typescript
 import { Framework } from '@vechain/connex-framework'
-import '@vechain/connex.driver'
+import { DriverInterface } from '@vechain/connex-framework/dist/driver-interface'
 
-class MyDriver implements Connex.Driver {
+class MyDriver implements DriverInterface {
     // implementations
 }
 
@@ -32,13 +32,3 @@ const framework = new Framework(driver)
 
 // here `framework` is the ready-to-use Connex instance object
 ```
-
-## See also
-
-### Driver implementations:
-
-* NodeJS - [connex.driver-nodejs](https://github.com/vechain/connex.driver-nodejs)
-
-### Connex playground
-
-* [connex repl](https://github.com/vechain/connex-repl)

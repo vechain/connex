@@ -18,7 +18,7 @@ The [REPL playground](https://github.com/vechain/connex-repl) is a good start.
 
 ```typescript
 import { Framework } from '@vechain/connex-framework'
-import { Driver, SimpleNet, SimpleWallet, options } from '@vechain/connex.driver-nodejs'
+import { Driver, SimpleNet, SimpleWallet, options } from '@vechain/connex-driver'
 
 const wallet = new SimpleWallet()
 // add account by importing private key
