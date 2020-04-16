@@ -12,7 +12,7 @@
 Connex is the standard interface to connect VeChain apps with VeChain blockchain and users. Aiming to help developers building decentralized applications.
 [Sync](https://env.vechain.org/#sync) or other connex compatible [clients](https://env.vechain.org/) will expose `connex` API by an injected object on [`Window Object`](https://developer.mozilla.org/en-US/docs/Glossary/Global_object).
 <p align="center">
-<img src="./docs/connex.jpg" alt="Connex Overview">
+<img src="../../docs/connex.jpg" alt="Connex Overview">
 </p>
 
 ## How To
@@ -74,7 +74,7 @@ if(!window.connex) {
 <details><summary>Implementation Architecture(SYNC)</summary>
 <p align="center">
 
-<img src="./docs/architecture.png" alt="Connex Architecture" width=400/>
+<img src="../../docs/architecture.png" alt="Connex Architecture" width=400/>
 
 </p>
 </details>
