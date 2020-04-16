@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "strict": true,
+      "outDir": "./dist",
+      "inlineSourceMap": true,
+      "declaration": true,
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true,
+      "types": ["@vechain/connex"]
+    },
+    "include": [
+      "./src"
+    ]
+}

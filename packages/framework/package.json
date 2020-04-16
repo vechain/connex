@@ -1,0 +1,34 @@
+{
+  "name": "@vechain/connex-framework",
+  "version": "1.1.3",
+  "description": "A library implements VeChain Connex interface",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist/;../../node_modules/.bin/tsc -p .",
+    "lint": "../../node_modules/.bin/tslint -p .",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vechain/connex.git"
+  },
+  "keywords": [
+    "Connex",
+    "Framework",
+    "VeChain",
+    "Wallet"
+  ],
+  "author": "qianbin",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/vechain/connex/issues"
+  },
+  "homepage": "https://github.com/vechain/connex/tree/master/packages/framework#readme",
+  "dependencies": {
+    "@vechain/connex": "^1.4.1",
+    "thor-devkit": "^1.2.3",
+    "validator-ts": "^0.9.1"
+  }
+}
