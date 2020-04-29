@@ -28,7 +28,7 @@
   "homepage": "https://github.com/vechain/connex/tree/master/packages/framework#readme",
   "dependencies": {
     "@vechain/connex": "^1.4.1",
-    "thor-devkit": "^1.2.3",
+    "thor-devkit": "^1.2.4",
     "validator-ts": "^0.9.1"
   }
 }
