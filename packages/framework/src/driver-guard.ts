@@ -35,8 +35,8 @@ export function newDriverGuard(
             return driver.getBlock(revision)
                 .then(b => b ? test(b, blockScheme, 'getBlock()') : b)
         },
-        getTransaction(id) {
-            return driver.getTransaction(id)
+        getTransaction(id, allowPending) {
+            return driver.getTransaction(id, allowPending)
                 .then(tx => tx ? test(tx, txScheme, 'getTransaction()') : tx)
         },
         getReceipt(id) {
@@ -154,11 +154,11 @@ const txScheme: V.Scheme<Connex.Thor.Transaction> = {
         value: R.hexString,
         data: R.bytes
     }],
-    meta: {
+    meta: V.nullable({
         blockID: R.bytes32,
         blockNumber: R.uint32,
         blockTimestamp: R.uint64
-    }
+    })
 }
 
 const logMetaScheme: V.Scheme<Connex.Thor.LogMeta> = {
