@@ -207,6 +207,12 @@ declare namespace Connex {
              */
             readonly id: string
 
+            /** 
+             * allow the queried tx be in pending state.
+             * note that a pending tx has null 'meta'.
+             */
+            allowPending(): this
+
             /**
              * query the transaction
              */

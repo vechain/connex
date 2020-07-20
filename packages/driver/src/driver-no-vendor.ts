@@ -50,9 +50,14 @@ export class DriverNoVendor implements DriverInterface {
         return this.cache.getBlock(revision, () =>
             this.httpGet(`blocks/${revision}`))
     }
-    public getTransaction(id: string) {
-        return this.cache.getTx(id, () =>
-            this.httpGet(`transactions/${id}`, { head: this.head.id }))
+    public getTransaction(id: string, allowPending: boolean) {
+        return this.cache.getTx(id, () => {
+            const query: Record<string, string> = { head: this.head.id }
+            if (allowPending) {
+                query.pending = 'true'
+            }
+            return this.httpGet(`transactions/${id}`, query)
+        })
     }
     public getReceipt(id: string) {
         return this.cache.getReceipt(id, () =>

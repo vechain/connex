@@ -109,7 +109,7 @@ export class Cache {
         }
 
         tx = await fetch()
-        if (tx) {
+        if (tx && tx.meta) { // only cache non-pending tx
             const { slot } = this.findSlot(tx.meta.blockID)
             if (slot) {
                 slot.txs.set(txid, tx)

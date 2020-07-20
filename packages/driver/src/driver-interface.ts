@@ -14,7 +14,7 @@ export interface DriverInterface {
     pollHead(): Promise<Thor.Status['head']>
 
     getBlock(revision: string | number): Promise<Thor.Block | null>
-    getTransaction(id: string): Promise<Thor.Transaction | null>
+    getTransaction(id: string, allowPending: boolean): Promise<Thor.Transaction | null>
     getReceipt(id: string): Promise<Thor.Receipt | null>
 
     getAccount(addr: string, revision: string): Promise<Thor.Account>
