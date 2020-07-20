@@ -13,6 +13,8 @@ export class DriverNoVendor implements DriverInterface {
     private headResolvers = [] as Array<() => void>
     private readonly int = new PromInt()
     private readonly cache = new Cache()
+    // to merge concurrent identical remote requests
+    private readonly pendingRequests: Record<string, Promise<any>> = {}
 
     constructor(
         private readonly net: Net,
@@ -100,25 +102,50 @@ export class DriverNoVendor implements DriverInterface {
         msg: DriverInterface.SignCertArg,
         options: DriverInterface.SignCertOption
     ): Promise<DriverInterface.SignCertResult> {
-        throw new Error(' not implemented')
+        throw new Error('not implemented')
     }
     public isAddressOwned(addr: string): Promise<boolean> {
         return Promise.resolve(false)
     }
     //////
+    protected mergeRequest(req: () => Promise<any>, ...keyParts: any[]) {
+        const key = JSON.stringify(keyParts)
+        const pending = this.pendingRequests[key]
+        if (pending) {
+            return pending
+        }
+        return this.pendingRequests[key] = (async () => {
+            try {
+                return await req()
+            } finally {
+                delete this.pendingRequests[key]
+            }
+        })()
+    }
     protected httpGet(path: string, query?: Record<string, string>) {
-        return this.net.http('GET', path, {
-            query,
-            validateResponseHeader: this.headerValidator
-        })
+        return this.mergeRequest(
+            () => {
+                return this.net.http('GET', path, {
+                    query,
+                    validateResponseHeader: this.headerValidator
+                })
+            },
+            path,
+            query || '')
     }
 
     protected httpPost(path: string, body: any, query?: Record<string, string>) {
-        return this.net.http('POST', path, {
-            query,
-            body,
-            validateResponseHeader: this.headerValidator
-        })
+        return this.mergeRequest(
+            () => {
+                return this.net.http('POST', path, {
+                    query,
+                    body,
+                    validateResponseHeader: this.headerValidator
+                })
+            },
+            path,
+            query || '',
+            body || '')
     }
 
     private get headerValidator() {
