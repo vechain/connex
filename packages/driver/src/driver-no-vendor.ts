@@ -164,8 +164,8 @@ export class DriverNoVendor implements DriverInterface {
     }
 
     private async headTrackerLoop() {
-        let triggerWs = 0
         for (; ;) {
+            let attemptWs = false
             try {
                 const best = await this.int.wrap<Connex.Thor.Block>(this.httpGet('blocks/best'))
                 if (best.id !== this.head.id && best.number >= this.head.number) {
@@ -181,11 +181,10 @@ export class DriverNoVendor implements DriverInterface {
 
                     if (Date.now() - this.head.timestamp * 1000 < 60 * 1000) {
                         // nearly synced
-                        triggerWs++
+                        attemptWs = true
                     }
                 }
             } catch (err) {
-                triggerWs = 0
                 if (!options.disableErrorLog) {
                     // tslint:disable-next-line: no-console
                     console.warn('headTracker(http):', err)
@@ -195,8 +194,7 @@ export class DriverNoVendor implements DriverInterface {
                 }
             }
 
-            if (triggerWs > 2) {
-                triggerWs = 0
+            if (attemptWs) {
                 try {
                     await this.trackWs()
                 } catch (err) {
