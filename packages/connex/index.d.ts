@@ -155,11 +155,11 @@ declare namespace Connex {
             gasPrice(gp: string | number): this
 
             /**
-             * Turn on caching for result of method call
+             * Turn on result cache.
              * TODO: More detailed description
-             * @param ties a set of addresses, as the condition of cache invalidation
+             * @param hints a set of addresses, as the condition of cache invalidation
              */
-            cache(ties: string[]): this
+            cache(hints: string[]): this
 
             /**
              * Pack arguments into {@link Clause}.
@@ -270,6 +270,13 @@ declare namespace Connex {
              * @param gp gas price in number or hex/dec string
              */
             gasPrice(gp: string | number): this
+
+            /**
+             * Turn on result cache.
+             * TODO: More detailed description
+             * @param hints a set of addresses, as the condition of cache invalidation
+             */
+            cache(hints: string[]): this
 
             /**
              * execute clauses
