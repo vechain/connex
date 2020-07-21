@@ -21,7 +21,7 @@ export interface DriverInterface {
     getCode(addr: string, revision: string): Promise<Thor.Code>
     getStorage(addr: string, key: string, revision: string): Promise<Thor.Storage>
 
-    explain(arg: DriverInterface.ExplainArg, revision: string, cacheTies?: string[]): Promise<Thor.VMOutput[]>
+    explain(arg: DriverInterface.ExplainArg, revision: string, cacheHints?: string[]): Promise<Thor.VMOutput[]>
 
     filterEventLogs(arg: DriverInterface.FilterEventLogsArg): Promise<Thor.Event[]>
     filterTransferLogs(arg: DriverInterface.FilterTransferLogsArg): Promise<Thor.Transfer[]>

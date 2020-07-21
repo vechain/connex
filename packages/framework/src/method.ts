@@ -15,7 +15,7 @@ export function newMethod(
         gasPrice?: string
     } = {}
 
-    let cacheTies: string[] | undefined
+    let cacheHints: string[] | undefined
 
     return {
         value(val) {
@@ -34,8 +34,8 @@ export function newMethod(
             opts.gasPrice = R.test(gp, R.bigInt, 'arg0').toString().toLowerCase()
             return this
         },
-        cache(ties: string[]) {
-            cacheTies = R.test(ties, [R.address], 'arg0').map(t => t.toLowerCase())
+        cache(hints) {
+            cacheHints = R.test(hints, [R.address], 'arg0').map(t => t.toLowerCase())
             return this
         },
         asClause: (...args) => {
@@ -60,7 +60,7 @@ export function newMethod(
                     ...opts
                 },
                 ctx.trackedHead.id,
-                cacheTies
+                cacheHints
             )
                 .then(outputs => outputs[0])
                 .then(output => {

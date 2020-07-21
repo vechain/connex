@@ -8,6 +8,7 @@ export function newExplainer(ctx: Context): Connex.Thor.Explainer {
         gas?: number
         gasPrice?: string
     } = {}
+    let cacheHints: string[] | undefined
 
     return {
         caller(addr) {
@@ -20,6 +21,10 @@ export function newExplainer(ctx: Context): Connex.Thor.Explainer {
         },
         gasPrice(gp) {
             opts.gasPrice = R.test(gp, R.bigInt, 'arg0').toString().toLowerCase()
+            return this
+        },
+        cache(hints) {
+            cacheHints = R.test(hints, [R.address], 'arg0').map(t => t.toLowerCase())
             return this
         },
         execute(clauses) {
@@ -38,7 +43,7 @@ export function newExplainer(ctx: Context): Connex.Thor.Explainer {
                     clauses: transformedClauses,
                     ...opts
                 },
-                ctx.trackedHead.id)
+                ctx.trackedHead.id, cacheHints)
                 .then(outputs => {
                     return outputs.map(o => {
                         if (o.reverted) {
