@@ -183,14 +183,14 @@ export class Cache {
      * @param key the cache key
      * @param revision block id where cache bound to
      * @param fetch to fetch value when cache missing
-     * @param ties array of tied addresses, as the gist to invalidate cache key. undefined means the key is always
+     * @param hints array of tied addresses, as the gist to invalidate cache key. undefined means the key is always
      * invalidated on different revision.
      */
     public async getTied(
         key: string,
         revision: string,
         fetch: () => Promise<any>,
-        ties?: string[]
+        hints?: string[]
     ) {
         const found = this.findSlot(revision)
         for (let i = found.index; i >= 0; i--) {
@@ -203,12 +203,12 @@ export class Cache {
                 return v
             }
 
-            if (!slot.bloom || !ties) {
+            if (!slot.bloom || !hints) {
                 break
             }
 
-            // if ties.length === 0, never invalidate cache
-            if (ties.some(t => testBytesHex(slot.bloom!, t))) {
+            // if hints.length === 0, never invalidate cache
+            if (hints.some(t => testBytesHex(slot.bloom!, t))) {
                 // might be dirty
                 break
             }

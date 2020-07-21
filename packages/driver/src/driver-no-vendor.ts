@@ -77,10 +77,10 @@ export class DriverNoVendor implements DriverInterface {
         return this.cache.getTied(`storage-${addr}-${key}`, revision, () =>
             this.httpGet(`accounts/${addr}/storage/${key}`, { revision }))
     }
-    public explain(arg: DriverInterface.ExplainArg, revision: string, cacheTies?: string[]) {
+    public explain(arg: DriverInterface.ExplainArg, revision: string, cacheHints?: string[]) {
         const cacheKey = `explain-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, revision, () =>
-            this.httpPost('accounts/*', arg, { revision }), cacheTies)
+            this.httpPost('accounts/*', arg, { revision }), cacheHints)
     }
     public filterEventLogs(arg: DriverInterface.FilterEventLogsArg) {
         const cacheKey = `event-${blake2b256(JSON.stringify(arg)).toString('hex')}`

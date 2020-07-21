@@ -135,8 +135,8 @@ export async function connect(url: string): Promise<DriverInterface> {
         getStorage: (addr, key, rev) => {
             return rpcCall('getStorage', addr, key, rev)
         },
-        explain: (arg, rev, cacheTies) => {
-            return rpcCall('explain', arg, rev, cacheTies)
+        explain: (arg, rev, cacheHints) => {
+            return rpcCall('explain', arg, rev, cacheHints)
         },
         filterEventLogs: arg => {
             return rpcCall('filterEventLogs', arg)
