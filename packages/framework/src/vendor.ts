@@ -5,7 +5,7 @@ import { DriverInterface } from './driver-interface'
 
 export function newVendor(driver: DriverInterface): Connex.Vendor {
     return {
-        sign: (kind) => {
+        sign: (kind: 'tx' | 'cert') => {
             if (kind === 'tx') {
                 return newTxSigningService(driver) as any
             } else if (kind === 'cert') {
@@ -45,19 +45,28 @@ function newTxSigningService(driver: DriverInterface): Connex.Vendor.TxSigningSe
             opts.comment = R.test(text, R.string, 'arg0')
             return this
         },
-        delegate(handler) {
-            R.ensure(typeof handler === 'function',
-                `arg0: expected function`)
+        delegate(delegator) {
+            R.ensure(typeof delegator === 'function' || typeof delegator === 'string',
+                `arg0: expected function or url string`)
 
-            opts.delegationHandler = async unsigned => {
-                const obj = await handler(unsigned)
-                R.test(obj, {
-                    signature: v => R.isHexBytes(v, 65) ? '' : 'expected 65 bytes'
-                }, 'delegation-result')
-                return {
-                    signature: obj.signature.toLowerCase()
+            if (typeof delegator === 'function') {
+                opts.delegator = async unsigned => {
+                    const obj = await delegator(unsigned)
+                    R.test(obj, {
+                        signature: v => R.isHexBytes(v, 65) ? '' : 'expected 65 bytes'
+                    }, 'delegation-result')
+                    return {
+                        signature: obj.signature.toLowerCase()
+                    }
                 }
+            } else {
+                opts.delegator = delegator
             }
+            return this
+        },
+        prepared(callback) {
+            R.ensure(typeof callback === 'function', 'arg0: expected function')
+            opts.onPrepared = callback
             return this
         },
         request(msg) {
@@ -90,6 +99,11 @@ function newCertSigningService(driver: DriverInterface): Connex.Vendor.CertSigni
         },
         link(url) {
             opts.link = R.test(url, R.string, 'arg0')
+            return this
+        },
+        prepared(callback) {
+            R.ensure(typeof callback === 'function', 'arg0: expected function')
+            opts.onPrepared = callback
             return this
         },
         request(msg) {

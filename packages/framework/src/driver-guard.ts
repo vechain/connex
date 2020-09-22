@@ -76,16 +76,22 @@ export function newDriverGuard(
                 .then(r => test(r, [transferWithMetaScheme], 'filterTransferLogs()'))
         },
         signTx(msg, option) {
+            let wrappedDelegator
+            if (option.delegator && typeof option.delegator === 'function') {
+                // to validate args for callback function
+                const delegator = option.delegator
+                wrappedDelegator = (unsigned: Connex.Vendor.DelegateArg) => {
+                    test(unsigned, {
+                        raw: R.bytes,
+                        origin: R.address
+                    }, 'delegator.arg')
+                    return delegator!(unsigned)
+                }
+            }
+
             return driver.signTx(msg, {
                 ...option,
-                delegationHandler: option.delegationHandler ?
-                    unsigned => {
-                        test(unsigned, {
-                            raw: R.bytes,
-                            origin: R.address
-                        }, 'delegationHandler.arg')
-                        return option.delegationHandler!(unsigned)
-                    } : undefined
+                delegator: wrappedDelegator || option.delegator
             })
                 .then(r => test(r, {
                     txid: R.bytes32,

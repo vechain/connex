@@ -489,11 +489,11 @@ declare namespace Connex {
     }
 
     interface Vendor {
-        /**
-         * Acquire the signing service
-         * @param kind kind of target to be signed
-         */
-        sign<T extends 'tx' | 'cert'>(kind: T): Vendor.SigningService<T>
+        /** Initiate the tx signing service */
+        sign(kind: 'tx'): Vendor.TxSigningService
+
+        /** Initiate the cert signing service */
+        sign(kind: 'cert'): Vendor.CertSigningService
 
         /**
          * Returns whether an address is owned by user
@@ -537,10 +537,11 @@ declare namespace Connex {
 
             /**
              * enable VIP-191 by providing delegation handler
-             * @param handler to sign tx as fee delegator
+             * @param delegator a callback function or web RPC url to sign tx as fee delegator
              */
-            delegate(handler: DelegationHandler): this
+            delegate(delegator: Delegator): this
 
+            prepared(callback: () => void): this
             /**
              * send request
              * @param msg clauses with comments
@@ -562,16 +563,14 @@ declare namespace Connex {
              */
             link(url: string): this
 
+            prepared(callback: () => void): this
+
             /**
              * send request
              * @param msg 
              */
             request(msg: CertMessage): Promise<CertResponse>
         }
-
-        type SigningService<T extends 'tx' | 'cert'> =
-            T extends 'tx' ? TxSigningService :
-            T extends 'cert' ? CertSigningService : never
 
         type TxMessage = Array<Thor.Clause & {
             /** comment to the clause */
@@ -602,13 +601,16 @@ declare namespace Connex {
             signature: string
         }
 
+        type DelegateArg = {
+            raw: string
+            origin: string
+        }
 
-        /** 
-        * returns object contains signature of fee delegator 
-        * @param unsignedTx.raw RLP-encoded unsigned tx in hex form
-        * @param unsignedTx.origin address of intended tx origin
-        */
-        type DelegationHandler = (unsignedTx: { raw: string, origin: string }) => Promise<{ signature: string }>
+        type DelegateResult = {
+            signature: string
+        }
+
+        type Delegator = ((arg: DelegateArg) => Promise<DelegateResult>) | string
     }
     type ErrorType = 'BadParameter' | 'Rejected'
 }

@@ -74,7 +74,12 @@ console.log(`VeChain Connex Playground v${version} @ ${baseUrl}`);
 function setupREPL(server: REPL.REPLServer, obj: object) {
     Object.assign(server.context, obj)
     if (server.terminal) {
-        require('repl.history')(server, resolve(process.env.HOME!, '.connex-repl_history'))
+        const historyPath = resolve(process.env.HOME!, '.connex-repl_history')
+        if ((server as any).setupHistory) {
+            (server as any).setupHistory(historyPath, () => { })
+        } else {
+            require('repl.history')(server, historyPath)
+        }
     }
     server.once('exit', () => {
         server.close()

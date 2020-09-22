@@ -61,6 +61,8 @@ export class Driver extends DriverNoVendor {
         msg: DriverInterface.SignTxArg,
         option: DriverInterface.SignTxOption,
     ): Promise<DriverInterface.SignTxResult> {
+        option.onPrepared && option.onPrepared()
+
         const key = this.findKey(option.signer)
         const clauses = msg.map(c => ({ to: c.to, value: c.value, data: c.data }))
         const gas = option.gas ||
@@ -78,14 +80,20 @@ export class Driver extends DriverNoVendor {
         }
 
         let tx: Transaction | undefined
-        if (option.delegationHandler) {
+        if (option.delegator) {
             const delegatedTx = new Transaction({ ...txBody, reserved: { features: 1/* vip191 */ } })
             const originSig = await key.sign(delegatedTx.signingHash())
+            const unsigned = {
+                raw: '0x' + delegatedTx.encode().toString('hex'),
+                origin: key.address
+            }
             try {
-                const result = await option.delegationHandler({
-                    raw: '0x' + delegatedTx.encode().toString('hex'),
-                    origin: key.address
-                })
+                let result
+                if (typeof option.delegator === 'string') { // web RPC
+                    result = await this.net.http('POST', option.delegator, { body: unsigned })
+                } else { // callback function
+                    result = await option.delegator(unsigned)
+                }
                 delegatedTx.signature = Buffer.concat([originSig, Buffer.from(result.signature.slice(2), 'hex')])
                 tx = delegatedTx
             } catch (err) {
@@ -116,13 +124,14 @@ export class Driver extends DriverNoVendor {
             txid: tx.id!,
             signer: key.address
         }
-
     }
 
     public async signCert(
         msg: DriverInterface.SignCertArg,
         options: DriverInterface.SignCertOption
     ): Promise<DriverInterface.SignCertResult> {
+        options.onPrepared && options.onPrepared()
+
         const key = this.findKey(options.signer)
 
         const annex = {

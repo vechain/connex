@@ -17,7 +17,7 @@ export class DriverNoVendor implements DriverInterface {
     private readonly pendingRequests: Record<string, Promise<any>> = {}
 
     constructor(
-        private readonly net: Net,
+        protected readonly net: Net,
         readonly genesis: Connex.Thor.Block,
         initialHead?: Connex.Thor.Status['head']
     ) {

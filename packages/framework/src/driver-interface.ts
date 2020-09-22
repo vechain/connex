@@ -77,7 +77,8 @@ export namespace DriverInterface {
         dependsOn?: string
         link?: string
         comment?: string
-        delegationHandler?: Vendor.DelegationHandler
+        delegator?: Vendor.Delegator
+        onPrepared?: () => void
     }
     export type SignTxResult = Vendor.TxResponse
 
@@ -85,6 +86,7 @@ export namespace DriverInterface {
     export type SignCertOption = {
         signer?: string
         link?: string
+        onPrepared?: () => void
     }
     export type SignCertResult = Vendor.CertResponse
 }
