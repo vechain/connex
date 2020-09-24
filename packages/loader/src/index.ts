@@ -3,12 +3,12 @@ import { DriverNoVendor } from '@vechain/connex-driver/dist/driver-no-vendor'
 import { DriverInterface } from '@vechain/connex-driver/dist/driver-interface'
 import { SimpleNet } from '@vechain/connex-driver/dist/simple-net'
 
-// import SignTxArg = DriverInterface.SignTxArg
-// import SignTxOption = DriverInterface.SignTxOption
-// import SignTxResult = DriverInterface.SignTxResult
-// import SignCertArg = DriverInterface.SignCertArg
-// import SignCertOption = DriverInterface.SignCertOption
-// import SignCertResult = DriverInterface.SignCertResult
+type SignTxArg = DriverInterface.SignTxArg
+type SignTxOption = DriverInterface.SignTxOption
+type SignTxResult = DriverInterface.SignTxResult
+type SignCertArg = DriverInterface.SignCertArg
+type SignCertOption = DriverInterface.SignCertOption
+type SignCertResult = DriverInterface.SignCertResult
 
 class Driver extends DriverNoVendor {
     // signTx(msg: SignTxArg, option: SignTxOption): Promise<SignTxResult> {
@@ -23,13 +23,12 @@ type options = {
     nodeUrl: string
 }
 
+export async function init(opts: options) {
 
-export default async function init(opts: options) {
     if (window.connex) {
         return window.connex
     }
 
-    console.log(opts)
     const net = new SimpleNet(opts.nodeUrl)
 
     const genesis: Connex.Thor.Block = await net.http('GET', 'blocks/0')
