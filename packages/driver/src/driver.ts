@@ -58,8 +58,8 @@ export class Driver extends DriverNoVendor {
     }
 
     public async signTx(
-        msg: DriverInterface.SignTxArg,
-        option: DriverInterface.SignTxOption,
+        msg: DriverInterface.SignTxMessage,
+        option: DriverInterface.SignTxOptions,
     ): Promise<DriverInterface.SignTxResult> {
         option.onPrepared && option.onPrepared()
 
@@ -127,8 +127,8 @@ export class Driver extends DriverNoVendor {
     }
 
     public async signCert(
-        msg: DriverInterface.SignCertArg,
-        options: DriverInterface.SignCertOption
+        msg: DriverInterface.SignCertMessage,
+        options: DriverInterface.SignCertOptions
     ): Promise<DriverInterface.SignCertResult> {
         options.onPrepared && options.onPrepared()
 

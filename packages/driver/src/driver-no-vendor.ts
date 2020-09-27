@@ -93,14 +93,14 @@ export class DriverNoVendor implements DriverInterface {
             this.httpPost('logs/transfer', arg))
     }
     public signTx(
-        msg: DriverInterface.SignTxArg,
-        option: DriverInterface.SignTxOption
+        msg: DriverInterface.SignTxMessage,
+        option: DriverInterface.SignTxOptions
     ): Promise<DriverInterface.SignTxResult> {
         throw new Error('not implemented')
     }
     public signCert(
-        msg: DriverInterface.SignCertArg,
-        options: DriverInterface.SignCertOption
+        msg: DriverInterface.SignCertMessage,
+        options: DriverInterface.SignCertOptions
     ): Promise<DriverInterface.SignCertResult> {
         throw new Error('not implemented')
     }

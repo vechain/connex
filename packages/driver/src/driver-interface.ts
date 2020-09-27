@@ -27,8 +27,8 @@ export interface DriverInterface {
     filterTransferLogs(arg: DriverInterface.FilterTransferLogsArg): Promise<Thor.Transfer[]>
 
     // vendor methods
-    signTx(msg: DriverInterface.SignTxArg, options: DriverInterface.SignTxOption): Promise<DriverInterface.SignTxResult>
-    signCert(msg: DriverInterface.SignCertArg, option: DriverInterface.SignCertOption): Promise<DriverInterface.SignCertResult>
+    signTx(msg: DriverInterface.SignTxMessage, options: DriverInterface.SignTxOptions): Promise<DriverInterface.SignTxResult>
+    signCert(msg: DriverInterface.SignCertMessage, option: DriverInterface.SignCertOptions): Promise<DriverInterface.SignCertResult>
     isAddressOwned(addr: string): Promise<boolean>
 }
 
@@ -64,14 +64,14 @@ export namespace DriverInterface {
         order: 'asc' | 'desc'
     }
 
-    export type SignTxArg = Array<{
+    export type SignTxMessage = Array<{
         to: string | null
         value: string
         data: string
         comment?: string
         abi?: object
     }>
-    export type SignTxOption = {
+    export type SignTxOptions = {
         signer?: string
         gas?: number
         dependsOn?: string
@@ -82,12 +82,11 @@ export namespace DriverInterface {
     }
     export type SignTxResult = Vendor.TxResponse
 
-    export type SignCertArg = Vendor.CertMessage
-    export type SignCertOption = {
+    export type SignCertMessage = Vendor.CertMessage
+    export type SignCertOptions = {
         signer?: string
         link?: string
         onPrepared?: () => void
     }
     export type SignCertResult = Vendor.CertResponse
 }
-

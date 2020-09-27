@@ -22,7 +22,7 @@ export function newVendor(driver: DriverInterface): Connex.Vendor {
 }
 
 function newTxSigningService(driver: DriverInterface): Connex.Vendor.TxSigningService {
-    const opts: DriverInterface.SignTxOption = {}
+    const opts: DriverInterface.SignTxOptions = {}
 
     return {
         signer(addr) {
@@ -90,7 +90,7 @@ function newTxSigningService(driver: DriverInterface): Connex.Vendor.TxSigningSe
 }
 
 function newCertSigningService(driver: DriverInterface): Connex.Vendor.CertSigningService {
-    const opts: DriverInterface.SignCertOption = {}
+    const opts: DriverInterface.SignCertOptions = {}
 
     return {
         signer(addr) {

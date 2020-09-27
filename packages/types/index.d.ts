@@ -612,12 +612,6 @@ declare namespace Connex {
 
         type Delegator = ((arg: DelegateArg) => Promise<DelegateResult>) | string
     }
-    type ErrorType = 'BadParameter' | 'Rejected'
+    type ErrorType = 'BadParameter' | 'Rejected' | 'Unavailable'
 }
 
-
-declare interface Window {
-    readonly connex: Connex
-}
-
-declare const connex: Connex

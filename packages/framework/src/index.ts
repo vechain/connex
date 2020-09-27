@@ -1,6 +1,6 @@
 import { newThor } from './thor'
 import { newVendor } from './vendor'
-import { version as connexVersion } from '@vechain/connex/package.json'
+import { version as connexVersion } from '@vechain/connex-types/package.json'
 import { newDriverGuard } from './driver-guard'
 import { DriverInterface } from './driver-interface'
 /**

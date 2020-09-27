@@ -9,7 +9,7 @@
       "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
       "resolveJsonModule": true,
-      "types": ["@vechain/connex"]
+      "types": ["@vechain/connex-types"]
     },
     "include": [
       "./src"

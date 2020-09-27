@@ -20,5 +20,12 @@
   "bugs": {
     "url": "https://github.com/vechain/connex/issues"
   },
-  "homepage": "https://github.com/vechain/connex/tree/master/packages/connex/#readme"
+  "homepage": "https://github.com/vechain/connex/tree/master/packages/connex/#readme",
+  "devDependencies": {
+    "@vechain/connex-types": "^1.4.2"
+  },
+  "dependencies": {
+    "@vechain/connex-driver": "^1.2.1",
+    "@vechain/connex-framework": "^1.1.4"
+  }
 }
