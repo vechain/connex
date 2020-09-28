@@ -8,7 +8,7 @@
       "declaration": true,
       "moduleResolution": "node",
       "allowSyntheticDefaultImports": true,
-      "types": ["@vechain/connex-types"]
+      "types": ["@vechain/connex-types", "@vechain/connex-framework/dist/driver-interface"]
     },
     "include": [
       "./src"

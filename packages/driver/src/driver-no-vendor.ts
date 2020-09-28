@@ -3,11 +3,9 @@ import { PromInt, InterruptedError } from './promint'
 import { Cache } from './cache'
 import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
 import { sleep } from './common'
-import { options } from './options'
-import { DriverInterface } from './driver-interface'
 
-/** class implements DriverInterface leaves out Vendor related methods */
-export class DriverNoVendor implements DriverInterface {
+/** class implements Connex.Driver leaves out Vendor related methods */
+export class DriverNoVendor implements Connex.Driver {
     public head: Connex.Thor.Status['head']
 
     private headResolvers = [] as Array<() => void>
@@ -77,31 +75,31 @@ export class DriverNoVendor implements DriverInterface {
         return this.cache.getTied(`storage-${addr}-${key}`, revision, () =>
             this.httpGet(`accounts/${addr}/storage/${key}`, { revision }))
     }
-    public explain(arg: DriverInterface.ExplainArg, revision: string, cacheHints?: string[]) {
+    public explain(arg: Connex.Driver.ExplainArg, revision: string, cacheHints?: string[]) {
         const cacheKey = `explain-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, revision, () =>
             this.httpPost('accounts/*', arg, { revision }), cacheHints)
     }
-    public filterEventLogs(arg: DriverInterface.FilterEventLogsArg) {
+    public filterEventLogs(arg: Connex.Driver.FilterEventLogsArg) {
         const cacheKey = `event-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
             this.httpPost('logs/event', arg))
     }
-    public filterTransferLogs(arg: DriverInterface.FilterTransferLogsArg) {
+    public filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg) {
         const cacheKey = `transfer-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
             this.httpPost('logs/transfer', arg))
     }
     public signTx(
-        msg: DriverInterface.SignTxMessage,
-        option: DriverInterface.SignTxOptions
-    ): Promise<DriverInterface.SignTxResult> {
+        msg: Connex.Vendor.TxMessage,
+        options: Connex.Driver.TxOptions
+    ): Promise<Connex.Vendor.TxResponse> {
         throw new Error('not implemented')
     }
     public signCert(
-        msg: DriverInterface.SignCertMessage,
-        options: DriverInterface.SignCertOptions
-    ): Promise<DriverInterface.SignCertResult> {
+        msg: Connex.Vendor.CertMessage,
+        options: Connex.Driver.CertOptions
+    ): Promise<Connex.Vendor.CertResponse> {
         throw new Error('not implemented')
     }
     public isAddressOwned(addr: string): Promise<boolean> {
@@ -185,10 +183,6 @@ export class DriverNoVendor implements DriverInterface {
                     }
                 }
             } catch (err) {
-                if (!options.disableErrorLog) {
-                    // tslint:disable-next-line: no-console
-                    console.warn('headTracker(http):', err)
-                }
                 if (err instanceof InterruptedError) {
                     break
                 }
@@ -198,10 +192,6 @@ export class DriverNoVendor implements DriverInterface {
                 try {
                     await this.trackWs()
                 } catch (err) {
-                    if (!options.disableErrorLog) {
-                        // tslint:disable-next-line: no-console
-                        console.warn('headTracker(ws):', err)
-                    }
                     if (err instanceof InterruptedError) {
                         break
                     }

@@ -536,10 +536,10 @@ declare namespace Connex {
             comment(text: string): this
 
             /**
-             * enable VIP-191 by providing delegation handler
-             * @param delegator a callback function or web RPC url to sign tx as fee delegator
+             * enable VIP-191 by providing url of delegation web service
+             * @param url the url of delegation web service
              */
-            delegate(delegator: Delegator): this
+            delegate(url: string): this
 
             prepared(callback: () => void): this
             /**
@@ -600,18 +600,7 @@ declare namespace Connex {
             }
             signature: string
         }
-
-        type DelegateArg = {
-            raw: string
-            origin: string
-        }
-
-        type DelegateResult = {
-            signature: string
-        }
-
-        type Delegator = ((arg: DelegateArg) => Promise<DelegateResult>) | string
     }
-    type ErrorType = 'BadParameter' | 'Rejected' | 'Unavailable'
+    type ErrorType = 'BadParameter' | 'Rejected'
 }
 

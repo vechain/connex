@@ -1,11 +1,10 @@
 import * as V from 'validator-ts'
 import * as R from './rules'
-import { DriverInterface } from './driver-interface'
 
 export function newDriverGuard(
-    driver: DriverInterface,
+    driver: Connex.Driver,
     errHandler?: (err: Error) => void
-): DriverInterface {
+): Connex.Driver {
 
     const test = <T>(obj: T, scheme: V.Scheme<T>, path: string) => {
         try {
@@ -75,31 +74,15 @@ export function newDriverGuard(
             return driver.filterTransferLogs(arg)
                 .then(r => test(r, [transferWithMetaScheme], 'filterTransferLogs()'))
         },
-        signTx(msg, option) {
-            let wrappedDelegator
-            if (option.delegator && typeof option.delegator === 'function') {
-                // to validate args for callback function
-                const delegator = option.delegator
-                wrappedDelegator = (unsigned: Connex.Vendor.DelegateArg) => {
-                    test(unsigned, {
-                        raw: R.bytes,
-                        origin: R.address
-                    }, 'delegator.arg')
-                    return delegator!(unsigned)
-                }
-            }
-
-            return driver.signTx(msg, {
-                ...option,
-                delegator: wrappedDelegator || option.delegator
-            })
+        signTx(msg, options) {
+            return driver.signTx(msg, options)
                 .then(r => test(r, {
                     txid: R.bytes32,
                     signer: R.address
                 }, 'signTx()'))
         },
-        signCert(msg, option) {
-            return driver.signCert(msg, option)
+        signCert(msg, options) {
+            return driver.signCert(msg, options)
                 .then(r => test(r, {
                     annex: {
                         domain: R.string,

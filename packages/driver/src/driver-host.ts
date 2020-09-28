@@ -2,10 +2,8 @@ import * as WS from 'ws/index'
 import { JSONRPC } from '@vechain/json-rpc'
 import * as Http from 'http'
 import * as Https from 'https'
-import { options } from './options'
-import { DriverInterface } from './driver-interface'
 
-const methods: Array<keyof DriverInterface> = [
+const methods: Array<keyof Connex.Driver> = [
     'pollHead',
     'getBlock',
     'getTransaction',
@@ -54,13 +52,11 @@ export class DriverHost {
         ws.on('message', data => {
             const isRequest = (data as string)[0] !== ' '
             rpc.receive(data as string, isRequest).catch(err => {
-                if (!options.disableErrorLog) {
-                    // tslint:disable-next-line: no-console
-                    console.warn('receive jsonrpc payload: ', err)
-                }
+                // tslint:disable-next-line: no-console
+                console.warn('receive jsonrpc payload: ', err)
             })
         })
-        let driver: DriverInterface | undefined
+        let driver: Connex.Driver | undefined
 
         rpc.serve(method => {
             if (method === 'connect') {
@@ -88,5 +84,5 @@ export class DriverHost {
 }
 
 export namespace DriverHost {
-    export type Acceptor = (ws: WebSocket, request: Http.IncomingMessage, genesisId?: string) => Promise<DriverInterface>
+    export type Acceptor = (ws: WebSocket, request: Http.IncomingMessage, genesisId?: string) => Promise<Connex.Driver>
 }

@@ -3,7 +3,7 @@ import { newFilter } from './filter'
 import { BadParameter, test } from './rules'
 
 export function newEventVisitor(
-    ctx: Context,
+    driver: Connex.Driver,
     addr: string,
     coder: abi.Event
 ): Connex.Thor.EventVisitor {
@@ -42,7 +42,7 @@ export function newEventVisitor(
                     throw new BadParameter(`arg0.#${i}: can not be encoded (${err.message})`)
                 }
             })
-            const filter = newFilter(ctx, 'event').criteria(criteriaSet)
+            const filter = newFilter(driver, 'event').criteria(criteriaSet)
             return {
                 criteria(set) {
                     filter.criteria(set)

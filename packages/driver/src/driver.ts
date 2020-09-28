@@ -5,8 +5,6 @@ import { Transaction } from 'thor-devkit/dist/transaction'
 import { Certificate } from 'thor-devkit/dist/certificate'
 import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
 import { randomBytes } from 'crypto'
-import { options } from './options'
-import { DriverInterface } from './driver-interface'
 
 /** class fully implements DriverInterface */
 export class Driver extends DriverNoVendor {
@@ -58,14 +56,18 @@ export class Driver extends DriverNoVendor {
     }
 
     public async signTx(
-        msg: DriverInterface.SignTxMessage,
-        option: DriverInterface.SignTxOptions,
-    ): Promise<DriverInterface.SignTxResult> {
-        option.onPrepared && option.onPrepared()
+        msg: Connex.Vendor.TxMessage,
+        options: Connex.Driver.TxOptions,
+    ): Promise<Connex.Vendor.TxResponse> {
+        options.onPrepared && options.onPrepared()
 
-        const key = this.findKey(option.signer)
-        const clauses = msg.map(c => ({ to: c.to, value: c.value, data: c.data }))
-        const gas = option.gas ||
+        const key = this.findKey(options.signer)
+        const clauses = msg.map(c => ({
+            to: c.to ? c.to.toLowerCase() : null,
+            value: c.value.toString().toLowerCase(),
+            data: (c.data || '0x').toLowerCase(),
+        }))
+        const gas = options.gas ||
             (await this.estimateGas(clauses, key.address))
 
         const txBody: Transaction.Body = {
@@ -75,12 +77,12 @@ export class Driver extends DriverNoVendor {
             clauses,
             gasPriceCoef: this.txParams.gasPriceCoef,
             gas,
-            dependsOn: option.dependsOn || null,
+            dependsOn: options.dependsOn || null,
             nonce: '0x' + randomBytes(8).toString('hex')
         }
 
         let tx: Transaction | undefined
-        if (option.delegator) {
+        if (options.delegator) {
             const delegatedTx = new Transaction({ ...txBody, reserved: { features: 1/* vip191 */ } })
             const originSig = await key.sign(delegatedTx.signingHash())
             const unsigned = {
@@ -88,19 +90,13 @@ export class Driver extends DriverNoVendor {
                 origin: key.address
             }
             try {
-                let result
-                if (typeof option.delegator === 'string') { // web RPC
-                    result = await this.net.http('POST', option.delegator, { body: unsigned })
-                } else { // callback function
-                    result = await option.delegator(unsigned)
-                }
+                const result = await this.net.http('POST', options.delegator, { body: unsigned })
                 delegatedTx.signature = Buffer.concat([originSig, Buffer.from(result.signature.slice(2), 'hex')])
                 tx = delegatedTx
             } catch (err) {
-                if (!options.disableErrorLog) {
-                    // tslint:disable-next-line: no-console
-                    console.warn('tx delegation error: ', err)
-                }
+                // tslint:disable-next-line: no-console
+                console.warn('tx delegation error: ', err)
+
                 // fallback to non-vip191 tx
             }
         }
@@ -127,9 +123,9 @@ export class Driver extends DriverNoVendor {
     }
 
     public async signCert(
-        msg: DriverInterface.SignCertMessage,
-        options: DriverInterface.SignCertOptions
-    ): Promise<DriverInterface.SignCertResult> {
+        msg: Connex.Vendor.CertMessage,
+        options: Connex.Driver.CertOptions
+    ): Promise<Connex.Vendor.CertResponse> {
         options.onPrepared && options.onPrepared()
 
         const key = this.findKey(options.signer)

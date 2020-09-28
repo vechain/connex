@@ -4,20 +4,20 @@ import { abi } from 'thor-devkit/dist/abi'
 import * as R from './rules'
 
 export function newAccountVisitor(
-    ctx: Context,
+    driver: Connex.Driver,
     addr: string
 ): Connex.Thor.AccountVisitor {
     return {
         get address() { return addr },
         get: () => {
-            return ctx.driver.getAccount(addr, ctx.trackedHead.id)
+            return driver.getAccount(addr, driver.head.id)
         },
         getCode: () => {
-            return ctx.driver.getCode(addr, ctx.trackedHead.id)
+            return driver.getCode(addr, driver.head.id)
         },
         getStorage: key => {
             key = R.test(key, R.bytes32, 'arg0').toLowerCase()
-            return ctx.driver.getStorage(addr, key, ctx.trackedHead.id)
+            return driver.getStorage(addr, key, driver.head.id)
         },
         method: jsonABI => {
             let coder
@@ -26,7 +26,7 @@ export function newAccountVisitor(
             } catch (err) {
                 throw new R.BadParameter(`arg0: expected valid ABI (${err.message})`)
             }
-            return newMethod(ctx, addr, coder)
+            return newMethod(driver, addr, coder)
         },
         event: jsonABI => {
             let coder
@@ -35,7 +35,7 @@ export function newAccountVisitor(
             } catch (err) {
                 throw new R.BadParameter(`arg0: expected valid ABI (${err.message})`)
             }
-            return newEventVisitor(ctx, addr, coder)
+            return newEventVisitor(driver, addr, coder)
         }
     }
 }

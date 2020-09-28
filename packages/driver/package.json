@@ -27,7 +27,8 @@
   "homepage": "https://github.com/vechain/connex/tree/marster/packages/driver/#readme",
   "devDependencies": {
     "@types/lru-cache": "^5.1.0",
-    "@types/ws": "^6.0.1"
+    "@types/ws": "^6.0.1",
+    "@vechain/connex-framework": "^1.1.4"
   },
   "dependencies": {
     "@vechain/connex-types": "^1.4.2",

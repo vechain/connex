@@ -4,7 +4,7 @@ import * as V from 'validator-ts'
 const MAX_LIMIT = 256
 
 export function newFilter<T extends 'event' | 'transfer'>(
-    ctx: Context,
+    driver: Connex.Driver,
     kind: T
 ): Connex.Thor.Filter<T> {
 
@@ -77,9 +77,9 @@ export function newFilter<T extends 'event' | 'transfer'>(
             filterBody.options.limit = limit
 
             if (kind === 'transfer') {
-                return ctx.driver.filterTransferLogs(filterBody as any) as Promise<any>
+                return driver.filterTransferLogs(filterBody as any) as Promise<any>
             } else {
-                return ctx.driver.filterEventLogs(filterBody as any) as Promise<any>
+                return driver.filterEventLogs(filterBody as any) as Promise<any>
             }
         }
     }
