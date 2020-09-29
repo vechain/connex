@@ -11,7 +11,7 @@ export class SimpleNet implements Net {
 
     constructor(
         readonly baseURL: string,
-        timeout = 15 * 1000,
+        timeout = 30 * 1000,
         private readonly wsTimeout = 30 * 1000
     ) {
         this.axios = Axios.create({
@@ -31,7 +31,7 @@ export class SimpleNet implements Net {
             const resp = await this.axios.request({
                 method,
                 url: path,
-                data: params.body ? JSON.stringify(params.body) : undefined,
+                data: params.body,
                 headers: params.headers,
                 params: params.query
             })
