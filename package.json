@@ -2,9 +2,11 @@
   "name": "root",
   "private": true,
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "eslint": "^7.10.0",
     "lerna": "^3.20.2",
     "ts-node": "^8.8.1",
-    "tslint": "^6.1.1",
-    "typescript": "^3.8.3"
+    "typescript": "^4.0.2"
   }
 }
