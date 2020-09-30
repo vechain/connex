@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-driver",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "description": "Connex framework driver implementation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "@types/lru-cache": "^5.1.0",
     "@types/ws": "^6.0.1",
-    "@vechain/connex-framework": "^2.0.0-beta.0"
+    "@vechain/connex-framework": "^2.0.0-beta.1"
   },
   "dependencies": {
     "@vechain/json-rpc": "^1.0.0-beta4",
