@@ -1,12 +1,14 @@
 {
   "name": "@vechain/connex-repl",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "",
   "main": "dist/index.js",
   "engines": {
     "node": ">=10.0.0"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "rm -rf dist/;../../node_modules/.bin/tsc -p .;cp src/index.js dist/",
     "lint": "../../node_modules/.bin/tslint -p .",
@@ -27,8 +29,8 @@
   },
   "homepage": "https://github.com/vechain/connex/tree/master/packages/repl#readme",
   "dependencies": {
-    "@vechain/connex-driver": "^2.0.0-beta.1",
-    "@vechain/connex-framework": "^2.0.0-beta.1",
+    "@vechain/connex-driver": "^2.0.0-beta.2",
+    "@vechain/connex-framework": "^2.0.0-beta.2",
     "bignumber.js": "^9.0.0",
     "repl.history": "^0.1.4"
   }
