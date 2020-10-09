@@ -1,8 +1,6 @@
 import { JSONRPC } from '@vechain/json-rpc'
 import * as WebSocket from 'isomorphic-ws'
 import { sleep } from './common'
-import { options } from './options'
-import { DriverInterface } from './driver-interface'
 
 function openWebSocket(url: string) {
     return new Promise<WebSocket>((resolve, reject) => {
@@ -30,7 +28,7 @@ function offWebSocket(ws: WebSocket) {
     ws.onopen = null as any
 }
 
-async function setupRPC(ws: WebSocket) {
+function setupRPC(ws: WebSocket) {
     const rpc = new JSONRPC((data, isRequest) => {
         if (!isRequest) {
             data = ' ' + data
@@ -42,10 +40,8 @@ async function setupRPC(ws: WebSocket) {
         const isRequest = (ev.data as string)[0] !== ' '
         rpc.receive(ev.data as string, isRequest)
             .catch(err => {
-                if (!options.disableErrorLog) {
-                    // tslint:disable-next-line: no-console
-                    console.warn('receive jsonrpc payload: ', err)
-                }
+                // tslint:disable-next-line: no-console
+                console.warn('receive jsonrpc payload: ', err)
             })
     }
     ws.onclose = () => {
@@ -62,7 +58,7 @@ async function setupRPC(ws: WebSocket) {
 
 async function _connect(url: string, genesisId?: string) {
     const ws = await openWebSocket(url)
-    const rpc = await setupRPC(ws)
+    const rpc = setupRPC(ws)
     try {
         const info = await rpc.call('connect', genesisId)
         return {
@@ -77,17 +73,15 @@ async function _connect(url: string, genesisId?: string) {
     }
 }
 
-export async function connect(url: string): Promise<DriverInterface> {
+export async function connect(url: string): Promise<Connex.Driver> {
     let conn = await _connect(url)
     const genesisId = conn.genesis.id
 
     const reconnect = () => {
-        setTimeout(async () => {
-            try {
-                conn = await _connect(url, genesisId)
-            } catch (err) {
-                reconnect()
-            }
+        setTimeout(() => {
+            _connect(url, genesisId)
+                .then(c => conn = c)
+                .catch(() => reconnect())
         }, 10 * 1000)
     }
 

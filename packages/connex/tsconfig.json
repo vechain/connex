@@ -1,5 +1,16 @@
 {
     "compilerOptions": {
-        "strict": true
-    }
+      "target": "es6",
+      "module": "commonjs",
+      "strict": true,
+      "outDir": "./dist",
+      "inlineSourceMap": true,
+      "declaration": true,
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true,
+      "types": ["@vechain/connex-types", "@vechain/connex-framework/dist/driver-interface"]
+    },
+    "include": [
+      "./src"
+    ]
 }

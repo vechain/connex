@@ -6,7 +6,7 @@ import { publicKeyToAddress } from 'thor-devkit/dist/cry/address'
 export class SimpleWallet implements Wallet {
     private readonly keys = [] as KeyEntity[]
 
-    get list() {
+    get list(): Wallet.Key[] {
         return this.keys.map(k => {
             return {
                 address: k.address,
@@ -22,7 +22,7 @@ export class SimpleWallet implements Wallet {
      * @param privateKey hex string presented private key
      * @returns address derived from the private key
      */
-    public import(privateKey: string) {
+    public import(privateKey: string): string {
         if (privateKey.startsWith('0x')) {
             privateKey = privateKey.slice(2)
         }
@@ -40,7 +40,7 @@ export class SimpleWallet implements Wallet {
      * @param addr address
      * @returns true if found and removed, false otherwise
      */
-    public remove(addr: string) {
+    public remove(addr: string): boolean {
         const i = this.keys.findIndex(k => k.address === addr.toLowerCase())
         if (i >= 0) {
             this.keys.splice(i, 1)

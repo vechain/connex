@@ -27,7 +27,7 @@ export class SimpleWebSocketReader implements Net.WebSocketReader {
         }
     }
 
-    public read() {
+    public read(): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             if (this.error) {
                 return reject(this.error)
@@ -47,7 +47,7 @@ export class SimpleWebSocketReader implements Net.WebSocketReader {
         })
     }
 
-    public close() {
+    public close(): void {
         this.ws.close()
     }
 

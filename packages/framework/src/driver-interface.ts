@@ -1,91 +1,78 @@
+
 /** Connex driver interface */
-import Thor = Connex.Thor
-import Vendor = Connex.Vendor
+declare namespace Connex {
+    interface Driver {
+        readonly genesis: Thor.Block
+        /** current known head */
+        readonly head: Thor.Status['head']
 
-export interface DriverInterface {
-    readonly genesis: Thor.Block
-    /** current known head */
-    readonly head: Thor.Status['head']
+        /**
+         * poll new head
+         * rejected only when driver closed
+         */
+        pollHead(): Promise<Thor.Status['head']>
 
-    /**
-     * poll new head
-     * rejected only when driver closed
-     */
-    pollHead(): Promise<Thor.Status['head']>
+        getBlock(revision: string | number): Promise<Thor.Block | null>
+        getTransaction(id: string, allowPending: boolean): Promise<Thor.Transaction | null>
+        getReceipt(id: string): Promise<Thor.Transaction.Receipt | null>
 
-    getBlock(revision: string | number): Promise<Thor.Block | null>
-    getTransaction(id: string, allowPending: boolean): Promise<Thor.Transaction | null>
-    getReceipt(id: string): Promise<Thor.Receipt | null>
+        getAccount(addr: string, revision: string): Promise<Thor.Account>
+        getCode(addr: string, revision: string): Promise<Thor.Account.Code>
+        getStorage(addr: string, key: string, revision: string): Promise<Thor.Account.Storage>
 
-    getAccount(addr: string, revision: string): Promise<Thor.Account>
-    getCode(addr: string, revision: string): Promise<Thor.Code>
-    getStorage(addr: string, key: string, revision: string): Promise<Thor.Storage>
+        explain(arg: Driver.ExplainArg, revision: string, cacheHints?: string[]): Promise<VM.Output[]>
 
-    explain(arg: DriverInterface.ExplainArg, revision: string, cacheHints?: string[]): Promise<Thor.VMOutput[]>
+        filterEventLogs(arg: Driver.FilterEventLogsArg): Promise<Thor.Filter.Row<'event'>[]>
+        filterTransferLogs(arg: Driver.FilterTransferLogsArg): Promise<Thor.Filter.Row<'transfer'>[]>
 
-    filterEventLogs(arg: DriverInterface.FilterEventLogsArg): Promise<Thor.Event[]>
-    filterTransferLogs(arg: DriverInterface.FilterTransferLogsArg): Promise<Thor.Transfer[]>
-
-    // vendor methods
-    signTx(msg: DriverInterface.SignTxArg, options: DriverInterface.SignTxOption): Promise<DriverInterface.SignTxResult>
-    signCert(msg: DriverInterface.SignCertArg, option: DriverInterface.SignCertOption): Promise<DriverInterface.SignCertResult>
-    isAddressOwned(addr: string): Promise<boolean>
-}
-
-export namespace DriverInterface {
-    export type ExplainArg = {
-        clauses: Array<{
-            to: string | null
-            value: string
-            data: string
-        }>,
-        caller?: string
-        gas?: number
-        gasPrice?: string
+        // vendor methods
+        signTx(msg: Vendor.TxMessage, options: Driver.TxOptions): Promise<Vendor.TxResponse>
+        signCert(msg: Vendor.CertMessage, option: Driver.CertOptions): Promise<Vendor.CertResponse>
+        isAddressOwned(addr: string): Promise<boolean>
     }
 
-    export type FilterEventLogsArg = {
-        range: Thor.Filter.Range
-        options: {
-            offset: number
-            limit: number
+    namespace Driver {
+        type ExplainArg = {
+            clauses: Thor.Transaction['clauses'],
+            caller?: string
+            gas?: number
+            gasPrice?: string
         }
-        criteriaSet: Thor.Event.Criteria[]
-        order: 'asc' | 'desc'
-    }
 
-    export type FilterTransferLogsArg = {
-        range: Thor.Filter.Range
-        options: {
-            offset: number
-            limit: number
+        type FilterEventLogsArg = {
+            range: Thor.Filter.Range
+            options: {
+                offset: number
+                limit: number
+            }
+            criteriaSet: Thor.Filter.Criteria<'event'>[]
+            order: 'asc' | 'desc'
         }
-        criteriaSet: Thor.Transfer.Criteria[]
-        order: 'asc' | 'desc'
-    }
 
-    export type SignTxArg = Array<{
-        to: string | null
-        value: string
-        data: string
-        comment?: string
-        abi?: object
-    }>
-    export type SignTxOption = {
-        signer?: string
-        gas?: number
-        dependsOn?: string
-        link?: string
-        comment?: string
-        delegationHandler?: Vendor.DelegationHandler
-    }
-    export type SignTxResult = Vendor.TxResponse
+        type FilterTransferLogsArg = {
+            range: Thor.Filter.Range
+            options: {
+                offset: number
+                limit: number
+            }
+            criteriaSet: Thor.Filter.Criteria<'transfer'>[]
+            order: 'asc' | 'desc'
+        }
 
-    export type SignCertArg = Vendor.CertMessage
-    export type SignCertOption = {
-        signer?: string
-        link?: string
+        type TxOptions = {
+            signer?: string
+            gas?: number
+            dependsOn?: string
+            link?: string
+            comment?: string
+            delegator?: string
+            onPrepared?: () => void
+        }
+
+        type CertOptions = {
+            signer?: string
+            link?: string
+            onPrepared?: () => void
+        }
     }
-    export type SignCertResult = Vendor.CertResponse
 }
-

@@ -1,7 +1,7 @@
 export function newTxVisitor(
-    ctx: Context,
+    driver: Connex.Driver,
     id: string
-): Connex.Thor.TransactionVisitor {
+): Connex.Thor.Transaction.Visitor {
     let allowPending = false
     return {
         get id() {
@@ -11,7 +11,7 @@ export function newTxVisitor(
             allowPending = true
             return this
         },
-        get: () => ctx.driver.getTransaction(id, allowPending),
-        getReceipt: () => ctx.driver.getReceipt(id)
+        get: () => driver.getTransaction(id, allowPending),
+        getReceipt: () => driver.getReceipt(id)
     }
 }

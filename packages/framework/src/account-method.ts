@@ -2,11 +2,11 @@ import { abi } from 'thor-devkit/dist/abi'
 import { decodeRevertReason } from './revert-reason'
 import * as R from './rules'
 
-export function newMethod(
-    ctx: Context,
+export function newAccountMethod(
+    driver: Connex.Driver,
     addr: string,
     coder: abi.Function
-): Connex.Thor.Method {
+): Connex.Thor.Account.Method {
 
     let value: string | number = 0
     const opts: {
@@ -54,12 +54,12 @@ export function newMethod(
         },
         call(...args) {
             const clause = this.asClause(...args)
-            return ctx.driver.explain(
+            return driver.explain(
                 {
                     clauses: [clause as any],
                     ...opts
                 },
-                ctx.trackedHead.id,
+                driver.head.id,
                 cacheHints
             )
                 .then(outputs => outputs[0])
