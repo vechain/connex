@@ -31,7 +31,8 @@
   "devDependencies": {
     "@types/lru-cache": "^5.1.0",
     "@types/ws": "^6.0.1",
-    "@vechain/connex-framework": "^2.0.0-beta.2"
+    "@vechain/connex-framework": "^2.0.0-beta.2",
+    "@vechain/connex-types": "^2.0.0-beta.2"
   },
   "dependencies": {
     "@vechain/json-rpc": "^1.0.0-beta4",
