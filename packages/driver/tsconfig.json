@@ -1,16 +1,10 @@
 {
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "strict": true,
-      "outDir": "./dist",
-      "inlineSourceMap": true,
-      "declaration": true,
-      "moduleResolution": "node",
-      "allowSyntheticDefaultImports": true,
-      "types": ["@vechain/connex-framework/dist/driver-interface"]
+        "outDir": "./dist",
+        "types": ["@vechain/connex-framework/dist/driver-interface"]
     },
     "include": [
-      "./src"
+        "./src"
     ]
 }
