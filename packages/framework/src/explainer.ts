@@ -2,7 +2,7 @@ import { decodeRevertReason } from './revert-reason'
 import * as R from './rules'
 import * as V from 'validator-ts'
 
-export function newExplainer(ctx: Context): Connex.Thor.Explainer {
+export function newExplainer(driver: Connex.Driver): Connex.VM.Explainer {
     const opts: {
         caller?: string
         gas?: number
@@ -38,17 +38,17 @@ export function newExplainer(ctx: Context): Connex.Thor.Explainer {
                 }
             })
 
-            return ctx.driver.explain(
+            return driver.explain(
                 {
                     clauses: transformedClauses,
                     ...opts
                 },
-                ctx.trackedHead.id, cacheHints)
+                driver.head.id, cacheHints)
                 .then(outputs => {
                     return outputs.map(o => {
                         if (o.reverted) {
                             const revertReason = decodeRevertReason(o.data)
-                            return { ...o, decoded: { revertReason } }
+                            return { ...o, revertReason }
                         }
                         return o
                     })
@@ -57,7 +57,7 @@ export function newExplainer(ctx: Context): Connex.Thor.Explainer {
     }
 }
 
-const clauseScheme: V.Scheme<Connex.Thor.Clause> = {
+const clauseScheme: V.Scheme<Connex.VM.Clause> = {
     to: V.nullable(R.address),
     value: R.bigInt,
     data: V.optional(R.bytes)

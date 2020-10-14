@@ -1,11 +1,9 @@
-
-import { DriverInterface } from './driver-interface'
-
-export function newHeadTracker(driver: DriverInterface) {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function newHeadTracker(driver: Connex.Driver) {
     let head = { ...driver.head }
     let resolvers: Array<(head: Connex.Thor.Status['head']) => void> = [];
 
-    (async () => {
+    void (async () => {
         for (; ;) {
             try {
                 const newHead = await driver.pollHead()

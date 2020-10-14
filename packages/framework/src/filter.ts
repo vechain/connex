@@ -4,7 +4,7 @@ import * as V from 'validator-ts'
 const MAX_LIMIT = 256
 
 export function newFilter<T extends 'event' | 'transfer'>(
-    ctx: Context,
+    driver: Connex.Driver,
     kind: T
 ): Connex.Thor.Filter<T> {
 
@@ -18,15 +18,15 @@ export function newFilter<T extends 'event' | 'transfer'>(
             offset: 0,
             limit: 10
         },
-        criteriaSet: [] as Array<Connex.Thor.Event.Criteria | Connex.Thor.Transfer.Criteria>,
+        criteriaSet: [] as Array<Connex.Thor.Filter.Criteria<'event' | 'transfer'>>,
         order: 'asc'
     }
 
     return {
         criteria(set) {
             if (kind === 'event') {
-                R.test(set as Connex.Thor.Event.Criteria[], [eventCriteriaScheme], 'arg0')
-                filterBody.criteriaSet = (set as Connex.Thor.Event.Criteria[])
+                R.test(set as Connex.Thor.Filter.Criteria<'event'>[], [eventCriteriaScheme], 'arg0')
+                filterBody.criteriaSet = (set as Connex.Thor.Filter.Criteria<'event'>[])
                     .map(c => {
                         return {
                             address: c.address ? c.address.toLowerCase() : undefined,
@@ -38,8 +38,8 @@ export function newFilter<T extends 'event' | 'transfer'>(
                         }
                     })
             } else {
-                R.test(set as Connex.Thor.Transfer.Criteria[], [transferCriteriaScheme], 'arg0')
-                filterBody.criteriaSet = (set as Connex.Thor.Transfer.Criteria[])
+                R.test(set as Connex.Thor.Filter.Criteria<'transfer'>[], [transferCriteriaScheme], 'arg0')
+                filterBody.criteriaSet = (set as Connex.Thor.Filter.Criteria<'transfer'>[])
                     .map(c => {
                         return {
                             txOrigin: c.txOrigin ? c.txOrigin.toLowerCase() : undefined,
@@ -77,15 +77,15 @@ export function newFilter<T extends 'event' | 'transfer'>(
             filterBody.options.limit = limit
 
             if (kind === 'transfer') {
-                return ctx.driver.filterTransferLogs(filterBody as any) as Promise<any>
+                return driver.filterTransferLogs(filterBody as any) as Promise<any>
             } else {
-                return ctx.driver.filterEventLogs(filterBody as any) as Promise<any>
+                return driver.filterEventLogs(filterBody as any) as Promise<any>
             }
         }
     }
 }
 
-const eventCriteriaScheme: V.Scheme<Connex.Thor.Event.Criteria> = {
+const eventCriteriaScheme: V.Scheme<Connex.Thor.Filter.Criteria<'event'>> = {
     address: V.optional(R.address),
     topic0: V.optional(R.bytes32),
     topic1: V.optional(R.bytes32),
@@ -93,7 +93,7 @@ const eventCriteriaScheme: V.Scheme<Connex.Thor.Event.Criteria> = {
     topic3: V.optional(R.bytes32),
     topic4: V.optional(R.bytes32)
 }
-const transferCriteriaScheme: V.Scheme<Connex.Thor.Transfer.Criteria> = {
+const transferCriteriaScheme: V.Scheme<Connex.Thor.Filter.Criteria<'transfer'>> = {
     sender: V.optional(R.address),
     recipient: V.optional(R.address),
     txOrigin: V.optional(R.address)

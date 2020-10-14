@@ -1,10 +1,10 @@
 export function newBlockVisitor(
-    ctx: Context,
+    driver: Connex.Driver,
     revision: string | number
-): Connex.Thor.BlockVisitor {
+): Connex.Thor.Block.Visitor {
 
     return {
         get revision() { return revision },
-        get: () => ctx.driver.getBlock(revision)
+        get: () => driver.getBlock(revision)
     }
 }

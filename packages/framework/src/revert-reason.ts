@@ -6,7 +6,7 @@ import { abi } from 'thor-devkit/dist/abi'
 
 const errorSig = '0x08c379a0'
 
-export function decodeRevertReason(data: string) {
+export function decodeRevertReason(data: string): string {
     try {
         if (data.startsWith(errorSig)) {
             return abi.decodeParameter('string', '0x' + data.slice(errorSig.length)) as string

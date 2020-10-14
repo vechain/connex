@@ -5,17 +5,11 @@ import { newFilter } from './filter'
 import { newHeadTracker } from './head-tracker'
 import { newExplainer } from './explainer'
 import * as R from './rules'
-import { DriverInterface } from './driver-interface'
 
-export function newThor(driver: DriverInterface): Connex.Thor {
+export function newThor(driver: Connex.Driver): Connex.Thor {
     const headTracker = newHeadTracker(driver)
 
-    const ctx: Context = {
-        driver,
-        get trackedHead() { return headTracker.head }
-    }
-
-    const genesis = JSON.parse(JSON.stringify(driver.genesis))
+    const genesis = JSON.parse(JSON.stringify(driver.genesis)) as Connex.Thor.Block
     return {
         get genesis() { return genesis },
         get status() {
@@ -27,26 +21,26 @@ export function newThor(driver: DriverInterface): Connex.Thor {
         ticker: () => headTracker.ticker(),
         account: addr => {
             addr = R.test(addr, R.address, 'arg0').toLowerCase()
-            return newAccountVisitor(ctx, addr)
+            return newAccountVisitor(driver, addr)
         },
         block: revision => {
             if (typeof revision === 'undefined') {
-                revision = ctx.trackedHead.id
+                revision = driver.head.id
             } else {
                 R.ensure(typeof revision === 'string' ? R.isHexBytes(revision, 32) : R.isUInt(revision, 32),
                     'arg0: expected bytes32 or unsigned 32-bit integer')
             }
-            return newBlockVisitor(ctx, typeof revision === 'string' ? revision.toLowerCase() : revision)
+            return newBlockVisitor(driver, typeof revision === 'string' ? revision.toLowerCase() : revision)
         },
         transaction: id => {
             id = R.test(id, R.bytes32, 'arg0').toLowerCase()
-            return newTxVisitor(ctx, id)
+            return newTxVisitor(driver, id)
         },
-        filter: kind => {
+        filter: (kind: 'event' | 'transfer') => {
             R.ensure(kind === 'event' || kind === 'transfer',
                 `arg0: expected 'event' or 'transfer'`)
-            return newFilter(ctx, kind)
+            return newFilter(driver, kind)
         },
-        explain: () => newExplainer(ctx)
+        explain: () => newExplainer(driver)
     }
 }
