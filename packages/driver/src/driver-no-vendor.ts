@@ -3,11 +3,9 @@ import { PromInt, InterruptedError } from './promint'
 import { Cache } from './cache'
 import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
 import { sleep } from './common'
-import { options } from './options'
-import { DriverInterface } from './driver-interface'
 
-/** class implements DriverInterface leaves out Vendor related methods */
-export class DriverNoVendor implements DriverInterface {
+/** class implements Connex.Driver leaves out Vendor related methods */
+export class DriverNoVendor implements Connex.Driver {
     public head: Connex.Thor.Status['head']
 
     private headResolvers = [] as Array<() => void>
@@ -17,7 +15,7 @@ export class DriverNoVendor implements DriverInterface {
     private readonly pendingRequests: Record<string, Promise<any>> = {}
 
     constructor(
-        private readonly net: Net,
+        protected readonly net: Net,
         readonly genesis: Connex.Thor.Block,
         initialHead?: Connex.Thor.Status['head']
     ) {
@@ -32,27 +30,27 @@ export class DriverNoVendor implements DriverInterface {
                 txsFeatures: genesis.txsFeatures
             }
         }
-        this.headTrackerLoop()
+        void this.headTrackerLoop()
     }
 
     // close the driver to prevent mem leak
-    public close() {
+    public close(): void {
         this.int.interrupt()
     }
 
     // implementations
-    public pollHead() {
+    public pollHead(): Promise<Connex.Thor.Status['head']> {
         return this.int.wrap(
             new Promise<Connex.Thor.Status['head']>(resolve => {
                 this.headResolvers.push(() => resolve(this.head))
             }))
     }
 
-    public getBlock(revision: string | number) {
+    public getBlock(revision: string | number): Promise<Connex.Thor.Block | null> {
         return this.cache.getBlock(revision, () =>
             this.httpGet(`blocks/${revision}`))
     }
-    public getTransaction(id: string, allowPending: boolean) {
+    public getTransaction(id: string, allowPending: boolean): Promise<Connex.Thor.Transaction | null> {
         return this.cache.getTx(id, () => {
             const query: Record<string, string> = { head: this.head.id }
             if (allowPending) {
@@ -61,56 +59,54 @@ export class DriverNoVendor implements DriverInterface {
             return this.httpGet(`transactions/${id}`, query)
         })
     }
-    public getReceipt(id: string) {
+    public getReceipt(id: string): Promise<Connex.Thor.Transaction.Receipt | null> {
         return this.cache.getReceipt(id, () =>
             this.httpGet(`transactions/${id}/receipt`, { head: this.head.id }))
     }
-    public getAccount(addr: string, revision: string) {
+    public getAccount(addr: string, revision: string): Promise<Connex.Thor.Account> {
         return this.cache.getAccount(addr, revision, () =>
             this.httpGet(`accounts/${addr}`, { revision }))
     }
-    public getCode(addr: string, revision: string) {
+    public getCode(addr: string, revision: string): Promise<Connex.Thor.Account.Code> {
         return this.cache.getTied(`code-${addr}`, revision, () =>
             this.httpGet(`accounts/${addr}/code`, { revision }))
     }
-    public getStorage(addr: string, key: string, revision: string) {
+    public getStorage(addr: string, key: string, revision: string): Promise<Connex.Thor.Account.Storage> {
         return this.cache.getTied(`storage-${addr}-${key}`, revision, () =>
             this.httpGet(`accounts/${addr}/storage/${key}`, { revision }))
     }
-    public explain(arg: DriverInterface.ExplainArg, revision: string, cacheHints?: string[]) {
+    public explain(arg: Connex.Driver.ExplainArg, revision: string, cacheHints?: string[]): Promise<Connex.VM.Output[]> {
         const cacheKey = `explain-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, revision, () =>
             this.httpPost('accounts/*', arg, { revision }), cacheHints)
     }
-    public filterEventLogs(arg: DriverInterface.FilterEventLogsArg) {
+    public filterEventLogs(arg: Connex.Driver.FilterEventLogsArg): Promise<Connex.Thor.Filter.Row<'event'>[]> {
         const cacheKey = `event-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
             this.httpPost('logs/event', arg))
     }
-    public filterTransferLogs(arg: DriverInterface.FilterTransferLogsArg) {
+    public filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg): Promise<Connex.Thor.Filter.Row<'transfer'>[]> {
         const cacheKey = `transfer-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
             this.httpPost('logs/transfer', arg))
     }
     public signTx(
-        msg: DriverInterface.SignTxArg,
-        option: DriverInterface.SignTxOption
-    ): Promise<DriverInterface.SignTxResult> {
+        msg: Connex.Vendor.TxMessage,
+        options: Connex.Driver.TxOptions
+    ): Promise<Connex.Vendor.TxResponse> {
         throw new Error('not implemented')
     }
     public signCert(
-        msg: DriverInterface.SignCertArg,
-        options: DriverInterface.SignCertOption
-    ): Promise<DriverInterface.SignCertResult> {
+        msg: Connex.Vendor.CertMessage,
+        options: Connex.Driver.CertOptions
+    ): Promise<Connex.Vendor.CertResponse> {
         throw new Error('not implemented')
-    }
-    public isAddressOwned(addr: string): Promise<boolean> {
-        return Promise.resolve(false)
     }
     //////
     protected mergeRequest(req: () => Promise<any>, ...keyParts: any[]) {
         const key = JSON.stringify(keyParts)
         const pending = this.pendingRequests[key]
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         if (pending) {
             return pending
         }
@@ -185,10 +181,6 @@ export class DriverNoVendor implements DriverInterface {
                     }
                 }
             } catch (err) {
-                if (!options.disableErrorLog) {
-                    // tslint:disable-next-line: no-console
-                    console.warn('headTracker(http):', err)
-                }
                 if (err instanceof InterruptedError) {
                     break
                 }
@@ -198,10 +190,6 @@ export class DriverNoVendor implements DriverInterface {
                 try {
                     await this.trackWs()
                 } catch (err) {
-                    if (!options.disableErrorLog) {
-                        // tslint:disable-next-line: no-console
-                        console.warn('headTracker(ws):', err)
-                    }
                     if (err instanceof InterruptedError) {
                         break
                     }
