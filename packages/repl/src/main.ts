@@ -3,6 +3,7 @@ import { Driver, SimpleWallet, SimpleNet } from '@vechain/connex-driver'
 import * as REPL from 'repl'
 import { resolve } from 'path'
 import BigNumber from 'bignumber.js'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const version = require('../package.json').version
 
 process.on('unhandledRejection', reason => {
@@ -19,7 +20,7 @@ const networks: { [index: string]: string } = {
 
 console.log(`VeChain Connex Playground v${version} @ ${baseUrl}`);
 
-(async () => {
+void (async () => {
     try {
         const wallet = new SimpleWallet()
         const driver = await Driver.connect(new SimpleNet(baseUrl), wallet)
@@ -29,8 +30,8 @@ console.log(`VeChain Connex Playground v${version} @ ${baseUrl}`);
         const network = networks[connex.thor.genesis.id] || 'Custom'
         const prompter = {
             get text() {
-                const progressStr = '' + Math.floor(connex.thor.status.progress * 1000) / 10
-                return `${network}(${progressStr}%)> `
+                const progress = Math.floor(connex.thor.status.progress * 1000) / 10
+                return `${network}(${progress}%)> `
             }
         }
 
@@ -74,7 +75,14 @@ console.log(`VeChain Connex Playground v${version} @ ${baseUrl}`);
 function setupREPL(server: REPL.REPLServer, obj: object) {
     Object.assign(server.context, obj)
     if (server.terminal) {
-        require('repl.history')(server, resolve(process.env.HOME!, '.connex-repl_history'))
+        const historyPath = resolve(process.env.HOME!, '.connex-repl_history')
+        if ((server as any).setupHistory) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            (server as any).setupHistory(historyPath, () => {/** */ })
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            require('repl.history')(server, historyPath)
+        }
     }
     server.once('exit', () => {
         server.close()
@@ -84,6 +92,7 @@ function setupREPL(server: REPL.REPLServer, obj: object) {
     // override completer
     const originalCompleter = server.completer;
     (server as any).completer = (line: string, callback: Function) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         (originalCompleter as any).call(server, line, (err: any, out: [string[], string]) => {
             if (err) {
                 return callback(err)
@@ -92,6 +101,7 @@ function setupREPL(server: REPL.REPLServer, obj: object) {
             if (line) {
                 callback(null, out)
             } else {
+                // eslint-disable-next-line no-prototype-builtins
                 callback(null, [out[0].filter(i => obj.hasOwnProperty(i)), out[1]])
             }
         })
