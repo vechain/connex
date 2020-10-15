@@ -16,8 +16,8 @@ declare namespace Connex.VM {
          */
         cache(hints: string[]): this
 
-        /** execute a batch of clauses (dry-run, without altering blockchain) */
-        execute(clauses: Clause[]): Promise<Output[]>
+        /** execute clauses (dry-run, without altering blockchain) */
+        execute(): Promise<Output[]>
     }
 
     type Clause = {

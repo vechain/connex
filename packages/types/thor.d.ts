@@ -28,13 +28,13 @@ declare namespace Connex {
         transaction(id: string): Thor.Transaction.Visitor
 
         /** create an event logs filter */
-        filter(kind: 'event'): Thor.Filter<'event'>
+        filter(kind: 'event', criteria: Thor.Filter.Criteria<'event'>[]): Thor.Filter<'event'>
 
         /** create an transfer logs filter */
-        filter(kind: 'transfer'): Thor.Filter<'transfer'>
+        filter(kind: 'transfer', criteria: Thor.Filter.Criteria<'transfer'>[]): Thor.Filter<'transfer'>
 
         /** create an explainer to simulate tx execution */
-        explain(): VM.Explainer
+        explain(clauses: VM.Clause[]): VM.Explainer
     }
 
     namespace Thor {

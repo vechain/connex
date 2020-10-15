@@ -1,9 +1,6 @@
 declare namespace Connex.Thor {
     /** the filter interface, to filter event/transfer logs */
     interface Filter<T extends 'event' | 'transfer', E = {}> {
-        /** set filter criteria */
-        criteria(set: Filter.Criteria<T>[]): this
-
         /** set range */
         range(range: Filter.Range): this
 

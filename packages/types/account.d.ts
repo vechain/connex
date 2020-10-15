@@ -68,7 +68,7 @@ declare namespace Connex.Thor {
             gasPrice(gp: string | number): this
 
             /**
-             * turn on result cache
+             * turn on call result cache
              * @param hints a set of addresses, as the condition of cache invalidation
              */
             cache(hints: string[]): this
@@ -78,6 +78,9 @@ declare namespace Connex.Thor {
 
             /** call the method (dry-run, without altering blockchain) */
             call(...args: any[]): Promise<VM.Output & WithDecoded>
+
+            /** initiate a signing service to commit this method as a transaction */
+            transact(...args: any[]): Vendor.TxSigningService
         }
 
         /** the interface to visit account associated events */

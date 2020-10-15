@@ -2,10 +2,10 @@ declare namespace Connex {
     /** the vendor interface to interact with wallets */
     interface Vendor {
         /** create the tx signing service */
-        sign(kind: 'tx'): Vendor.TxSigningService
+        sign(kind: 'tx', msg: Vendor.TxMessage): Vendor.TxSigningService
 
         /** create the cert signing service */
-        sign(kind: 'cert'): Vendor.CertSigningService
+        sign(kind: 'cert', msg: Vendor.CertMessage): Vendor.CertSigningService
     }
 
     namespace Vendor {
@@ -39,7 +39,7 @@ declare namespace Connex {
              * commit the request
              * @param msg the tx content
              */
-            request(msg: TxMessage): Promise<TxResponse>
+            request(): Promise<TxResponse>
         }
 
         /** the interface is for requesting user wallet to sign certificates */
@@ -60,7 +60,7 @@ declare namespace Connex {
              * commit the request
              * @param msg the cert content
              */
-            request(msg: CertMessage): Promise<CertResponse>
+            request(): Promise<CertResponse>
         }
 
         type TxMessage = Array<Connex.VM.Clause & {
