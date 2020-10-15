@@ -1,8 +1,7 @@
 import { decodeRevertReason } from './revert-reason'
 import * as R from './rules'
-import * as V from 'validator-ts'
 
-export function newExplainer(driver: Connex.Driver): Connex.VM.Explainer {
+export function newExplainer(driver: Connex.Driver, clauses: Connex.VM.Clause[]): Connex.VM.Explainer {
     const opts: {
         caller?: string
         gas?: number
@@ -27,9 +26,7 @@ export function newExplainer(driver: Connex.Driver): Connex.VM.Explainer {
             cacheHints = R.test(hints, [R.address], 'arg0').map(t => t.toLowerCase())
             return this
         },
-        execute(clauses) {
-            R.test(clauses, [clauseScheme], 'arg0')
-
+        execute() {
             const transformedClauses = clauses.map(c => {
                 return {
                     to: c.to ? c.to.toLowerCase() : null,
@@ -55,10 +52,4 @@ export function newExplainer(driver: Connex.Driver): Connex.VM.Explainer {
                 })
         }
     }
-}
-
-const clauseScheme: V.Scheme<Connex.VM.Clause> = {
-    to: V.nullable(R.address),
-    value: R.bigInt,
-    data: V.optional(R.bytes)
 }

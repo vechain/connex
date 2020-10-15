@@ -1,6 +1,7 @@
 import { abi } from 'thor-devkit/dist/abi'
 import { decodeRevertReason } from './revert-reason'
 import { newFilter } from './filter'
+import { newTxSigningService } from './vendor'
 import * as R from './rules'
 
 export function newAccountVisitor(
@@ -110,6 +111,10 @@ function newMethod(
                         return { ...output, decoded }
                     }
                 })
+        },
+        transact(...args) {
+            const clause = this.asClause(...args)
+            return newTxSigningService(driver, [clause])
         }
     }
 }
@@ -147,19 +152,15 @@ function newEvent(
                 indexed = [{}]
             }
 
-            const criteriaSet = indexed.map((o, i) => {
+            const criteria = indexed.map((o, i) => {
                 try {
                     return encode(o)
                 } catch (err) {
                     throw new R.BadParameter(`arg0.#${i}: can not be encoded (${err.message})`)
                 }
             })
-            const filter = newFilter(driver, 'event').criteria(criteriaSet)
+            const filter = newFilter(driver, 'event', criteria)
             return {
-                criteria(set) {
-                    filter.criteria(set)
-                    return this
-                },
                 range(range: Connex.Thor.Filter.Range) {
                     filter.range(range)
                     return this
