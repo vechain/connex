@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-framework",
-  "version": "2.0.0-beta.7",
+  "version": "2.0.0-beta.8",
   "description": "A library implements VeChain Connex interface",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/vechain/connex/tree/master/packages/framework#readme",
   "dependencies": {
-    "@vechain/connex-types": "^2.0.0-beta.7",
+    "@vechain/connex-types": "^2.0.0-beta.8",
     "thor-devkit": "^1.3.1",
     "validator-ts": "^0.9.1"
   }
