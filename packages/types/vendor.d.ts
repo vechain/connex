@@ -32,13 +32,10 @@ declare namespace Connex {
             /** enable VIP-191 by providing url of web api, which provides delegation service */
             delegate(url: string): this
 
-            /** register a callback function fired when the request is prepared */
-            prepared(cb: () => void): this
+            /** register a callback function fired when the request is accepted by user wallet */
+            accepted(cb: () => void): this
 
-            /**
-             * commit the request
-             * @param msg the tx content
-             */
+            /** send the request */
             request(): Promise<TxResponse>
         }
 
@@ -53,13 +50,10 @@ declare namespace Connex {
              */
             link(url: string): this
 
-            /** register a callback function fired when the request is prepared */
-            prepared(cb: () => void): this
+            /** register a callback function fired when the request is accepted by user wallet */
+            accepted(cb: () => void): this
 
-            /**
-             * commit the request
-             * @param msg the cert content
-             */
+            /** send the request */
             request(): Promise<CertResponse>
         }
 
