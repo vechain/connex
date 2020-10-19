@@ -39,5 +39,5 @@ export const genesisBlocks = {
 
 export const urls = {
     tos: 'https://tos.vecha.in:5678/',
-    spaWallet: 'http://localhost:8080/'
+    spaWallet: 'https://qianbin.github.io/sync-spa/#/'
 }

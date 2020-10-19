@@ -33,26 +33,39 @@ export class Driver extends DriverNoVendor {
         msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage,
         options: T extends 'tx' ? Connex.Driver.TxOptions : Connex.Driver.CertOptions
     ): Promise<T extends 'tx' ? Connex.Vendor.TxResponse : Connex.Vendor.CertResponse> {
-        const onPrepared = options.onPrepared
-        options = { ...options, onPrepared: undefined }
-        const reqId = await this.submitRequest({
-            type,
-            gid: this.genesis.id,
-            payload: {
-                message: msg,
-                options: options
-            },
-            nonce: randomBytes(16).toString('hex')
-        })
-        onPrepared && onPrepared()
+        let onAccepted = options.onAccepted
+        options = { ...options, onAccepted: undefined }
+        try {
+            const reqId = await this.submitRequest({
+                type,
+                gid: this.genesis.id,
+                payload: {
+                    message: msg,
+                    options: options
+                },
+                nonce: randomBytes(16).toString('hex')
+            })
 
-        await open(reqId)
 
-        const resp = await this.awaitResponse(reqId)
-        if (resp.error) {
-            throw new Error(resp.error)
+            onAccepted && void (async () => {
+                try {
+                    await this.pollData(reqId, '-accepted', 60 * 1000)
+                    onAccepted && onAccepted()
+                } catch (err) {
+                    console.warn(err)
+                }
+            })()
+
+            await open(reqId)
+
+            const resp: RelayedResponse = await this.pollData(reqId, '-resp', 2 * 60 * 1000)
+            if (resp.error) {
+                throw new Error(resp.error)
+            }
+            return resp.payload as any
+        } finally {
+            onAccepted = undefined
         }
-        return resp.payload as any
     }
 
     async submitRequest(req: RelayedRequest): Promise<string> {
@@ -68,22 +81,26 @@ export class Driver extends DriverNoVendor {
         return reqId
     }
 
-    async awaitResponse(reqId: string): Promise<RelayedResponse> {
-        for (let i = 0, errCount = 0; i < 5 && errCount < 2; i++) {
+    async pollData(reqId: string, suffix: string, timeout: number): Promise<any> {
+        let errCount = 0
+        const deadline = Date.now() + timeout
+        while (Date.now() < deadline) {
             try {
                 const resp = await this.net.http(
                     'GET',
-                    urls.tos + reqId + '-resp',
+                    `${urls.tos}${reqId}${suffix}`,
                     { query: { wait: '1' } })
 
                 if (resp) {
                     return resp
                 }
             } catch (err) {
-                await new Promise(resolve => setTimeout(resolve, 2000))
-                errCount++
+                if (++errCount > 2) {
+                    throw err
+                }
+                await new Promise(resolve => setTimeout(resolve, 3000))
             }
         }
-        return { error: 'timeout' }
+        throw new Error('timeout')
     }
 }
