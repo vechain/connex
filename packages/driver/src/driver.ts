@@ -59,7 +59,7 @@ export class Driver extends DriverNoVendor {
         msg: Connex.Vendor.TxMessage,
         options: Connex.Driver.TxOptions,
     ): Promise<Connex.Vendor.TxResponse> {
-        options.onPrepared && options.onPrepared()
+        options.onAccepted && options.onAccepted()
 
         const key = this.findKey(options.signer)
         const clauses = msg.map(c => ({
@@ -127,7 +127,7 @@ export class Driver extends DriverNoVendor {
         msg: Connex.Vendor.CertMessage,
         options: Connex.Driver.CertOptions
     ): Promise<Connex.Vendor.CertResponse> {
-        options.onPrepared && options.onPrepared()
+        options.onAccepted && options.onAccepted()
 
         const key = this.findKey(options.signer)
 

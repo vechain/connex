@@ -65,13 +65,13 @@ declare namespace Connex {
             link?: string
             comment?: string
             delegator?: string
-            onPrepared?: () => void
+            onAccepted?: () => void
         }
 
         type CertOptions = {
             signer?: string
             link?: string
-            onPrepared?: () => void
+            onAccepted?: () => void
         }
     }
 }

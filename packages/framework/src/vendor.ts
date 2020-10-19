@@ -54,9 +54,9 @@ export function newTxSigningService(driver: Connex.Driver, msg: Connex.Vendor.Tx
             opts.delegator = delegator
             return this
         },
-        prepared(cb) {
+        accepted(cb) {
             R.ensure(typeof cb === 'function', 'arg0: expected function')
-            opts.onPrepared = cb
+            opts.onAccepted = cb
             return this
         },
         request() {
@@ -83,9 +83,9 @@ function newCertSigningService(driver: Connex.Driver, msg: Connex.Vendor.CertMes
             opts.link = R.test(url, R.string, 'arg0')
             return this
         },
-        prepared(cb) {
+        accepted(cb) {
             R.ensure(typeof cb === 'function', 'arg0: expected function')
-            opts.onPrepared = cb
+            opts.onAccepted = cb
             return this
         },
         request() {
