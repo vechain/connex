@@ -14,7 +14,7 @@ function openExternal(requestId: string) {
     })
 }
 
-export async function open(requestId: string): Promise<void> {
+export async function open(requestId: string, spaWallet?: string): Promise<void> {
     try {
         await openExternal(requestId)
         return
@@ -24,7 +24,7 @@ export async function open(requestId: string): Promise<void> {
     try {
         const spaWindowTarget = 'sync/sign'
         const spaWindowFeatures = 'width=360,height=640,resizable,scrollbars=yes,dependent,modal'
-        window.open(`${urls.spaWallet}sign?rid=${encodeURIComponent(requestId)}`, spaWindowTarget, spaWindowFeatures, true)
+        window.open(`${spaWallet || urls.spaWallet}sign?rid=${encodeURIComponent(requestId)}`, spaWindowTarget, spaWindowFeatures, true)
         return
     } catch {
         /** */

@@ -11,6 +11,7 @@ export import ErrorType = Connex.ErrorType
 
 export type Options = {
     network?: 'main' | 'test' | Connex.Thor.Block
+    spaWallet?: string // will be removed later
 }
 
 function extractGenesis(network: Options['network']): Thor.Block | undefined {
@@ -42,5 +43,6 @@ export function create(nodeUrl: string, opts?: Options): Connex {
 
     const net = new SimpleNet(nodeUrl)
     const driver = new Driver(net, genesis)
+    driver.spaWallet = opts.spaWallet
     return new Framework(driver)
 }

@@ -20,6 +20,7 @@ type RelayedResponse = {
 }
 
 export class Driver extends DriverNoVendor {
+    spaWallet?: string
     signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
         return this.sign('tx', msg, options)
     }
@@ -56,7 +57,7 @@ export class Driver extends DriverNoVendor {
                 }
             })()
 
-            await open(reqId)
+            await open(reqId, this.spaWallet)
 
             const resp: RelayedResponse = await this.pollData(reqId, '-resp', 2 * 60 * 1000)
             if (resp.error) {
