@@ -39,7 +39,6 @@
   "dependencies": {
     "@vechain/connex-driver": "^2.0.0-beta.10",
     "@vechain/connex-framework": "^2.0.0-beta.10",
-    "custom-protocol-detection": "^1.0.1",
     "randombytes": "^2.1.0",
     "thor-devkit": "^1.3.1"
   }
