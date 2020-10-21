@@ -4,17 +4,7 @@ import { genesisBlocks } from './config'
 import { Driver } from './driver'
 import { compat1 } from './compat'
 
-export import Thor = Connex.Thor
-export import Vendor = Connex.Vendor
-export import VM = Connex.VM
-export import ErrorType = Connex.ErrorType
-
-export type Options = {
-    network?: 'main' | 'test' | Connex.Thor.Block
-    spaWallet?: string // will be removed later
-}
-
-function extractGenesis(network: Options['network']): Thor.Block | undefined {
+function extractGenesis(network: Options['network']): Connex.Thor.Block | undefined {
     network = network || 'main'
     if (typeof network === 'string') {
         return genesisBlocks[network]
@@ -23,7 +13,7 @@ function extractGenesis(network: Options['network']): Thor.Block | undefined {
     }
 }
 
-export function create(nodeUrl: string, opts?: Options): Connex {
+function create(nodeUrl: string, opts?: Options): Connex {
     opts = opts || {}
     const genesis = extractGenesis(opts.network)
 
@@ -46,3 +36,25 @@ export function create(nodeUrl: string, opts?: Options): Connex {
     driver.spaWallet = opts.spaWallet
     return new Framework(driver)
 }
+
+export type Options = {
+    network?: 'main' | 'test' | Connex.Thor.Block
+    spaWallet?: string // will be removed later
+}
+
+class ConnexClass implements Connex {
+    constructor(nodeUrl: string, opts?: Options) {
+        const f = create(nodeUrl, opts)
+        return {
+            get version() { return f.version },
+            get thor() { return f.thor },
+            get vendor() { return f.vendor }
+        }
+    }
+    version!: string
+    thor!: Connex.Thor
+    vendor!: Connex.Vendor
+}
+
+export default ConnexClass
+export const Connex = ConnexClass

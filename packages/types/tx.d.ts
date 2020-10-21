@@ -52,7 +52,10 @@ declare namespace Connex.Thor {
                 events: VM.Event[]
                 transfers: VM.Transfer[]
             }[]
-            meta: Transaction['meta'] & {
+            meta: {
+                blockID: string
+                blockNumber: number
+                blockTimestamp: number
                 txID: string
                 txOrigin: string
             }

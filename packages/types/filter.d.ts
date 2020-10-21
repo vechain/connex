@@ -34,7 +34,14 @@ declare namespace Connex.Thor {
         }
 
         type WithMeta = {
-            meta: Thor.Transaction.Receipt['meta'] & { clauseIndex: number }
+            meta: {
+                blockID: string
+                blockNumber: number
+                blockTimestamp: number
+                txID: string
+                txOrigin: string
+                clauseIndex: number
+            }
         }
 
         type Row<T extends 'event' | 'transfer', E = {}> = (
