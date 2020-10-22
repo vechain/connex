@@ -13,7 +13,7 @@ function extractGenesis(network: Options['network']): Connex.Thor.Block | undefi
     }
 }
 
-function create(nodeUrl: string, opts?: Options): Connex {
+function createConnex(nodeUrl: string, opts?: Options): Connex {
     opts = opts || {}
     const genesis = extractGenesis(opts.network)
 
@@ -44,7 +44,7 @@ export type Options = {
 
 class ConnexClass implements Connex {
     constructor(nodeUrl: string, opts?: Options) {
-        const f = create(nodeUrl, opts)
+        const f = createConnex(nodeUrl, opts)
         return {
             get version() { return f.version },
             get thor() { return f.thor },

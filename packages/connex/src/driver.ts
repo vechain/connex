@@ -1,9 +1,10 @@
 import { DriverNoVendor } from '@vechain/connex-driver/dist/driver-no-vendor'
 import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
 import { urls } from './config'
-import { open } from './opener'
 import * as randomBytes from 'randombytes'
+import * as W from './wallet'
 
+/** sign request relayed by tos */
 type RelayedRequest = {
     type: 'tx' | 'cert'
     gid?: string
@@ -14,9 +15,22 @@ type RelayedRequest = {
     nonce: string
 }
 
+/** sign response relayed by tos */
 type RelayedResponse = {
     error?: string
     payload?: object
+}
+
+async function connectWallet(rid: string, overrideSpa?: string) {
+    try {
+        await W.connectApp(rid)
+        return
+    } catch { /** */ }
+    try {
+        await W.connectSPA(rid, overrideSpa)
+    } catch {/** */ }
+
+    throw new Error('unexpected')
 }
 
 export class Driver extends DriverNoVendor {
@@ -37,7 +51,7 @@ export class Driver extends DriverNoVendor {
         let onAccepted = options.onAccepted
         options = { ...options, onAccepted: undefined }
         try {
-            const reqId = await this.submitRequest({
+            const rid = await this.submitRequest({
                 type,
                 gid: this.genesis.id,
                 payload: {
@@ -50,16 +64,16 @@ export class Driver extends DriverNoVendor {
 
             onAccepted && void (async () => {
                 try {
-                    await this.pollData(reqId, '-accepted', 60 * 1000)
+                    await this.pollData(rid, '-accepted', 60 * 1000)
                     onAccepted && onAccepted()
                 } catch (err) {
                     console.warn(err)
                 }
             })()
 
-            await open(reqId, this.spaWallet)
+            await connectWallet(rid, this.spaWallet)
 
-            const resp: RelayedResponse = await this.pollData(reqId, '-resp', 2 * 60 * 1000)
+            const resp: RelayedResponse = await this.pollData(rid, '-resp', 2 * 60 * 1000)
             if (resp.error) {
                 throw new Error(resp.error)
             }
