@@ -38,12 +38,8 @@ function openUriWithHiddenFrame(uri: string, timeout: number) {
 }
 
 function openUriWithTimeoutHack(uri: string, timeout: number) {
-    let target: Window = window
-    while (target != target.parent) {
-        target = target.parent;
-    }
     window.location.href = uri
-    return watchEvent(target, 'blur', timeout)
+    return watchEvent(window, 'blur', timeout)
 }
 
 function openUriUsingFirefox(uri: string) {
