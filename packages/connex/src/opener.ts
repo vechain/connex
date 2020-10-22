@@ -1,12 +1,20 @@
 import { urls } from './config'
 
-function registerEvent(target: Window, event: string, cb: () => void) {
-    target.addEventListener(event, cb)
-    return {
-        remove: () => {
+function watchEvent(target: Window, event: string, timeout: number) {
+    return new Promise((resolve, reject) => {
+        // eslint-disable-next-line prefer-const
+        let cb: (ev: Event) => void
+        const timer = setTimeout(() => {
             target.removeEventListener(event, cb)
+            reject()
+        }, timeout)
+        cb = (ev) => {
+            target.removeEventListener(event, cb)
+            clearTimeout(timer)
+            resolve(ev)
         }
-    }
+        target.addEventListener(event, cb)
+    })
 }
 
 function createOrGetHiddenIframe() {
@@ -24,43 +32,18 @@ function createOrGetHiddenIframe() {
 }
 
 function openUriWithHiddenFrame(uri: string, timeout: number) {
-    return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => {
-            reject()
-            handler.remove()
-        }, timeout)
-
-        const handler = registerEvent(window, "blur", () => {
-            clearTimeout(timer)
-            handler.remove()
-            resolve()
-        })
-
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        createOrGetHiddenIframe().contentWindow!.location.href = uri;
-    })
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    createOrGetHiddenIframe().contentWindow!.location.href = uri;
+    return watchEvent(window, 'blur', timeout)
 }
 
 function openUriWithTimeoutHack(uri: string, timeout: number) {
-    return new Promise((resolve, reject) => {
-        //handle page running in an iframe (blur must be registered with top level window)
-        let target: Window = window
-        while (target != target.parent) {
-            target = target.parent;
-        }
-
-        const timer = setTimeout(() => {
-            reject()
-            handler.remove()
-        }, timeout)
-
-        const handler = registerEvent(target, "blur", () => {
-            clearTimeout(timer)
-            handler.remove()
-            resolve()
-        })
-        window.location.href = uri
-    })
+    let target: Window = window
+    while (target != target.parent) {
+        target = target.parent;
+    }
+    window.location.href = uri
+    return watchEvent(target, 'blur', timeout)
 }
 
 function openUriUsingFirefox(uri: string) {
