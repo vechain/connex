@@ -28,6 +28,7 @@ async function connectWallet(rid: string, overrideSpa?: string) {
     } catch { /** */ }
     try {
         await W.connectSPA(rid, overrideSpa)
+        return
     } catch {/** */ }
 
     throw new Error('unexpected')
