@@ -74,7 +74,7 @@ declare namespace Connex.Thor {
             cache(hints: string[]): this
 
             /** encode arguments into clause */
-            asClause(...args: any[]): VM.Clause
+            asClause(...args: any[]): Transaction['clauses'][0]
 
             /** call the method (dry-run, without altering blockchain) */
             call(...args: any[]): Promise<VM.Output & WithDecoded>

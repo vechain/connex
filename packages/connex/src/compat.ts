@@ -26,7 +26,7 @@ export function compat1(connex1: Connex1): Connex {
                                 gas(gas) { m1.gas(gas); return this },
                                 gasPrice(gp) { m1.gasPrice(gp); return this },
                                 cache(hints) { m1.cache(hints); return this },
-                                asClause: (...args) => m1.asClause(...args),
+                                asClause: (...args) => m1.asClause(...args) as Connex.Thor.Transaction['clauses'][0],
                                 call: (...args) => {
                                     return m1.call(...args).
                                         then(r => {
