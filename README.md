@@ -4,8 +4,14 @@ Connex is the standard interface to connect VeChain apps with VeChain blockchain
 
 # Packages
 
-* [Connex](packages/connex/README.md) - typescript definitions of Connex interface
-* [Framework](packages/framework/README.md) - the library implements Connex interface 
-* [Driver](packages/driver/README.md) - the library helps the Framework efficiently access to VeChain node
-* [REPL](packages/repl/README.md) - the Connex playground
-* [Loader](packages/loader/README.md) - working in progress
+* [Connex](packages/connex) - 
+* [Type](packages/types) - typescript definitions of Connex interface
+* [Framework](packages/framework) - the library implements Connex interface 
+* [Driver](packages/driver) - the library drives the Framework
+* [REPL](packages/repl) - the Connex playground
+
+## License
+
+This package is licensed under the
+[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
+in *LICENSE* file in the repository.

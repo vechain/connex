@@ -4,10 +4,11 @@
 
 Connex REPL is the playground to interact with VeChain using Connex interface.
 
+## Requirement
+
+It requires NodeJS version >= 10
 
 ## Installation
-
-NodeJS version >= 10 is required.
 
 ```bash
 $ npm i -g @vechain/connex-repl
@@ -47,4 +48,8 @@ Testnet(100%)>
     Testnet(100%)> wallet.import('<private key>')
     ```
 
-TODO
+## License
+
+This package is licensed under the
+[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
+in *LICENSE* file in the repository.

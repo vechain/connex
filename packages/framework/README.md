@@ -2,33 +2,34 @@
 
 [![npm version](https://badge.fury.io/js/%40vechain%2Fconnex-framework.svg)](https://badge.fury.io/js/%40vechain%2Fconnex-framework)
 
-Connex Framework is a library implements Connex interface. 
-It helps various wallet instances offer consistent Connex interface to VeChain DApps.
+Connex Framework is a library implements Connex interface.
 
 ## Installation
 
+It always works along with the package @vechain/connex-driver.
+
 ```sh
-npm i @vechain/connex-framework
+npm i @vechain/connex-framework @vechain/connex-driver
 ```
 
 ## Usage
 
-To create framework instance, DriverInterface needs to be implemented
+
+To create a Framework instance:
 
 ```typescript
 import { Framework } from '@vechain/connex-framework'
-import { DriverInterface } from '@vechain/connex-framework/dist/driver-interface'
+import { Driver, SimpleNet } from '@vechain/connex-driver'
 
-class MyDriver implements DriverInterface {
-    // implementations
-}
+const net = new SimpleNet('http://localhost:8669/')
+const driver = Driver.connect(net)
 
-const driver = new MyDriver()
-
-// it's suggested in development mode, which is helpful to diagnose driver implementation.
-// const framework = new Framework(Framework.guardDriver(driver))
-
+// now we get the ready-to-use Connex instance object
 const framework = new Framework(driver)
-
-// here `framework` is the ready-to-use Connex instance object
 ```
+
+## License
+
+This package is licensed under the
+[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
+in *LICENSE* file in the repository.

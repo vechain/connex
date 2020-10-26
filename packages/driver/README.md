@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40vechain%2Fconnex-driver.svg)](https://badge.fury.io/js/%40vechain%2Fconnex-driver)
 
-It drives Connex Framework to work in NodeJS environment. Now you can use Connex in NodeJS backend project.
+It drives Connex Framework.
 
 ## Installation
 
@@ -18,7 +18,7 @@ The [REPL playground](https://github.com/vechain/connex-repl) is a good start.
 
 ```typescript
 import { Framework } from '@vechain/connex-framework'
-import { Driver, SimpleNet, SimpleWallet, options } from '@vechain/connex-driver'
+import { Driver, SimpleNet, SimpleWallet } from '@vechain/connex-driver'
 
 const wallet = new SimpleWallet()
 // add account by importing private key
@@ -37,7 +37,10 @@ driver.txParams.gasPriceCoef = 128
 driver.onTxCommit = txObj => {
     // 
 }
-
-// if feel error logs annoying, you can disable it by
-options.disableErrorLog = true
 ```
+
+## License
+
+This package is licensed under the
+[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
+in *LICENSE* file in the repository.
