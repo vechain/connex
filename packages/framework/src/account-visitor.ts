@@ -1,4 +1,4 @@
-import { abi } from 'thor-devkit/dist/abi'
+import { abi } from 'thor-devkit'
 import { decodeRevertReason } from './revert-reason'
 import { newFilter } from './filter'
 import { newTxSigningService } from './vendor'

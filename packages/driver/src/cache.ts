@@ -1,5 +1,5 @@
 import * as LRU from 'lru-cache'
-import { Bloom } from 'thor-devkit/dist/bloom'
+import { Bloom } from 'thor-devkit'
 import BigNumber from 'bignumber.js'
 
 const WINDOW_LEN = 12

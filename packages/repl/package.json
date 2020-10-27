@@ -12,7 +12,7 @@
   "scripts": {
     "build": "rm -rf dist/;../../node_modules/.bin/tsc -p .;cp src/index.js dist/",
     "lint": "../../node_modules/.bin/tslint -p .",
-    "prepare": "npm run build",
+    "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {

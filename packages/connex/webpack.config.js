@@ -1,8 +1,9 @@
 const path = require('path')
+const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = {
-    entry: './dist/index.js',
+    entry: './esm/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'connex.min.js',
@@ -15,17 +16,30 @@ module.exports = {
     optimization: {
         minimizer: [
             new TerserPlugin({
-                cache: true,
                 parallel: true,
-                sourceMap: true, // Must be set to true if using source-maps in production
                 terserOptions: {
                     // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-                    keep_classnames: true
+                    // keep_classnames: true
                 }
             }),
-        ],
+        ]
     },
     performance: {
         hints: false
-    }
+    },
+    resolve: {
+        fallback: {
+            crypto: require.resolve("crypto-browserify"),
+            buffer: require.resolve('buffer/'),
+            url: require.resolve('url/'),
+            stream: require.resolve('stream-browserify'),
+            http: require.resolve('./dummy-http-agent'),
+            https: require.resolve('./dummy-http-agent')
+        }
+    },
+    plugins: [
+        new webpack.ProvidePlugin({
+          Buffer: ['buffer', 'Buffer'],
+        })
+    ]
 }

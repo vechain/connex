@@ -1,6 +1,5 @@
 import { Wallet } from './interfaces'
-import { secp256k1 } from 'thor-devkit/dist/cry/secp256k1'
-import { publicKeyToAddress } from 'thor-devkit/dist/cry/address'
+import { cry } from 'thor-devkit'
 
 /** class simply implements Wallet interface */
 export class SimpleWallet implements Wallet {
@@ -11,7 +10,7 @@ export class SimpleWallet implements Wallet {
             return {
                 address: k.address,
                 sign(msgHash: Buffer) {
-                    return Promise.resolve(secp256k1.sign(msgHash, k.privateKey))
+                    return Promise.resolve(cry.secp256k1.sign(msgHash, k.privateKey))
                 }
             }
         })
@@ -30,7 +29,7 @@ export class SimpleWallet implements Wallet {
             throw new Error('invalid private key')
         }
         const buf = Buffer.from(privateKey, 'hex')
-        const addr = '0x' + publicKeyToAddress(secp256k1.derivePublicKey(buf)).toString('hex')
+        const addr = '0x' + cry.publicKeyToAddress(cry.secp256k1.derivePublicKey(buf)).toString('hex')
         this.keys.push({ address: addr, privateKey: buf })
         return addr
     }

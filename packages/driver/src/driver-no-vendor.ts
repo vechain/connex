@@ -1,7 +1,7 @@
 import { Net } from './interfaces'
 import { PromInt, InterruptedError } from './promint'
 import { Cache } from './cache'
-import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
+import { cry } from 'thor-devkit'
 import { sleep } from './common'
 
 /** class implements Connex.Driver leaves out Vendor related methods */
@@ -76,17 +76,17 @@ export class DriverNoVendor implements Connex.Driver {
             this.httpGet(`accounts/${addr}/storage/${key}`, { revision }))
     }
     public explain(arg: Connex.Driver.ExplainArg, revision: string, cacheHints?: string[]): Promise<Connex.VM.Output[]> {
-        const cacheKey = `explain-${blake2b256(JSON.stringify(arg)).toString('hex')}`
+        const cacheKey = `explain-${cry.blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, revision, () =>
             this.httpPost('accounts/*', arg, { revision }), cacheHints)
     }
     public filterEventLogs(arg: Connex.Driver.FilterEventLogsArg): Promise<Connex.Thor.Filter.Row<'event'>[]> {
-        const cacheKey = `event-${blake2b256(JSON.stringify(arg)).toString('hex')}`
+        const cacheKey = `event-${cry.blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
             this.httpPost('logs/event', arg))
     }
     public filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg): Promise<Connex.Thor.Filter.Row<'transfer'>[]> {
-        const cacheKey = `transfer-${blake2b256(JSON.stringify(arg)).toString('hex')}`
+        const cacheKey = `transfer-${cry.blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
             this.httpPost('logs/transfer', arg))
     }

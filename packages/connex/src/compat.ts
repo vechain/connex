@@ -1,11 +1,11 @@
-import { VERSION } from '@vechain/connex-framework'
+import { Framework } from '@vechain/connex-framework'
 
 /** ports connex v1 to connex v2 */
 export function compat1(connex1: Connex1): Connex {
     const t1 = connex1.thor
     const v1 = connex1.vendor
     return {
-        version: `${VERSION}#${connex1.version}`,
+        version: `${Framework.version}#${connex1.version}`,
         get thor(): Connex.Thor {
             const t2: Connex.Thor = {
                 get genesis() { return t1.genesis },

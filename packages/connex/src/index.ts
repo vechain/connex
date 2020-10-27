@@ -1,5 +1,5 @@
 import { Framework } from '@vechain/connex-framework'
-import { SimpleNet } from '@vechain/connex-driver/dist/simple-net'
+import { SimpleNet } from '@vechain/connex-driver'
 import { genesisBlocks } from './config'
 import { Driver } from './driver'
 import { compat1 } from './compat'
@@ -57,4 +57,4 @@ class ConnexClass implements Connex {
 }
 
 export default ConnexClass
-export const Connex = ConnexClass
+export { ConnexClass as Connex }

@@ -1,6 +1,6 @@
 import * as R from './rules'
 import * as V from 'validator-ts'
-import { abi } from 'thor-devkit/dist/abi'
+import { abi } from 'thor-devkit'
 
 export function newVendor(driver: Connex.Driver): Connex.Vendor {
     return {

@@ -1,9 +1,7 @@
 
 import { DriverNoVendor } from './driver-no-vendor'
 import { Net, Wallet } from './interfaces'
-import { Transaction } from 'thor-devkit/dist/transaction'
-import { Certificate } from 'thor-devkit/dist/certificate'
-import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
+import { Transaction, Certificate, cry } from 'thor-devkit'
 import { randomBytes } from 'crypto'
 
 /** class fully implements DriverInterface */
@@ -140,7 +138,7 @@ export class Driver extends DriverNoVendor {
             ...msg,
             ...annex
         })
-        const signature = await key.sign(blake2b256(unsigned))
+        const signature = await key.sign(cry.blake2b256(unsigned))
         return {
             annex,
             signature: '0x' + signature.toString('hex')

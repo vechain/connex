@@ -1,5 +1,5 @@
-import { DriverNoVendor } from '@vechain/connex-driver/dist/driver-no-vendor'
-import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
+import { DriverNoVendor } from '@vechain/connex-driver'
+import { cry } from 'thor-devkit'
 import { urls } from './config'
 import * as randomBytes from 'randombytes'
 import * as W from './wallet'
@@ -86,7 +86,7 @@ export class Driver extends DriverNoVendor {
 
     async submitRequest(req: RelayedRequest): Promise<string> {
         const data = JSON.stringify(req)
-        const reqId = blake2b256(data).toString('hex')
+        const reqId = cry.blake2b256(data).toString('hex')
         await this.net.http(
             'POST',
             urls.tos + reqId,

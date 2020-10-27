@@ -4,7 +4,6 @@
         "module": "commonjs",
         "strict": true,
         "inlineSourceMap": true,
-        "declaration": true,
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true
     }
