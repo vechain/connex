@@ -19,29 +19,26 @@ function watchEvent(target: Window, event: string, timeout: number) {
     })
 }
 
+let hiddenIframe = null as HTMLIFrameElement | null
 function getHiddenIframe() {
-    const id = 'connex-hiddenIframe'
-    const exist = document.getElementById(id)
-    if (exist) {
-        return exist as HTMLIFrameElement
+    if (!hiddenIframe) {
+        const iframe = parent.document.createElement("iframe")
+        iframe.style.display = "none"
+        parent.document.body.appendChild(iframe)
+        hiddenIframe = iframe
     }
-    const iframe = document.createElement("iframe")
-    iframe.src = 'about:blank'
-    iframe.id = id
-    iframe.style.display = "none"
-    document.body.appendChild(iframe)
-    return iframe
+    return hiddenIframe
 }
 
 function openWithHiddenFrame(uri: string, timeout: number) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     getHiddenIframe().contentWindow!.location.href = uri;
-    return watchEvent(window, 'blur', timeout)
+    return watchEvent(parent, 'blur', timeout)
 }
 
 function openWithTimeoutHack(uri: string, timeout: number) {
-    window.location.href = uri
-    return watchEvent(window, 'blur', timeout)
+    parent.location.href = uri
+    return watchEvent(parent, 'blur', timeout)
 }
 
 function openInFirefox(uri: string) {

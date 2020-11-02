@@ -3,7 +3,6 @@ import { blake2b256 } from 'thor-devkit'
 import * as randomBytes from 'randombytes'
 import * as W from './wallet'
 
-
 const TOS_URL = 'https://tos.vecha.in:5678/'
 
 /** sign request relayed by tos */
@@ -126,11 +125,18 @@ class Driver extends DriverNoVendor {
     }
 }
 
+const drivers: Record<string, Connex.Driver> = {}
 export function create(nodeUrl: string, genesis: Connex.Thor.Block, spaWalletUrl: string): Connex.Driver {
     const key = JSON.stringify({
         nodeUrl,
         genesis,
         spaWalletUrl
     })
-    return new Driver(new SimpleNet(nodeUrl), genesis, spaWalletUrl)
+    const exist = drivers[key]
+    if (exist) {
+        return exist
+    }
+    const driver = new Driver(new SimpleNet(nodeUrl), genesis, spaWalletUrl)
+    drivers[key] = driver
+    return driver
 }
