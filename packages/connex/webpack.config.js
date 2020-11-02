@@ -1,8 +1,16 @@
 const path = require('path')
 const webpack = require('webpack')
-const TerserPlugin = require('terser-webpack-plugin')
 
-module.exports = {
+const common = {
+    mode: 'production',
+    devtool: 'source-map',
+    performance: {
+        hints: false
+    }
+}
+
+module.exports = [{
+    ...common,
     entry: './esm/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -11,21 +19,26 @@ module.exports = {
         libraryTarget: 'umd',
         libraryExport: 'default'
     },
-    mode: 'production',
-    devtool: 'source-map',
-    optimization: {
-        minimizer: [
-            new TerserPlugin({
-                parallel: true,
-                terserOptions: {
-                    // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-                    // keep_classnames: true
-                }
-            }),
-        ]
+    resolve: {
+        fallback: {
+            crypto: require.resolve("crypto-browserify"),
+            buffer: require.resolve('buffer/'),
+            stream: require.resolve('stream-browserify')
+        }
     },
-    performance: {
-        hints: false
+    plugins: [
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        })
+    ]
+}, {
+    ...common,
+    entry: './esm/driver-bundle/index.js',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'driver-bundle.min.js',
+        library: 'ConnexDriver',
+        libraryTarget: 'umd'
     },
     resolve: {
         fallback: {
@@ -39,7 +52,7 @@ module.exports = {
     },
     plugins: [
         new webpack.ProvidePlugin({
-          Buffer: ['buffer', 'Buffer'],
+            Buffer: ['buffer', 'Buffer'],
         })
     ]
-}
+}]

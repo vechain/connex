@@ -1,8 +1,10 @@
-import { DriverNoVendor } from '@vechain/connex-driver'
+import { DriverNoVendor, Net, SimpleNet } from '@vechain/connex-driver'
 import { blake2b256 } from 'thor-devkit'
-import { urls } from './config'
 import * as randomBytes from 'randombytes'
 import * as W from './wallet'
+
+
+const TOS_URL = 'https://tos.vecha.in:5678/'
 
 /** sign request relayed by tos */
 type RelayedRequest = {
@@ -21,21 +23,24 @@ type RelayedResponse = {
     payload?: object
 }
 
-async function connectWallet(rid: string, overrideSpa?: string) {
+async function connectWallet(rid: string, walletUrl: string) {
     try {
         await W.connectApp(rid)
         return
     } catch { /** */ }
     try {
-        await W.connectSPA(rid, overrideSpa)
+        await W.connectSPA(rid, walletUrl)
         return
     } catch {/** */ }
 
     throw new Error('unexpected')
 }
 
-export class Driver extends DriverNoVendor {
-    spaWallet?: string
+class Driver extends DriverNoVendor {
+    constructor(net: Net, genesis: Connex.Thor.Block, readonly spaWalletUrl: string) {
+        super(net, genesis)
+    }
+
     signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
         return this.sign('tx', msg, options)
     }
@@ -72,7 +77,7 @@ export class Driver extends DriverNoVendor {
                 }
             })()
 
-            await connectWallet(rid, this.spaWallet)
+            await connectWallet(rid, this.spaWalletUrl)
 
             const resp: RelayedResponse = await this.pollData(rid, '-resp', 2 * 60 * 1000)
             if (resp.error) {
@@ -89,7 +94,7 @@ export class Driver extends DriverNoVendor {
         const reqId = blake2b256(data).toString('hex')
         await this.net.http(
             'POST',
-            urls.tos + reqId,
+            TOS_URL + reqId,
             {
                 body: data,
                 headers: { 'content-type': 'application/json' }
@@ -104,7 +109,7 @@ export class Driver extends DriverNoVendor {
             try {
                 const resp = await this.net.http(
                     'GET',
-                    `${urls.tos}${reqId}${suffix}`,
+                    `${TOS_URL}${reqId}${suffix}`,
                     { query: { wait: '1' } })
 
                 if (resp) {
@@ -119,4 +124,13 @@ export class Driver extends DriverNoVendor {
         }
         throw new Error('timeout')
     }
+}
+
+export function create(nodeUrl: string, genesis: Connex.Thor.Block, spaWalletUrl: string): Connex.Driver {
+    const key = JSON.stringify({
+        nodeUrl,
+        genesis,
+        spaWalletUrl
+    })
+    return new Driver(new SimpleNet(nodeUrl), genesis, spaWalletUrl)
 }

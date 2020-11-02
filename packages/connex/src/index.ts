@@ -1,8 +1,71 @@
 import { Framework } from '@vechain/connex-framework'
-import { SimpleNet } from '@vechain/connex-driver'
 import { genesisBlocks } from './config'
-import { Driver } from './driver'
 import { compat1 } from './compat'
+import type * as ConnexDriver from './driver-bundle'
+
+const loadDriverCreator = (() => {
+    let instance = null as Promise<typeof ConnexDriver> | null
+    return () => {
+        if (!instance) {
+            const i = document.createElement('iframe')
+            i.style.display = 'none'
+            document.body.appendChild(i)
+            if (i.contentWindow) {
+                const subDoc = i.contentWindow.document
+                const s = subDoc.createElement('script')
+                instance = new Promise(resolve => {
+                    s.onload = () => resolve((i.contentWindow as any).ConnexDriver)
+                })
+                s.src = 'https://unpkg.com/@vechain/connex@beta/dist/driver-bundle.min.js'
+                subDoc.body.appendChild(s)
+            } else {
+                throw new Error('contentWindow unavailable')
+            }
+        }
+        return instance
+    }
+})()
+
+function createDriver(nodeUrl: string, genesis: Connex.Thor.Block, spaWalletUrl: string): Connex.Driver {
+    const drv = loadDriverCreator()
+        .then(c => c.create(nodeUrl, genesis, spaWalletUrl))
+
+    let curHead: Connex.Thor.Status['head'] = {
+        id: genesis.id,
+        number: genesis.number,
+        parentID: genesis.parentID,
+        timestamp: genesis.timestamp,
+        txsFeatures: genesis.txsFeatures
+    }
+    void drv.then(d => { curHead = d.head })
+    return {
+        get genesis() { return genesis },
+        get head() { return curHead },
+        pollHead: async () => {
+            for (; ;) {
+                try {
+                    const newHead = await (await drv).pollHead()
+                    curHead = newHead
+                    return newHead
+                } catch {
+                    await new Promise(resolve => setTimeout(resolve, 5000))
+                }
+            }
+        },
+        getBlock: rev => drv.then(d => d.getBlock(rev)),
+        getTransaction: (id, allowPending) => drv.then(d => d.getTransaction(id, allowPending)),
+        getReceipt: id => drv.then(d => d.getReceipt(id)),
+        getAccount: (addr, revision) => drv.then(d => d.getAccount(addr, revision)),
+        getCode: (addr, revision) => drv.then(d => d.getCode(addr, revision)),
+        getStorage: (addr, key, revision) => drv.then(d => d.getStorage(addr, key, revision)),
+        explain: (arg, revision, cacheHints) => drv.then(d => d.explain(arg, revision, cacheHints)),
+        filterEventLogs: arg => drv.then(d => d.filterEventLogs(arg)),
+        filterTransferLogs: arg => drv.then(d => d.filterTransferLogs(arg)),
+        signTx: (msg, options) => drv.then(d => d.signTx(msg, options)),
+        signCert: (msg, options) => drv.then(d => d.signCert(msg, options))
+    }
+}
+
 
 function extractGenesis(network: Options['network']): Connex.Thor.Block | undefined {
     network = network || 'main'
@@ -31,9 +94,8 @@ function createConnex(nodeUrl: string, opts?: Options): Connex {
         }
     } catch { /**/ }
 
-    const net = new SimpleNet(nodeUrl)
-    const driver = new Driver(net, genesis)
-    driver.spaWallet = opts.spaWallet
+
+    const driver = createDriver(nodeUrl, genesis, opts.spaWallet || 'https://qianbin.github.io/sync-spa/#/')
     return new Framework(driver)
 }
 

@@ -1,3 +1,5 @@
+import { detect } from 'detect-browser'
+
 // ref: https://github.com/ismailhabib/custom-protocol-detection
 
 function watchEvent(target: Window, event: string, timeout: number) {
@@ -65,19 +67,6 @@ function openWithMsLaunchUri(uri: string) {
     })
 }
 
-function checkBrowser() {
-    const isOpera = !!(window as any).opera || navigator.userAgent.indexOf(' OPR/') >= 0;
-    const ua = navigator.userAgent.toLowerCase();
-    return {
-        isOpera: isOpera,
-        isFirefox: typeof (window as any).InstallTrigger !== 'undefined',
-        isSafari: (~ua.indexOf('safari') && !~ua.indexOf('chrome')) || Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,
-        isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream,
-        isChrome: !!(window as any).chrome && !isOpera,
-        isIE: /*@cc_on!@*/false || !!(document as any).documentMode // At least IE6
-    }
-}
-
 /**
  * open custom protocol uri with installed native app 
  * @param uri the custom protocol uri
@@ -87,17 +76,27 @@ export function openUri(uri: string, timeout: number): Promise<unknown> {
     // eslint-disable-next-line no-extra-boolean-cast
     if (!!navigator.msLaunchUri) { //for IE and Edge in Win 8 and Win 10
         return openWithMsLaunchUri(uri)
-    } else {
-        const browser = checkBrowser()
-        if (browser.isFirefox) {
+    }
+
+    const browser = detect()
+    if (!browser) {
+        return Promise.reject()
+    }
+
+    // iOS is not supported
+    if (browser.os === 'iOS') {
+        return Promise.reject()
+    }
+
+    switch (browser.name) {
+        case 'firefox':
             return openInFirefox(uri)
-        } else if (browser.isChrome || browser.isIOS) {
+        case 'chrome':
+        case 'edge-chromium':
             return openWithTimeoutHack(uri, timeout)
-        } else if (browser.isSafari) {
+        case 'safari':
             return openWithHiddenFrame(uri, timeout)
-        } else {
+        default:
             return Promise.reject()
-            //not supported, implement please
-        }
     }
 }

@@ -36,8 +36,3 @@ export const genesisBlocks = {
         transactions: []
     }
 }
-
-export const urls = {
-    tos: 'https://tos.vecha.in:5678/',
-    spaWallet: 'https://qianbin.github.io/sync-spa/#/'
-}

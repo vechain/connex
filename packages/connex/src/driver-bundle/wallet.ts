@@ -1,4 +1,4 @@
-import { urls } from './config'
+
 import { openUri } from './open-uri'
 
 /**
@@ -13,11 +13,11 @@ export function connectApp(rid: string): Promise<unknown> {
 /**
  * connect to SPA wallet
  * @param rid the request id
- * @param overrideUrl override the url of SPA wallet
+ * @param walletUrl the url of SPA wallet
  */
-export function connectSPA(rid: string, overrideUrl?: string): Promise<unknown> {
+export function connectSPA(rid: string, walletUrl: string): Promise<unknown> {
     const target = 'sync/sign'
     const features = 'width=360,height=640,resizable,scrollbars=yes,dependent,modal'
-    window.open(`${overrideUrl || urls.spaWallet}sign?rid=${encodeURIComponent(rid)}`, target, features, true)
+    window.open(`${walletUrl}sign?rid=${encodeURIComponent(rid)}`, target, features, true)
     return Promise.resolve()
 }
