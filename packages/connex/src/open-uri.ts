@@ -18,7 +18,7 @@ function watchEvent(target: Window, event: string, timeout: number) {
 }
 
 function getHiddenIframe() {
-    const id = 'hiddenIframe'
+    const id = 'connex-hiddenIframe'
     const exist = document.getElementById(id)
     if (exist) {
         return exist as HTMLIFrameElement
