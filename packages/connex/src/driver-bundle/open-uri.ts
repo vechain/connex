@@ -21,24 +21,24 @@ function watchEvent(target: Window, event: string, timeout: number) {
 
 let hiddenIframe = null as HTMLIFrameElement | null
 function getHiddenIframe() {
-    if (!hiddenIframe) {
-        const iframe = parent.document.createElement("iframe")
+    if(!hiddenIframe) {
+        const iframe = document.createElement("iframe")
         iframe.style.display = "none"
-        parent.document.body.appendChild(iframe)
+        document.body.appendChild(iframe)
         hiddenIframe = iframe
-    }
+    }   
     return hiddenIframe
 }
 
 function openWithHiddenFrame(uri: string, timeout: number) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     getHiddenIframe().contentWindow!.location.href = uri;
-    return watchEvent(parent, 'blur', timeout)
+    return watchEvent(window, 'blur', timeout)
 }
 
 function openWithTimeoutHack(uri: string, timeout: number) {
-    parent.location.href = uri
-    return watchEvent(parent, 'blur', timeout)
+    window.location.href = uri
+    return watchEvent(window, 'blur', timeout)
 }
 
 function openInFirefox(uri: string) {
