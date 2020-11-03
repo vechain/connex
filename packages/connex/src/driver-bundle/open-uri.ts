@@ -19,16 +19,17 @@ function watchEvent(target: Window, event: string, timeout: number) {
     })
 }
 
-let hiddenIframe = null as HTMLIFrameElement | null
-function getHiddenIframe() {
-    if(!hiddenIframe) {
-        const iframe = document.createElement("iframe")
-        iframe.style.display = "none"
-        document.body.appendChild(iframe)
-        hiddenIframe = iframe
-    }   
-    return hiddenIframe
-}
+const getHiddenIframe = (() => {
+    let iframe = null as HTMLIFrameElement | null
+    return () => {
+        if (!iframe) {
+            iframe = document.createElement("iframe")
+            iframe.style.display = "none"
+            document.body.appendChild(iframe)
+        }
+        return iframe
+    }
+})()
 
 function openWithHiddenFrame(uri: string, timeout: number) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

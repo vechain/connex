@@ -1,12 +1,24 @@
 const path = require('path')
 const webpack = require('webpack')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const common = {
     mode: 'production',
     devtool: 'source-map',
     performance: {
         hints: false
-    }
+    },
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                parallel: true,
+                terserOptions: {
+                    // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+                    keep_classnames: true
+                }
+            }),
+        ]
+    },
 }
 
 module.exports = [{

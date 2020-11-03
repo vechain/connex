@@ -7,20 +7,13 @@ const loadDriverCreator = (() => {
     let instance = null as Promise<typeof ConnexDriver> | null
     return () => {
         if (!instance) {
-            const iframe = document.createElement('iframe')
-            iframe.style.display = 'none'
-            document.body.appendChild(iframe)
-            if (iframe.contentWindow) {
-                const doc = iframe.contentWindow.document
-                const script = doc.createElement('script')
-                instance = new Promise(resolve => {
-                    script.onload = () => resolve((iframe.contentWindow as any).ConnexDriver)
-                })
-                script.src = 'https://unpkg.com/@vechain/connex@beta/dist/driver-bundle.min.js'
-                doc.body.appendChild(script)
-            } else {
-                throw new Error('contentWindow unavailable')
-            }
+            const script = document.createElement('script')
+            instance = new Promise((resolve, reject) => {
+                script.onload = () => resolve((window as any).ConnexDriver)
+                script.onerror = err => reject(new Error(err.toString()))
+            })
+            script.src = 'https://unpkg.com/@vechain/connex@beta/dist/driver-bundle.min.js'
+            document.body.appendChild(script)
         }
         return instance
     }
