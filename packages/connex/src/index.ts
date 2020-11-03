@@ -1,64 +1,7 @@
 import { Framework } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
 import { compat1 } from './compat'
-import type * as ConnexDriver from './driver-bundle'
-
-const loadDriverCreator = (() => {
-    let instance = null as Promise<typeof ConnexDriver> | null
-    return () => {
-        if (!instance) {
-            const script = document.createElement('script')
-            instance = new Promise((resolve, reject) => {
-                script.onload = () => resolve((window as any).ConnexDriver)
-                script.onerror = err => reject(new Error(err.toString()))
-            })
-            script.src = 'https://unpkg.com/@vechain/connex@beta/dist/driver-bundle.min.js'
-            document.body.appendChild(script)
-        }
-        return instance
-    }
-})()
-
-function createDriver(nodeUrl: string, genesis: Connex.Thor.Block, spaWalletUrl: string): Connex.Driver {
-    const drv = loadDriverCreator()
-        .then(c => c.create(nodeUrl, genesis, spaWalletUrl))
-
-    let curHead: Connex.Thor.Status['head'] = {
-        id: genesis.id,
-        number: genesis.number,
-        parentID: genesis.parentID,
-        timestamp: genesis.timestamp,
-        txsFeatures: genesis.txsFeatures
-    }
-    void drv.then(d => { curHead = d.head })
-    return {
-        get genesis() { return genesis },
-        get head() { return curHead },
-        pollHead: async () => {
-            for (; ;) {
-                try {
-                    const newHead = await (await drv).pollHead()
-                    curHead = newHead
-                    return newHead
-                } catch {
-                    await new Promise(resolve => setTimeout(resolve, 5000))
-                }
-            }
-        },
-        getBlock: rev => drv.then(d => d.getBlock(rev)),
-        getTransaction: (id, allowPending) => drv.then(d => d.getTransaction(id, allowPending)),
-        getReceipt: id => drv.then(d => d.getReceipt(id)),
-        getAccount: (addr, revision) => drv.then(d => d.getAccount(addr, revision)),
-        getCode: (addr, revision) => drv.then(d => d.getCode(addr, revision)),
-        getStorage: (addr, key, revision) => drv.then(d => d.getStorage(addr, key, revision)),
-        explain: (arg, revision, cacheHints) => drv.then(d => d.explain(arg, revision, cacheHints)),
-        filterEventLogs: arg => drv.then(d => d.filterEventLogs(arg)),
-        filterTransferLogs: arg => drv.then(d => d.filterTransferLogs(arg)),
-        signTx: (msg, options) => drv.then(d => d.signTx(msg, options)),
-        signCert: (msg, options) => drv.then(d => d.signCert(msg, options))
-    }
-}
-
+import { create as createDriver } from './driver'
 
 function extractGenesis(network: Options['network']): Connex.Thor.Block | undefined {
     network = network || 'main'
@@ -86,7 +29,6 @@ function createConnex(nodeUrl: string, opts?: Options): Connex {
             return injected
         }
     } catch { /**/ }
-
 
     const driver = createDriver(nodeUrl, genesis, opts.spaWallet || 'https://qianbin.github.io/sync-spa/#/')
     return new Framework(driver)
