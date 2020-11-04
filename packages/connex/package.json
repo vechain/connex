@@ -4,7 +4,8 @@
   "description": "Standard interface to connect DApp with VeChain and user",
   "main": "dist/index.js",
   "module": "esm/index.js",
-  "browser": "dist/connex.min.js",
+  "unpkg": "dist/connex.min.js",
+  "jsdelivr": "dist/connex.min.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
