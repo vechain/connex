@@ -1,4 +1,4 @@
-import { detect } from 'detect-browser'
+import { browser } from './browser'
 
 // ref: https://github.com/ismailhabib/custom-protocol-detection
 
@@ -75,7 +75,6 @@ export function openUri(uri: string, timeout: number): Promise<unknown> | null {
         return openWithMsLaunchUri(uri)
     }
 
-    const browser = detect()
     if (!browser) {
         return null
     }

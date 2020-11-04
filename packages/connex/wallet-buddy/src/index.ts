@@ -38,20 +38,24 @@ async function connectWallet(rid: string, walletUrl: string) {
     throw new Error('unexpected')
 }
 
-async function submitRequest(req: RelayedRequest) {
-    const data = JSON.stringify(req)
-    const reqId = blake2b256(data).toString('hex')
-    await fetch(TOS_URL + reqId, {
-        method: 'POST',
-        body: data,
-        headers: new Headers({
-            'Content-Type': 'application/json'
-        })
-    })
-    return reqId
+async function submitRequest(reqId: string, json: string) {
+    for (let i = 0; i < 3; i++) {
+        try {
+            await fetch(TOS_URL + reqId, {
+                method: 'POST',
+                body: json,
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            })
+            return
+        } catch {
+            await new Promise(resolve => setTimeout(resolve, 2000))
+        }
+    }
 }
 
-async function pollData(reqId: string, suffix: string, timeout: number) {
+async function pollResponse(reqId: string, suffix: string, timeout: number) {
     let errCount = 0
     const deadline = Date.now() + timeout
     while (Date.now() < deadline) {
@@ -59,7 +63,7 @@ async function pollData(reqId: string, suffix: string, timeout: number) {
             const resp = await fetch(`${TOS_URL}${reqId}${suffix}?wait=1`)
             const text = await resp.text()
             if (text) {
-                return JSON.parse(text)
+                return text
             }
         } catch (err) {
             if (++errCount > 2) {
@@ -81,7 +85,7 @@ async function sign<T extends 'tx' | 'cert'>(
     let onAccepted = options.onAccepted
     options = { ...options, onAccepted: undefined }
     try {
-        const rid = await submitRequest({
+        const req: RelayedRequest = {
             type,
             gid: genesisId,
             payload: {
@@ -89,21 +93,24 @@ async function sign<T extends 'tx' | 'cert'>(
                 options: options
             },
             nonce: randomBytes(16).toString('hex')
-        })
+        }
+        const json = JSON.stringify(req)
+        const rid = blake2b256(json).toString('hex')
+        connectWallet(rid, spaWalletUrl).catch(() => {/* noop */ })
 
+        await submitRequest(rid, json)
 
         onAccepted && void (async () => {
             try {
-                await pollData(rid, '-accepted', 60 * 1000)
+                await pollResponse(rid, '-accepted', 60 * 1000)
                 onAccepted && onAccepted()
             } catch (err) {
                 console.warn(err)
             }
         })()
 
-        await connectWallet(rid, spaWalletUrl)
-
-        const resp: RelayedResponse = await pollData(rid, '-resp', 2 * 60 * 1000)
+        const respJson = await pollResponse(rid, '-resp', 2 * 60 * 1000)
+        const resp: RelayedResponse = JSON.parse(respJson)
         if (resp.error) {
             throw new Error(resp.error)
         }
@@ -122,12 +129,13 @@ export function create(
     genesisId: string,
     spaWalletUrl?: string
 ): Pick<Connex.Driver, 'signTx' | 'signCert'> {
+    const walletUrl = spaWalletUrl || SPA_WALLET_URL
     return {
         signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
-            return sign('tx', msg, options, genesisId, spaWalletUrl || SPA_WALLET_URL)
+            return sign('tx', msg, options, genesisId, walletUrl)
         },
         signCert(msg: Connex.Vendor.CertMessage, options: Connex.Driver.CertOptions): Promise<Connex.Vendor.CertResponse> {
-            return sign('cert', msg, options, genesisId, spaWalletUrl || SPA_WALLET_URL)
+            return sign('cert', msg, options, genesisId, walletUrl)
         }
     }
 }
