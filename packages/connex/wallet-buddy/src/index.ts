@@ -26,18 +26,19 @@ type RelayedResponse = {
 
 async function connectWallet(rid: string, walletUrl: string) {
     try {
-        await W.connectApp(rid)
-        return
+        const r = W.connectApp(rid)
+        if (r) {
+            return await r
+        }
     } catch { /** */ }
     try {
-        await W.connectSPA(rid, walletUrl)
-        return
+        return W.connectSPA(rid, walletUrl)
     } catch {/** */ }
 
     throw new Error('unexpected')
 }
 
-async function submitRequest(req: RelayedRequest): Promise<string> {
+async function submitRequest(req: RelayedRequest) {
     const data = JSON.stringify(req)
     const reqId = blake2b256(data).toString('hex')
     await fetch(TOS_URL + reqId, {
@@ -50,14 +51,15 @@ async function submitRequest(req: RelayedRequest): Promise<string> {
     return reqId
 }
 
-async function pollData(reqId: string, suffix: string, timeout: number): Promise<any> {
+async function pollData(reqId: string, suffix: string, timeout: number) {
     let errCount = 0
     const deadline = Date.now() + timeout
     while (Date.now() < deadline) {
         try {
             const resp = await fetch(`${TOS_URL}${reqId}${suffix}?wait=1`)
-            if (resp.body) {
-                return await resp.json()
+            const text = await resp.text()
+            if (text) {
+                return JSON.parse(text)
             }
         } catch (err) {
             if (++errCount > 2) {

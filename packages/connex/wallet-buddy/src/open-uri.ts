@@ -69,7 +69,7 @@ function openWithMsLaunchUri(uri: string) {
  * @param uri the custom protocol uri
  * @param timeout 
  */
-export function openUri(uri: string, timeout: number): Promise<unknown> {
+export function openUri(uri: string, timeout: number): Promise<unknown> | null {
     // eslint-disable-next-line no-extra-boolean-cast
     if (!!navigator.msLaunchUri) { //for IE and Edge in Win 8 and Win 10
         return openWithMsLaunchUri(uri)
@@ -77,12 +77,12 @@ export function openUri(uri: string, timeout: number): Promise<unknown> {
 
     const browser = detect()
     if (!browser) {
-        return Promise.reject()
+        return null
     }
 
     // iOS is not supported
     if (browser.os === 'iOS') {
-        return Promise.reject()
+        return null
     }
 
     switch (browser.name) {
@@ -92,6 +92,6 @@ export function openUri(uri: string, timeout: number): Promise<unknown> {
         case 'safari':
             return openWithHiddenFrame(uri, timeout)
         default:
-            return Promise.reject()
+            return null
     }
 }

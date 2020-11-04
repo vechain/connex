@@ -1,10 +1,11 @@
 {
   "name": "@vechain/connex-wallet-buddy",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "description": "to bridge connex sign request to wallet",
   "main": "dist/index.js",
   "module": "esm/index.js",
-  "browser": "dist/bundle.min.js",
+  "unpkg": "dist/bundle.min.js",
+  "jsdelivr": "dist/bundle.min.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
