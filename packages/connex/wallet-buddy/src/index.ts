@@ -53,6 +53,7 @@ async function submitRequest(reqId: string, json: string) {
             await new Promise(resolve => setTimeout(resolve, 2000))
         }
     }
+    throw new Error('failed to submit request')
 }
 
 async function pollResponse(reqId: string, suffix: string, timeout: number) {
