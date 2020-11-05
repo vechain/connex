@@ -2,7 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
-    entry: './esm/index.js',
+    entry: './entry.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.min.js',
