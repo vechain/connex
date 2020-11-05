@@ -37,10 +37,10 @@ function openWithHiddenFrame(uri: string, timeout: number) {
     return watchEvent(window, 'blur', timeout)
 }
 
-function openWithTimeoutHack(uri: string, timeout: number) {
-    window.location.href = uri
-    return watchEvent(window, 'blur', timeout)
-}
+// function openWithTimeoutHack(uri: string, timeout: number) {
+//     window.location.href = uri
+//     return watchEvent(window, 'blur', timeout)
+// }
 
 // // no longer work after v64
 // function openInFirefox(uri: string) {
@@ -87,7 +87,6 @@ export function openUri(uri: string, timeout: number): Promise<unknown> | null {
     switch (browser.name) {
         case 'chrome':
         case 'edge-chromium':
-            return openWithTimeoutHack(uri, timeout)
         case 'safari':
             return openWithHiddenFrame(uri, timeout)
         default:
