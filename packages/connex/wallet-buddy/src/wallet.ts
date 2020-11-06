@@ -15,7 +15,6 @@ export function connectApp(rid: string): Promise<unknown> | null {
  * @param walletUrl the url of SPA wallet
  */
 export function connectSPA(rid: string, walletUrl: string): void {
-    const target = 'sync/sign'
     const features = (() => {
         switch (browser && browser.os) {
             case 'iOS':
@@ -25,5 +24,5 @@ export function connectSPA(rid: string, walletUrl: string): void {
                 return 'width=360,height=640,resizable,scrollbars=yes,dependent,modal'
         }
     })()
-    window.open(`${walletUrl}sign?rid=${encodeURIComponent(rid)}`, target, features, true)
+    window.open(`${walletUrl}sign?rid=${encodeURIComponent(rid)}`, undefined, features)
 }

@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-wallet-buddy",
-  "version": "0.0.13",
+  "version": "0.0.16",
   "description": "to bridge connex sign request to wallet",
   "main": "dist/index.js",
   "module": "esm/index.js",

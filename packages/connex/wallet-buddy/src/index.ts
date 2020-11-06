@@ -41,14 +41,13 @@ async function connectWallet(rid: string, walletUrl: string) {
 async function submitRequest(reqId: string, json: string) {
     for (let i = 0; i < 3; i++) {
         try {
-            await fetch(TOS_URL + reqId, {
+            return await fetch(TOS_URL + reqId, {
                 method: 'POST',
                 body: json,
                 headers: new Headers({
                     'Content-Type': 'application/json'
                 })
             })
-            return
         } catch {
             await new Promise(resolve => setTimeout(resolve, 2000))
         }
@@ -68,7 +67,7 @@ async function pollResponse(reqId: string, suffix: string, timeout: number) {
             }
         } catch (err) {
             if (++errCount > 2) {
-                throw err
+                throw new Error('failed fetch response')
             }
             await new Promise(resolve => setTimeout(resolve, 3000))
         }
