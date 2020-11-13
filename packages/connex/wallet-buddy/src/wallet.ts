@@ -15,14 +15,17 @@ export function connectApp(rid: string): Promise<unknown> | null {
  * @param walletUrl the url of SPA wallet
  */
 export function connectSPA(rid: string, walletUrl: string): void {
-    const features = (() => {
+    const options = (() => {
         switch (browser && browser.os) {
             case 'iOS':
             case 'android':
-                return undefined
+                return {}
             default:
-                return 'width=360,height=640,resizable,scrollbars=yes,dependent,modal'
+                return {
+                    target: 'sync/sign',
+                    features: 'width=360,height=640,resizable,scrollbars=yes,dependent,modal'
+                }
         }
     })()
-    window.open(`${walletUrl}sign?rid=${encodeURIComponent(rid)}`, undefined, features)
+    window.open(`${walletUrl}sign?rid=${encodeURIComponent(rid)}`, options.target, options.features)
 }
