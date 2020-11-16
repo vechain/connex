@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex",
-  "version": "2.0.0-beta.24",
+  "version": "2.0.0-beta.25",
   "description": "Standard interface to connect DApp with VeChain and user",
   "main": "dist/index.js",
   "unpkg": "dist/connex.min.js",
