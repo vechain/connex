@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = {
-    entry: './esm/index.js',
+    entry: './dist/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'connex.min.js',

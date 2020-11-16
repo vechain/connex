@@ -3,7 +3,6 @@
   "version": "2.0.0-beta.24",
   "description": "Standard interface to connect DApp with VeChain and user",
   "main": "dist/index.js",
-  "module": "esm/index.js",
   "unpkg": "dist/connex.min.js",
   "jsdelivr": "dist/connex.min.js",
   "types": "dist/index.d.ts",
@@ -12,7 +11,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -d -p . && ../../node_modules/.bin/tsc --module esnext --outDir 'esm' -p . && webpack",
+    "build": "rm -rf dist/ && ../../node_modules/.bin/tsc -p . && webpack",
     "lint": "../../node_modules/.bin/tslint -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
