@@ -25,14 +25,15 @@ type RelayedResponse = {
 
 
 async function connectWallet(rid: string, walletUrl: string) {
+    const rUrl = TOS_URL + rid
     try {
-        const r = W.connectApp(rid)
+        const r = W.connectApp(rUrl)
         if (r) {
             return await r
         }
     } catch { /** */ }
     try {
-        return W.connectSPA(rid, walletUrl)
+        return W.connectSPA(rUrl, walletUrl)
     } catch {/** */ }
 
     throw new Error('unexpected')
