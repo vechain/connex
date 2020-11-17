@@ -14,7 +14,7 @@ export function connectApp(rUrl: string): Promise<unknown> | null {
  * @param rUrl the url where to fetch the request object
  * @param walletUrl the url of SPA wallet
  */
-export function connectSPA(rUrl: string, walletUrl: string): void {
+export function connectSPA(rUrl: string, walletUrl: string): Window | null {
     const options = (() => {
         switch (browser && browser.os) {
             case 'iOS':
@@ -22,10 +22,14 @@ export function connectSPA(rUrl: string, walletUrl: string): void {
                 return {}
             default:
                 return {
-                    target: 'sync/sign',
+                    target: `sync|${window.location.host}`,
                     features: 'width=360,height=640,resizable,scrollbars=yes,dependent,modal'
                 }
         }
     })()
-    window.open(`${walletUrl}sign?rurl=${encodeURIComponent(rUrl)}`, options.target, options.features)
+    return window.open(
+        `${walletUrl}sign?rurl=${encodeURIComponent(rUrl)}`,
+        options.target,
+        options.features,
+        true)
 }
