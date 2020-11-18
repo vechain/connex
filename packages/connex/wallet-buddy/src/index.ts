@@ -149,7 +149,7 @@ function sign<T extends 'tx' | 'cert'>(
                 onAccepted = undefined
                 completed = true
             }
-        })
+        })()
     })
 }
 
