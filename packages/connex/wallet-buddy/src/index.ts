@@ -23,10 +23,11 @@ type RelayedResponse = {
     payload?: object
 }
 
-type WalletStatus = {
-    closed: boolean
+type Signal = {
+    done: boolean
 }
 
+// open wallet app or spa wallet in browser window.
 async function connectWallet(rid: string, walletUrl: string) {
     const rUrl = TOS_URL + rid
     try {
@@ -37,15 +38,11 @@ async function connectWallet(rid: string, walletUrl: string) {
         }
     } catch { /** */ }
 
-    const w = W.connectSPA(rUrl, walletUrl)
-    if (!w) {
-        throw new Error('failed to open wallet window')
-    }
-    return w
+    return W.connectSPA(rUrl, walletUrl)
 }
 
-async function submitRequest(reqId: string, json: string, wStatus: WalletStatus) {
-    for (let i = 0; i < 3 && !wStatus.closed; i++) {
+async function submitRequest(reqId: string, json: string, signal: Signal) {
+    for (let i = 0; i < 3 && !signal.done; i++) {
         try {
             return await fetch(TOS_URL + reqId, {
                 method: 'POST',
@@ -61,10 +58,10 @@ async function submitRequest(reqId: string, json: string, wStatus: WalletStatus)
     throw new Error('failed to submit request')
 }
 
-async function pollResponse(reqId: string, suffix: string, timeout: number, wStatus: WalletStatus) {
+async function pollResponse(reqId: string, suffix: string, timeout: number, signal: Signal) {
     let errCount = 0
     const deadline = Date.now() + timeout
-    while (Date.now() < deadline && !wStatus.closed) {
+    while (Date.now() < deadline && !signal.done) {
         try {
             const resp = await fetch(`${TOS_URL}${reqId}${suffix}?wait=1`)
             const text = await resp.text()
@@ -88,69 +85,63 @@ function sign<T extends 'tx' | 'cert'>(
     genesisId: string,
     spaWalletUrl: string
 ): Promise<T extends 'tx' ? Connex.Vendor.TxResponse : Connex.Vendor.CertResponse> {
-    return new Promise((resolve, reject) => {
-        const req: RelayedRequest = {
-            type,
-            gid: genesisId,
-            payload: {
-                message: msg,
-                options: options
-            },
-            nonce: randomBytes(16).toString('hex')
-        }
-        const json = JSON.stringify(req)
-        const rid = blake2b256(json).toString('hex')
+    const onAccepted = options.onAccepted
+    const req: RelayedRequest = {
+        type,
+        gid: genesisId,
+        payload: {
+            message: msg,
+            options: { ...options, onAccepted: undefined }
+        },
+        nonce: randomBytes(16).toString('hex')
+    }
+    const json = JSON.stringify(req)
+    const rid = blake2b256(json).toString('hex')
 
-        let completed = false
-        const walletStatus = {
-            closed: false
-        }
+    const signal = {
+        done: false
+    }
 
-        void (async () => {
+    return Promise.race([
+        // open wallet and watch wallet closing
+        (async () => {
             try {
                 const w = await connectWallet(rid, spaWalletUrl)
-                while (w && !completed) {
-                    if (w.closed) {
-                        reject(new Error('wallet window closed'))
-                        walletStatus.closed = true
-                        break
+                while (!signal.done) {
+                    if (w && w.closed) {
+                        throw new Error('wallet window closed')
                     }
                     await new Promise(resolve => setTimeout(resolve, 1000))
                 }
-            } catch (err) {
-                reject(err)
+            } finally {
+                signal.done = true
             }
-        })()
-
-        void (async () => {
-            let onAccepted = options.onAccepted
-            options = { ...options, onAccepted: undefined }
+        })(),
+        // submit request and poll response
+        (async () => {
             try {
-                await submitRequest(rid, json, walletStatus)
+                await submitRequest(rid, json, signal)
 
                 onAccepted && void (async () => {
                     try {
-                        await pollResponse(rid, '-accepted', 60 * 1000, walletStatus)
-                        onAccepted && onAccepted()
+                        await pollResponse(rid, '-accepted', 60 * 1000, signal)
+                        !signal.done && onAccepted && onAccepted()
                     } catch (err) {
                         console.warn(err)
                     }
                 })()
 
-                const respJson = await pollResponse(rid, '-resp', 2 * 60 * 1000, walletStatus)
+                const respJson = await pollResponse(rid, '-resp', 2 * 60 * 1000, signal)
                 const resp: RelayedResponse = JSON.parse(respJson)
                 if (resp.error) {
                     throw new Error(resp.error)
                 }
-                resolve(resp.payload as any)
-            } catch (err) {
-                reject(err)
+                return resp.payload as any
             } finally {
-                onAccepted = undefined
-                completed = true
+                signal.done = true
             }
         })()
-    })
+    ])
 }
 
 /**
