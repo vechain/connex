@@ -7,8 +7,8 @@ const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
 
 class Driver extends DriverNoVendor {
     private readonly buddy: Promise<ReturnType<typeof ConnexWalletBuddy.create>>
-    constructor(nodeUrl: string, genesis: Connex.Thor.Block, readonly spaWalletUrl: string) {
-        super(new SimpleNet(nodeUrl), genesis)
+    constructor(nodeUrl: string, genesis: Connex.Thor.Block, initHead: Connex.Thor.Status['head'], readonly spaWalletUrl: string) {
+        super(new SimpleNet(nodeUrl), genesis, initHead)
         this.buddy = loadLibrary<typeof ConnexWalletBuddy>(
             BUDDY_SRC,
             BUDDY_LIB_NAME
@@ -32,7 +32,16 @@ export function create(nodeUrl: string, genesis: Connex.Thor.Block, spaWalletUrl
     })
     let driver = cache[key]
     if (!driver) {
-        cache[key] = driver = new Driver(nodeUrl, genesis, spaWalletUrl)
+        const headCacheKey = `head-${genesis.id}@${nodeUrl}`
+        let head
+        try {
+            head = JSON.parse(localStorage.getItem(headCacheKey) || '')
+        } catch { /** */ }
+        cache[key] = driver = new Driver(nodeUrl, genesis, head, spaWalletUrl)
+
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem(headCacheKey, JSON.stringify(driver.head))
+        })
     }
     return driver
 }
