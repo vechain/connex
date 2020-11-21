@@ -32,14 +32,14 @@ export function create(nodeUrl: string, genesis: Connex.Thor.Block, spaWalletUrl
     })
     let driver = cache[key]
     if (!driver) {
-        const headCacheKey = `head-${genesis.id}@${nodeUrl}`
+        const headCacheKey = `connex-head-${genesis.id}@${nodeUrl}`
         let head
         try {
             head = JSON.parse(localStorage.getItem(headCacheKey) || '')
         } catch { /** */ }
         cache[key] = driver = new Driver(nodeUrl, genesis, head, spaWalletUrl)
 
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('pagehide', () => {
             localStorage.setItem(headCacheKey, JSON.stringify(driver.head))
         })
     }
