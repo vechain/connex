@@ -9,7 +9,7 @@ const SPA_WALLET_URL = 'https://qianbin.github.io/sync-spa/#/'
 /** sign request relayed by tos */
 type RelayedRequest = {
     type: 'tx' | 'cert'
-    gid?: string
+    gid: string
     payload: {
         message: object
         options: object
