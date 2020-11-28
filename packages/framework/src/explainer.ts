@@ -1,7 +1,7 @@
 import { decodeRevertReason } from './revert-reason'
 import * as R from './rules'
 
-export function newExplainer(driver: Connex.Driver, clauses: Connex.VM.Clause[]): Connex.VM.Explainer {
+export function newExplainer(readyDriver: Promise<Connex.Driver>, clauses: Connex.VM.Clause[]): Connex.VM.Explainer {
     const opts: {
         caller?: string
         gas?: number
@@ -35,12 +35,12 @@ export function newExplainer(driver: Connex.Driver, clauses: Connex.VM.Clause[])
                 }
             })
 
-            return driver.explain(
+            return readyDriver.then(d => d.explain(
                 {
                     clauses: transformedClauses,
                     ...opts
                 },
-                driver.head.id, cacheHints)
+                d.head.id, cacheHints))
                 .then(outputs => {
                     return outputs.map(o => {
                         if (o.reverted) {

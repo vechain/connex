@@ -5,20 +5,20 @@ import { newTxSigningService } from './vendor'
 import * as R from './rules'
 
 export function newAccountVisitor(
-    driver: Connex.Driver,
+    readyDriver: Promise<Connex.Driver>,
     addr: string
 ): Connex.Thor.Account.Visitor {
     return {
         get address() { return addr },
         get: () => {
-            return driver.getAccount(addr, driver.head.id)
+            return readyDriver.then(d => d.getAccount(addr, d.head.id))
         },
         getCode: () => {
-            return driver.getCode(addr, driver.head.id)
+            return readyDriver.then(d => d.getCode(addr, d.head.id))
         },
         getStorage: key => {
             key = R.test(key, R.bytes32, 'arg0').toLowerCase()
-            return driver.getStorage(addr, key, driver.head.id)
+            return readyDriver.then(d => d.getStorage(addr, key, d.head.id))
         },
         method: jsonABI => {
             let coder
@@ -27,7 +27,7 @@ export function newAccountVisitor(
             } catch (err) {
                 throw new R.BadParameter(`arg0: expected valid ABI (${err.message})`)
             }
-            return newMethod(driver, addr, coder)
+            return newMethod(readyDriver, addr, coder)
         },
         event: jsonABI => {
             let coder
@@ -36,13 +36,13 @@ export function newAccountVisitor(
             } catch (err) {
                 throw new R.BadParameter(`arg0: expected valid ABI (${err.message})`)
             }
-            return newEvent(driver, addr, coder)
+            return newEvent(readyDriver, addr, coder)
         }
     }
 }
 
 function newMethod(
-    driver: Connex.Driver,
+    readyDriver: Promise<Connex.Driver>,
     addr: string,
     coder: abi.Function
 ): Connex.Thor.Account.Method {
@@ -93,14 +93,14 @@ function newMethod(
         },
         call(...args) {
             const clause = this.asClause(...args)
-            return driver.explain(
+            return readyDriver.then(d => d.explain(
                 {
                     clauses: [clause as any],
                     ...opts
                 },
-                driver.head.id,
+                d.head.id,
                 cacheHints
-            )
+            ))
                 .then(outputs => outputs[0])
                 .then(output => {
                     if (output.reverted) {
@@ -114,13 +114,13 @@ function newMethod(
         },
         transact(...args) {
             const clause = this.asClause(...args)
-            return newTxSigningService(driver, [clause])
+            return newTxSigningService(readyDriver, [clause])
         }
     }
 }
 
 function newEvent(
-    driver: Connex.Driver,
+    readyDriver: Promise<Connex.Driver>,
     addr: string,
     coder: abi.Event
 ): Connex.Thor.Account.Event {
@@ -159,7 +159,7 @@ function newEvent(
                     throw new R.BadParameter(`arg0.#${i}: can not be encoded (${err.message})`)
                 }
             })
-            const filter = newFilter(driver, 'event', criteria)
+            const filter = newFilter(readyDriver, 'event', criteria)
             return {
                 range(range: Connex.Thor.Filter.Range) {
                     filter.range(range)

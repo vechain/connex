@@ -7,7 +7,7 @@ export function newVendor(driver: Connex.Driver): Connex.Vendor {
         sign: <T extends 'tx' | 'cert'>(kind: T, msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage): any => {
             if (kind === 'tx') {
                 R.test(msg as Connex.Vendor.TxMessage, [clauseScheme], 'arg1')
-                return newTxSigningService(driver, msg as Connex.Vendor.TxMessage)
+                return newTxSigningService(Promise.resolve(driver), msg as Connex.Vendor.TxMessage)
             } else if (kind === 'cert') {
                 R.test(msg as Connex.Vendor.CertMessage, {
                     purpose: v => (v === 'agreement' || v === 'identification') ?
@@ -17,7 +17,7 @@ export function newVendor(driver: Connex.Driver): Connex.Vendor {
                         content: R.string
                     }
                 }, 'arg1')
-                return newCertSigningService(driver, msg as Connex.Vendor.CertMessage)
+                return newCertSigningService(Promise.resolve(driver), msg as Connex.Vendor.CertMessage)
             } else {
                 throw new R.BadParameter(`arg0: expected 'tx' or 'cert'`)
             }
@@ -25,7 +25,7 @@ export function newVendor(driver: Connex.Driver): Connex.Vendor {
     }
 }
 
-export function newTxSigningService(driver: Connex.Driver, msg: Connex.Vendor.TxMessage): Connex.Vendor.TxSigningService {
+export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.Vendor.TxMessage): Connex.Vendor.TxSigningService {
     const opts: Connex.Driver.TxOptions = {}
 
     return {
@@ -62,6 +62,7 @@ export function newTxSigningService(driver: Connex.Driver, msg: Connex.Vendor.Tx
         request() {
             return (async () => {
                 try {
+                    const driver = await readyDriver
                     return await driver.signTx(msg, opts)
                 } catch (err) {
                     throw new Rejected(err.message)
@@ -71,7 +72,7 @@ export function newTxSigningService(driver: Connex.Driver, msg: Connex.Vendor.Tx
     }
 }
 
-function newCertSigningService(driver: Connex.Driver, msg: Connex.Vendor.CertMessage): Connex.Vendor.CertSigningService {
+function newCertSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.Vendor.CertMessage): Connex.Vendor.CertSigningService {
     const opts: Connex.Driver.CertOptions = {}
 
     return {
@@ -91,6 +92,7 @@ function newCertSigningService(driver: Connex.Driver, msg: Connex.Vendor.CertMes
         request() {
             return (async () => {
                 try {
+                    const driver = await readyDriver
                     return await driver.signCert(msg, opts)
                 } catch (err) {
                     throw new Rejected(err.message)

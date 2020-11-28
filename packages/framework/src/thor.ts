@@ -10,6 +10,14 @@ import * as V from 'validator-ts'
 export function newThor(driver: Connex.Driver): Connex.Thor {
     const headTracker = newHeadTracker(driver)
 
+    const readyDriver = (async () => {
+        if (headTracker.head.number > 0) {
+            return driver
+        }
+        await headTracker.ticker().next()
+        return driver
+    })()
+
     const genesis = JSON.parse(JSON.stringify(driver.genesis)) as Connex.Thor.Block
     return {
         get genesis() { return genesis },
@@ -22,7 +30,7 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
         ticker: () => headTracker.ticker(),
         account: addr => {
             addr = R.test(addr, R.address, 'arg0').toLowerCase()
-            return newAccountVisitor(driver, addr)
+            return newAccountVisitor(readyDriver, addr)
         },
         block: revision => {
             if (typeof revision === 'undefined') {
@@ -35,14 +43,14 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
         },
         transaction: id => {
             id = R.test(id, R.bytes32, 'arg0').toLowerCase()
-            return newTxVisitor(driver, id)
+            return newTxVisitor(readyDriver, id)
         },
         filter: <T extends 'event' | 'transfer'>(kind: T, criteria: Connex.Thor.Filter.Criteria<T>[]): any => {
             R.ensure(kind === 'event' || kind === 'transfer',
                 `arg0: expected 'event' or 'transfer'`)
             if (kind === 'event') {
                 R.test(criteria as Connex.Thor.Filter.Criteria<'event'>[], [eventCriteriaScheme], 'arg1')
-                return newFilter(driver, 'event', (criteria as Connex.Thor.Filter.Criteria<'event'>[])
+                return newFilter(readyDriver, 'event', (criteria as Connex.Thor.Filter.Criteria<'event'>[])
                     .map(c => {
                         return {
                             address: c.address ? c.address.toLowerCase() : undefined,
@@ -55,7 +63,7 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
                     }))
             } else {
                 R.test(criteria as Connex.Thor.Filter.Criteria<'transfer'>[], [transferCriteriaScheme], 'arg1')
-                return newFilter(driver, 'transfer', (criteria as Connex.Thor.Filter.Criteria<'transfer'>[])
+                return newFilter(readyDriver, 'transfer', (criteria as Connex.Thor.Filter.Criteria<'transfer'>[])
                     .map(c => {
                         return {
                             txOrigin: c.txOrigin ? c.txOrigin.toLowerCase() : undefined,
@@ -67,7 +75,7 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
         },
         explain: (clauses) => {
             R.test(clauses, [clauseScheme], 'arg0')
-            return newExplainer(driver, clauses)
+            return newExplainer(readyDriver, clauses)
         }
     }
 }

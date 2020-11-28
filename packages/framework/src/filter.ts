@@ -3,7 +3,7 @@ import * as R from './rules'
 const MAX_LIMIT = 256
 
 export function newFilter<T extends 'event' | 'transfer'>(
-    driver: Connex.Driver,
+    readyDriver: Promise<Connex.Driver>,
     kind: T,
     criteria: Connex.Thor.Filter.Criteria<T>[]
 ): Connex.Thor.Filter<T> {
@@ -49,9 +49,9 @@ export function newFilter<T extends 'event' | 'transfer'>(
             filterBody.options.limit = limit
 
             if (kind === 'transfer') {
-                return driver.filterTransferLogs(filterBody as any) as Promise<any>
+                return readyDriver.then<any>(d => d.filterTransferLogs(filterBody as any))
             } else {
-                return driver.filterEventLogs(filterBody as any) as Promise<any>
+                return readyDriver.then<any>(d => d.filterEventLogs(filterBody as any))
             }
         }
     }
