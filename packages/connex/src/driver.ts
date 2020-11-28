@@ -7,7 +7,7 @@ const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
 
 class Driver extends DriverNoVendor {
     private readonly buddy: Promise<ReturnType<typeof ConnexWalletBuddy.create>>
-    constructor(nodeUrl: string, genesis: Connex.Thor.Block, initHead: Connex.Thor.Status['head'], readonly spaWalletUrl: string) {
+    constructor(nodeUrl: string, genesis: Connex.Thor.Block, initHead: Connex.Thor.Status['head'] | undefined, readonly spaWalletUrl: string) {
         super(new SimpleNet(nodeUrl), genesis, initHead)
         this.buddy = loadLibrary<typeof ConnexWalletBuddy>(
             BUDDY_SRC,
@@ -35,12 +35,18 @@ export function create(nodeUrl: string, genesis: Connex.Thor.Block, spaWalletUrl
         const headCacheKey = `connex-head-${genesis.id}@${nodeUrl}`
         let head
         try {
-            head = JSON.parse(localStorage.getItem(headCacheKey) || '')
+            const cachedHead = JSON.parse(localStorage.getItem(headCacheKey) || '') as Connex.Thor.Status['head']
+            // use the cachedHead if not too old
+            if (cachedHead.timestamp * 1000 > Date.now() - 3600 * 1000) {
+                head = cachedHead
+            }
         } catch { /** */ }
         cache[key] = driver = new Driver(nodeUrl, genesis, head, spaWalletUrl)
 
         window.addEventListener('pagehide', () => {
-            localStorage.setItem(headCacheKey, JSON.stringify(driver.head))
+            if (driver.head.timestamp > Date.now() - 300 * 1000) {
+                localStorage.setItem(headCacheKey, JSON.stringify(driver.head))
+            }
         })
     }
     return driver
