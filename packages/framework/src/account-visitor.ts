@@ -52,6 +52,7 @@ function newMethod(
         caller?: string
         gas?: number
         gasPrice?: string
+        gasPayer?: string
     } = {}
 
     let cacheHints: string[] | undefined
@@ -61,8 +62,8 @@ function newMethod(
             value = R.test(val, R.bigInt, 'arg0')
             return this
         },
-        caller(caller) {
-            opts.caller = R.test(caller, R.address, 'arg0').toLowerCase()
+        caller(addr) {
+            opts.caller = R.test(addr, R.address, 'arg0').toLowerCase()
             return this
         },
         gas(gas) {
@@ -71,6 +72,10 @@ function newMethod(
         },
         gasPrice(gp) {
             opts.gasPrice = R.test(gp, R.bigInt, 'arg0').toString().toLowerCase()
+            return this
+        },
+        gasPayer(addr: string) {
+            opts.gasPayer = R.test(addr, R.address, 'arg0').toLowerCase()
             return this
         },
         cache(hints) {

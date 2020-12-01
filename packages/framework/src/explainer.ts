@@ -6,6 +6,7 @@ export function newExplainer(readyDriver: Promise<Connex.Driver>, clauses: Conne
         caller?: string
         gas?: number
         gasPrice?: string
+        gasPayer?: string
     } = {}
     let cacheHints: string[] | undefined
 
@@ -20,6 +21,10 @@ export function newExplainer(readyDriver: Promise<Connex.Driver>, clauses: Conne
         },
         gasPrice(gp) {
             opts.gasPrice = R.test(gp, R.bigInt, 'arg0').toString().toLowerCase()
+            return this
+        },
+        gasPayer(addr) {
+            opts.gasPayer = R.test(addr, R.address, 'arg0').toLowerCase()
             return this
         },
         cache(hints) {

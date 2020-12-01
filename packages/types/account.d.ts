@@ -67,6 +67,9 @@ declare namespace Connex.Thor {
             /** set gas price, presented by hex/dec string or number type */
             gasPrice(gp: string | number): this
 
+            /** set gas payer */
+            gasPayer(addr: string): this
+
             /**
              * turn on call result cache
              * @param hints a set of addresses, as the condition of cache invalidation

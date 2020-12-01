@@ -25,6 +25,7 @@ export function compat1(connex1: Connex1): Connex {
                                 caller(addr) { m1.caller(addr); return this },
                                 gas(gas) { m1.gas(gas); return this },
                                 gasPrice(gp) { m1.gasPrice(gp); return this },
+                                gasPayer(addr) { return this },
                                 cache(hints) { m1.cache(hints); return this },
                                 asClause: (...args) => m1.asClause(...args) as Connex.Thor.Transaction['clauses'][0],
                                 call: (...args) => {
@@ -80,6 +81,7 @@ export function compat1(connex1: Connex1): Connex {
                         caller(addr) { e1.caller(addr); return this },
                         gas(gas) { e1.gas(gas); return this },
                         gasPrice(gp) { e1.gasPrice(gp); return this },
+                        gasPayer(addr) { return this },
                         cache() { console.warn('cache is not supported in compat mode'); return this },
                         execute: () => e1.execute(clauses)
                     }
