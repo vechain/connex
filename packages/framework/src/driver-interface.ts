@@ -64,7 +64,7 @@ declare namespace Connex {
             dependsOn?: string
             link?: string
             comment?: string
-            delegator?: string
+            delegator?: { url: string, signer?: string }
             onAccepted?: () => void
         }
 

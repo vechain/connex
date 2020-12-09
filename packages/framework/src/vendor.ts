@@ -49,9 +49,10 @@ export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Co
             opts.comment = R.test(text, R.string, 'arg0')
             return this
         },
-        delegate(delegator) {
-            R.ensure(typeof delegator === 'string', `arg0: expected url string`)
-            opts.delegator = delegator
+        delegate(url, signer) {
+            R.ensure(typeof url === 'string', `arg0: expected url string`)
+            R.test(signer, V.optional(R.address), 'arg1')
+            opts.delegator = { url, signer }
             return this
         },
         accepted(cb) {

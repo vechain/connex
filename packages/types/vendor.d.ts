@@ -29,8 +29,12 @@ declare namespace Connex {
             /** set comment for the tx content */
             comment(text: string): this
 
-            /** enable VIP-191 by providing url of web api, which provides delegation service */
-            delegate(url: string): this
+            /**
+             * enable VIP-191 by providing url of web api, which provides delegation service 
+             * @param url the url of web api
+             * @param signer hint of the delegator address
+             */
+            delegate(url: string, signer?: string): this
 
             /** register a callback function fired when the request is accepted by user wallet */
             accepted(cb: () => void): this

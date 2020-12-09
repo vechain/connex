@@ -88,7 +88,7 @@ export class Driver extends DriverNoVendor {
                 origin: key.address
             }
             try {
-                const result = await this.net.http('POST', options.delegator, { body: unsigned })
+                const result = await this.net.http('POST', options.delegator.url, { body: unsigned })
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 delegatedTx.signature = Buffer.concat([originSig, Buffer.from(result.signature.slice(2), 'hex')])
                 tx = delegatedTx

@@ -101,7 +101,7 @@ export function compat1(connex1: Connex1): Connex {
                             dependsOn(txid) { s1.dependsOn(txid); return this },
                             link(url) { s1.link(url); return this },
                             comment(text) { s1.comment(text); return this },
-                            delegate(/*url*/) {
+                            delegate(/*url, signer */) {
                                 console.warn('delegate is not supported in compat mode')
                                 return this
                             },
