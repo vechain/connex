@@ -3,6 +3,8 @@ import { genesisBlocks } from './config'
 import { compat1 } from './compat'
 import { create as createDriver } from './driver'
 
+const SPA_WALLET_URL = 'https://qianbin.github.io/sync-spa/#/'
+
 function extractGenesis(network: Options['network']): Connex.Thor.Block | undefined {
     network = network || 'main'
     if (typeof network === 'string') {
@@ -30,13 +32,12 @@ function createConnex(nodeUrl: string, opts?: Options): Connex {
         }
     } catch { /**/ }
 
-    const driver = createDriver(nodeUrl, genesis, opts.spaWallet || 'https://qianbin.github.io/sync-spa/#/')
+    const driver = createDriver(nodeUrl, genesis, SPA_WALLET_URL)
     return new Framework(driver)
 }
 
 export type Options = {
     network?: 'main' | 'test' | Connex.Thor.Block
-    spaWallet?: string // will be removed later
 }
 
 class ConnexClass implements Connex {

@@ -4,7 +4,6 @@ import * as randomBytes from 'randombytes'
 import * as W from './wallet'
 
 const TOS_URL = 'https://tos.vecha.in:5678/'
-const SPA_WALLET_URL = 'https://qianbin.github.io/sync-spa/#/'
 
 /** sign request relayed by tos */
 type RelayedRequest = {
@@ -151,15 +150,14 @@ function sign<T extends 'tx' | 'cert'>(
  */
 export function create(
     genesisId: string,
-    spaWalletUrl?: string
+    spaWalletUrl: string
 ): Pick<Connex.Driver, 'signTx' | 'signCert'> {
-    const walletUrl = spaWalletUrl || SPA_WALLET_URL
     return {
         signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
-            return sign('tx', msg, options, genesisId, walletUrl)
+            return sign('tx', msg, options, genesisId, spaWalletUrl)
         },
         signCert(msg: Connex.Vendor.CertMessage, options: Connex.Driver.CertOptions): Promise<Connex.Vendor.CertResponse> {
-            return sign('cert', msg, options, genesisId, walletUrl)
+            return sign('cert', msg, options, genesisId, spaWalletUrl)
         }
     }
 }
