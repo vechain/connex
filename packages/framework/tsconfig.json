@@ -3,6 +3,7 @@
     "compilerOptions": {
         "outDir": "./dist",
         "resolveJsonModule": true,
+        "esModuleInterop": true,
         "types": ["@vechain/connex-types"]
     },
     "include": [
