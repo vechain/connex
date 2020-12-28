@@ -8,8 +8,6 @@
 
 /** The VeChain Connex interface */
 declare interface Connex {
-    /** the version number */
-    readonly version: string
     /** the module for accessing VeChain accounts/blocks/txs/logs etc. */
     readonly thor: Connex.Thor
     /** the module for interacting with wallets */
