@@ -1,6 +1,5 @@
 import { newThor } from './thor'
 import { newVendor } from './vendor'
-import pkg from '@vechain/connex-types/package.json'
 import { newDriverGuard } from './driver-guard'
 
 /**
@@ -19,9 +18,7 @@ export class Framework implements Connex {
     ): Connex.Driver {
         return newDriverGuard(driver, errorHandler)
     }
-    public static get version(): string { return pkg.version }
 
-    public readonly version = pkg.version
     public readonly thor: Connex.Thor
     public readonly vendor: Connex.Vendor
 
@@ -34,3 +31,5 @@ export class Framework implements Connex {
         this.vendor = newVendor(driver)
     }
 }
+
+export { newVendor }
