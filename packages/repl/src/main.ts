@@ -1,4 +1,5 @@
 import { Framework } from '@vechain/connex-framework'
+import pkg from '@vechain/connex-framework/package.json'
 import { Driver, SimpleWallet, SimpleNet } from '@vechain/connex-driver'
 import * as REPL from 'repl'
 import { resolve } from 'path'
@@ -25,7 +26,7 @@ void (async () => {
         const wallet = new SimpleWallet()
         const driver = await Driver.connect(new SimpleNet(baseUrl), wallet)
         const connex = new Framework(Framework.guardDriver(driver))
-        console.log(`connex v${connex.version}`)
+        console.log(`framework v${pkg.version}`)
 
         const network = networks[connex.thor.genesis.id] || 'Custom'
         const prompter = {
