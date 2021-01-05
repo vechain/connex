@@ -52,7 +52,7 @@ export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Co
         delegate(url, signer) {
             R.ensure(typeof url === 'string', `arg0: expected url string`)
             R.test(signer, V.optional(R.address), 'arg1')
-            opts.delegator = { url, signer }
+            opts.delegator = { url, signer: signer && signer.toLowerCase() }
             return this
         },
         accepted(cb) {
