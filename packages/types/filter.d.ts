@@ -7,6 +7,12 @@ declare namespace Connex.Thor {
         /** set sort order */
         order(order: 'asc' | 'desc'): this
 
+        /**
+         * turn on result cache
+         * @param hints a set of addresses, as the condition of cache invalidation
+         */
+        cache(hints: string[]): this
+
         /** do query */
         apply(offset: number, limit: number): Promise<Filter.Row<T, E>[]>
     }

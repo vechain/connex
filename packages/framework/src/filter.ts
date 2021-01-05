@@ -22,6 +22,8 @@ export function newFilter<T extends 'event' | 'transfer'>(
         order: 'asc'
     }
 
+    let cacheHints: string[] | undefined
+
     return {
         range(range) {
             R.test(range, {
@@ -40,6 +42,10 @@ export function newFilter<T extends 'event' | 'transfer'>(
             filterBody.order = order
             return this
         },
+        cache(hints) {
+            cacheHints = R.test(hints, [R.address], 'arg0').map(t => t.toLowerCase())
+            return this
+        },
         apply(offset, limit) {
             R.test(offset, R.uint64, 'arg0')
             R.ensure(limit >= 0 && limit <= MAX_LIMIT && Number.isInteger(limit),
@@ -49,9 +55,9 @@ export function newFilter<T extends 'event' | 'transfer'>(
             filterBody.options.limit = limit
 
             if (kind === 'transfer') {
-                return readyDriver.then<any>(d => d.filterTransferLogs(filterBody as any))
+                return readyDriver.then<any>(d => d.filterTransferLogs(filterBody as any, cacheHints))
             } else {
-                return readyDriver.then<any>(d => d.filterEventLogs(filterBody as any))
+                return readyDriver.then<any>(d => d.filterEventLogs(filterBody as any, cacheHints))
             }
         }
     }

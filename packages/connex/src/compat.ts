@@ -50,6 +50,7 @@ export function compat1(connex1: Connex1): Connex {
                                     return {
                                         range(r) { f1.range(r); return this },
                                         order(o) { f1.order(o); return this },
+                                        cache() { return this },
                                         apply(offset, limit) {
                                             return f1.apply(offset, limit) as any
                                         }
@@ -67,6 +68,7 @@ export function compat1(connex1: Connex1): Connex {
                     return {
                         range(r) { f1.range(r); return this },
                         order(o) { f1.order(o); return this },
+                        cache() { return this },
                         apply(offset, limit): Promise<any> {
                             return f1.apply(offset, limit)
                         }

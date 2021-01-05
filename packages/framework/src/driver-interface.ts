@@ -22,8 +22,8 @@ declare namespace Connex {
 
         explain(arg: Driver.ExplainArg, revision: string, cacheHints?: string[]): Promise<VM.Output[]>
 
-        filterEventLogs(arg: Driver.FilterEventLogsArg): Promise<Thor.Filter.Row<'event'>[]>
-        filterTransferLogs(arg: Driver.FilterTransferLogsArg): Promise<Thor.Filter.Row<'transfer'>[]>
+        filterEventLogs(arg: Driver.FilterEventLogsArg, cacheHints?: string[]): Promise<Thor.Filter.Row<'event'>[]>
+        filterTransferLogs(arg: Driver.FilterTransferLogsArg, cacheHints?: string[]): Promise<Thor.Filter.Row<'transfer'>[]>
 
         // vendor methods
         signTx(msg: Vendor.TxMessage, options: Driver.TxOptions): Promise<Vendor.TxResponse>

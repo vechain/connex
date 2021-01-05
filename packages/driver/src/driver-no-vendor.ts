@@ -80,15 +80,15 @@ export class DriverNoVendor implements Connex.Driver {
         return this.cache.getTied(cacheKey, revision, () =>
             this.httpPost('accounts/*', arg, { revision }), cacheHints)
     }
-    public filterEventLogs(arg: Connex.Driver.FilterEventLogsArg): Promise<Connex.Thor.Filter.Row<'event'>[]> {
+    public filterEventLogs(arg: Connex.Driver.FilterEventLogsArg, cacheHints?: string[]): Promise<Connex.Thor.Filter.Row<'event'>[]> {
         const cacheKey = `event-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
-            this.httpPost('logs/event', arg))
+            this.httpPost('logs/event', arg), cacheHints)
     }
-    public filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg): Promise<Connex.Thor.Filter.Row<'transfer'>[]> {
+    public filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg, cacheHints?: string[]): Promise<Connex.Thor.Filter.Row<'transfer'>[]> {
         const cacheKey = `transfer-${blake2b256(JSON.stringify(arg)).toString('hex')}`
         return this.cache.getTied(cacheKey, this.head.id, () =>
-            this.httpPost('logs/transfer', arg))
+            this.httpPost('logs/transfer', arg), cacheHints)
     }
     public signTx(
         msg: Connex.Vendor.TxMessage,

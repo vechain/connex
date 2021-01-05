@@ -174,6 +174,10 @@ function newEvent(
                     filter.order(order)
                     return this
                 },
+                cache(hints) {
+                    filter.cache(hints)
+                    return this
+                },
                 apply(offset: number, limit: number) {
                     return filter.apply(offset, limit)
                         .then(events => events.map(event => {
