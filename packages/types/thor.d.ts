@@ -54,6 +54,8 @@ declare namespace Connex {
                 parentID: string
                 /** bits of supported txs features */
                 txsFeatures?: number
+                /** block gas limit */
+                gasLimit: number
             }
         }
 

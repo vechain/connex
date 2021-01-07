@@ -1,11 +1,11 @@
 import * as LRU from 'lru-cache'
-import { Bloom } from 'thor-devkit'
 import BigNumber from 'bignumber.js'
+import { newFilter } from './bloom'
 
 const WINDOW_LEN = 12
 
 type Slot = Connex.Thor.Status['head'] & {
-    bloom?: Bloom
+    bloom?: ReturnType<typeof newFilter>
     block?: Connex.Thor.Block
 
     accounts: Map<string, Account>
@@ -40,7 +40,7 @@ export class Cache {
 
         this.window.push({
             ...head,
-            bloom: bloom ? new Bloom(bloom.k, Buffer.from(bloom.bits.slice(2), 'hex')) : undefined,
+            bloom: bloom ? newFilter(Buffer.from(bloom.bits.slice(2), 'hex'), bloom.k) : undefined,
             block,
             accounts: new Map<string, Account>(),
             txs: new Map<string, Connex.Thor.Transaction>(),
@@ -236,7 +236,7 @@ export class Cache {
     }
 }
 
-function testBytesHex(bloom: Bloom, hex: string) {
+function testBytesHex(filter: ReturnType<typeof newFilter>, hex: string) {
     let buf = Buffer.from(hex.slice(2), 'hex')
     const nzIndex = buf.findIndex(v => v !== 0)
     if (nzIndex < 0) {
@@ -244,7 +244,7 @@ function testBytesHex(bloom: Bloom, hex: string) {
     } else {
         buf = buf.slice(nzIndex)
     }
-    return bloom.test(buf)
+    return filter.contains(buf)
 }
 
 const ENERGY_GROWTH_RATE = 5000000000

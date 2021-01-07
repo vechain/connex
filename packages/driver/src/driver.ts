@@ -25,13 +25,15 @@ export class Driver extends DriverNoVendor {
 
         return new Driver(
             net,
-            genesis, {
-            id: best.id,
-            number: best.number,
-            timestamp: best.timestamp,
-            parentID: best.parentID,
-            txsFeatures: best.txsFeatures
-        },
+            genesis,
+            {
+                id: best.id,
+                number: best.number,
+                timestamp: best.timestamp,
+                parentID: best.parentID,
+                txsFeatures: best.txsFeatures,
+                gasLimit: best.gasLimit
+            },
             wallet)
     }
 

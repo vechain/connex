@@ -27,7 +27,8 @@ export class DriverNoVendor implements Connex.Driver {
                 number: genesis.number,
                 timestamp: genesis.timestamp,
                 parentID: genesis.parentID,
-                txsFeatures: genesis.txsFeatures
+                txsFeatures: genesis.txsFeatures,
+                gasLimit: genesis.gasLimit
             }
         }
         void this.headTrackerLoop()
@@ -170,7 +171,8 @@ export class DriverNoVendor implements Connex.Driver {
                         number: best.number,
                         timestamp: best.timestamp,
                         parentID: best.parentID,
-                        txsFeatures: best.txsFeatures
+                        txsFeatures: best.txsFeatures,
+                        gasLimit: best.gasLimit
                     }
                     this.cache.handleNewBlock(this.head, undefined, best)
                     this.emitNewHead()
@@ -205,21 +207,22 @@ export class DriverNoVendor implements Connex.Driver {
 
     private async trackWs() {
         const wsPath =
-            `subscriptions/beat?pos=${this.head.parentID}`
+            `subscriptions/beat2?pos=${this.head.parentID}`
 
         const wsr = this.net.openWebSocketReader(wsPath)
 
         try {
             for (; ;) {
                 const data = await this.int.wrap(wsr.read())
-                const beat: Beat = JSON.parse(data)
+                const beat: Beat2 = JSON.parse(data)
                 if (!beat.obsolete && beat.id !== this.head.id && beat.number >= this.head.number) {
                     this.head = {
                         id: beat.id,
                         number: beat.number,
                         timestamp: beat.timestamp,
                         parentID: beat.parentID,
-                        txsFeatures: beat.txsFeatures
+                        txsFeatures: beat.txsFeatures,
+                        gasLimit: beat.gasLimit
                     }
                     this.cache.handleNewBlock(this.head, { k: beat.k, bits: beat.bloom })
                     this.emitNewHead()
@@ -231,11 +234,12 @@ export class DriverNoVendor implements Connex.Driver {
     }
 }
 
-interface Beat {
+interface Beat2 {
     number: number
     id: string
     parentID: string
     timestamp: number
+    gasLimit: number
     bloom: string
     k: number
     txsFeatures?: number

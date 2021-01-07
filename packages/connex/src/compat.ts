@@ -6,8 +6,22 @@ export function compat1(connex1: Connex1): Connex {
         get thor(): Connex.Thor {
             const t2: Connex.Thor = {
                 get genesis() { return t1.genesis },
-                get status() { return t1.status },
-                ticker: () => t1.ticker(),
+                get status() {
+                    const s = t1.status
+                    return {
+                        ...s,
+                        head: {
+                            ...s.head,
+                            gasLimit: 20000000
+                        }
+                    }
+                },
+                ticker: () => {
+                    const t = t1.ticker()
+                    return {
+                        next: () => t.next().then(h => ({ ...h, gasLimit: 20000000 }))
+                    }
+                },
                 account: addr => {
                     const a1 = t1.account(addr)
                     return {
