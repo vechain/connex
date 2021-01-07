@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-wallet-buddy",
-  "version": "0.0.23",
+  "version": "0.0.25",
   "description": "to bridge connex sign request to wallet",
   "main": "dist/index.js",
   "module": "esm/index.js",
@@ -22,7 +22,7 @@
   "dependencies": {
     "detect-browser": "^5.2.0",
     "randombytes": "^2.1.0",
-    "thor-devkit": "^2.0.0"
+    "thor-devkit": "^2.0.1"
   },
   "devDependencies": {
     "@types/randombytes": "^2.0.0",
