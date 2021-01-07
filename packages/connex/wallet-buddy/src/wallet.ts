@@ -2,19 +2,19 @@ import { openUri } from './open-uri'
 import { browser } from './browser'
 /**
  * connect to native wallet app
- * @param rUrl the url where to fetch the request object
+ * @param src the url where to fetch the request object
  */
-export function connectApp(rUrl: string): Promise<unknown> | null {
-    const uri = `connex:sign?rurl=${encodeURIComponent(rUrl)}`
+export function connectApp(src: string): Promise<unknown> | null {
+    const uri = `connex:sign?src=${encodeURIComponent(src)}`
     return openUri(uri, 1000)
 }
 
 /**
  * connect to SPA wallet
- * @param rUrl the url where to fetch the request object
+ * @param src the url where to fetch the request object
  * @param walletUrl the url of SPA wallet
  */
-export function connectSPA(rUrl: string, walletUrl: string): Window | null {
+export function connectSPA(src: string, walletUrl: string): Window | null {
     const options = (() => {
         switch (browser && browser.os) {
             case 'iOS':
@@ -28,7 +28,7 @@ export function connectSPA(rUrl: string, walletUrl: string): Window | null {
         }
     })()
     return window.open(
-        `${walletUrl}sign?rurl=${encodeURIComponent(rUrl)}`,
+        `${walletUrl}sign?src=${encodeURIComponent(src)}`,
         options.target,
         options.features,
         true)

@@ -28,16 +28,16 @@ type Signal = {
 
 // open wallet app or spa wallet in browser window.
 async function connectWallet(rid: string, walletUrl: string) {
-    const rUrl = TOS_URL + rid
+    const src = new URL(rid, TOS_URL).href
     try {
-        const r = W.connectApp(rUrl)
+        const r = W.connectApp(src)
         if (r) {
             await r
             return null
         }
     } catch { /** */ }
 
-    return W.connectSPA(rUrl, walletUrl)
+    return W.connectSPA(src, walletUrl)
 }
 
 async function submitRequest(reqId: string, json: string, signal: Signal) {
