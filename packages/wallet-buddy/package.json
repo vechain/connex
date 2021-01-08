@@ -12,7 +12,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../../node_modules/.bin/tsc -d -p . && ../../../node_modules/.bin/tsc --module esnext --outDir 'esm' -p . && webpack",
+    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -d -p . && ../../node_modules/.bin/tsc --module esnext --outDir 'esm' -p . && webpack",
     "lint": "../../node_modules/.bin/tslint -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,7 +26,10 @@
   },
   "devDependencies": {
     "@types/randombytes": "^2.0.0",
-    "@vechain/connex-framework": "^2.0.0-beta.18",
+    "@vechain/connex-framework": "../framework",
+    "buffer": "^5.6.1",
+    "crypto-browserify": "^3.12.0",
+    "stream-browserify": "^3.0.0",
     "webpack": "^5.2.0",
     "webpack-cli": "^4.1.0"
   }
