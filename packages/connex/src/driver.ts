@@ -5,15 +5,13 @@ import type * as ConnexWalletBuddy from '@vechain/connex-wallet-buddy'
 const BUDDY_SRC = 'https://unpkg.com/@vechain/connex-wallet-buddy@0.0'
 const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
 
-const SPA_WALLET_URL = 'https://qianbin.github.io/sync-spa/#/'
-
 export class DriverVendorOnly implements Connex.Driver {
     private readonly buddy: Promise<ReturnType<typeof ConnexWalletBuddy.create>>
     constructor(genesisId: string) {
         this.buddy = loadLibrary<typeof ConnexWalletBuddy>(
             BUDDY_SRC,
             BUDDY_LIB_NAME
-        ).then(lib => lib.create(genesisId, SPA_WALLET_URL))
+        ).then(lib => lib.create(genesisId))
     }
     get genesis(): Connex.Thor.Block { throw new Error('not implemented') }
     get head(): Connex.Thor.Status['head'] { throw new Error('not implemented') }

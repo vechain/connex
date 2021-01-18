@@ -56,7 +56,7 @@ function openWithHiddenFrame(uri: string, timeout: number) {
 // }
 
 function openWithMsLaunchUri(uri: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         navigator.msLaunchUri(uri,
             resolve,
             reject

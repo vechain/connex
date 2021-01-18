@@ -1,20 +1,14 @@
 import { openUri } from './open-uri'
 import { browser } from './browser'
-/**
- * connect to native wallet app
- * @param src the url where to fetch the request object
- */
-export function connectApp(src: string): Promise<unknown> | null {
+
+const LITE_WALLET_URL = 'https://lite.sync.vecha.in/'
+
+function connectApp(src: string): Promise<unknown> | null {
     const uri = `connex:sign?src=${encodeURIComponent(src)}`
     return openUri(uri, 1000)
 }
 
-/**
- * connect to SPA wallet
- * @param src the url where to fetch the request object
- * @param walletUrl the url of SPA wallet
- */
-export function connectSPA(src: string, walletUrl: string): Window | null {
+function connectLite(src: string): Window | null {
     const options = (() => {
         switch (browser && browser.os) {
             case 'iOS':
@@ -27,9 +21,26 @@ export function connectSPA(src: string, walletUrl: string): Window | null {
                 }
         }
     })()
+
     return window.open(
-        `${walletUrl}sign?src=${encodeURIComponent(src)}`,
+        new URL(`#/sign?src=${encodeURIComponent(src)}`, LITE_WALLET_URL).href,
         options.target,
         options.features,
         true)
+}
+
+/**
+ * open wallet app or lite wallet in browser window.
+ * @param src the url where to fetch the request object
+ */
+export async function connect(src: string): Promise<Window | null> {
+    try {
+        const r = connectApp(src)
+        if (r) {
+            await r
+            return null
+        }
+    } catch { /** */ }
+
+    return connectLite(src)
 }

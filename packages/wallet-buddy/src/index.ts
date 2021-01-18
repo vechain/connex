@@ -5,6 +5,9 @@ import * as W from './wallet'
 
 const TOS_URL = 'https://tos.vecha.in:5678/'
 
+const ACCEPTED_SUFFIX = '.accepted'
+const RESP_SUFFIX = '.resp'
+
 /** sign request relayed by tos */
 type RelayedRequest = {
     type: 'tx' | 'cert'
@@ -26,24 +29,11 @@ type Signal = {
     done: boolean
 }
 
-// open wallet app or spa wallet in browser window.
-async function connectWallet(rid: string, walletUrl: string) {
+async function submitRequest(rid: string, json: string, signal: Signal) {
     const src = new URL(rid, TOS_URL).href
-    try {
-        const r = W.connectApp(src)
-        if (r) {
-            await r
-            return null
-        }
-    } catch { /** */ }
-
-    return W.connectSPA(src, walletUrl)
-}
-
-async function submitRequest(reqId: string, json: string, signal: Signal) {
     for (let i = 0; i < 3 && !signal.done; i++) {
         try {
-            return await fetch(TOS_URL + reqId, {
+            return await fetch(src, {
                 method: 'POST',
                 body: json,
                 headers: new Headers({
@@ -62,7 +52,7 @@ async function pollResponse(reqId: string, suffix: string, timeout: number, sign
     const deadline = Date.now() + timeout
     while (Date.now() < deadline && !signal.done) {
         try {
-            const resp = await fetch(`${TOS_URL}${reqId}${suffix}?wait=1`)
+            const resp = await fetch(new URL(`${reqId}${suffix}?wait=1`, TOS_URL).href)
             const text = await resp.text()
             if (text) {
                 return text
@@ -81,8 +71,7 @@ function sign<T extends 'tx' | 'cert'>(
     type: T,
     msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage,
     options: T extends 'tx' ? Connex.Driver.TxOptions : Connex.Driver.CertOptions,
-    genesisId: string,
-    spaWalletUrl: string
+    genesisId: string
 ): Promise<T extends 'tx' ? Connex.Vendor.TxResponse : Connex.Vendor.CertResponse> {
     const onAccepted = options.onAccepted
     const req: RelayedRequest = {
@@ -105,7 +94,7 @@ function sign<T extends 'tx' | 'cert'>(
         // open wallet and watch wallet closing
         (async () => {
             try {
-                const w = await connectWallet(rid, spaWalletUrl)
+                const w = await W.connect(new URL(rid, TOS_URL).href)
                 while (!signal.done) {
                     if (w && w.closed) {
                         throw new Error('wallet window closed')
@@ -123,14 +112,14 @@ function sign<T extends 'tx' | 'cert'>(
 
                 onAccepted && void (async () => {
                     try {
-                        await pollResponse(rid, '-accepted', 60 * 1000, signal)
+                        await pollResponse(rid, ACCEPTED_SUFFIX, 60 * 1000, signal)
                         !signal.done && onAccepted && onAccepted()
                     } catch (err) {
                         console.warn(err)
                     }
                 })()
 
-                const respJson = await pollResponse(rid, '-resp', 2 * 60 * 1000, signal)
+                const respJson = await pollResponse(rid, RESP_SUFFIX, 10 * 60 * 1000, signal)
                 const resp: RelayedResponse = JSON.parse(respJson)
                 if (resp.error) {
                     throw new Error(resp.error)
@@ -146,18 +135,16 @@ function sign<T extends 'tx' | 'cert'>(
 /**
  * create a instance of wallet buddy to help make signing requests to wallet app
  * @param genesisId the genesis id of requests binding to
- * @param spaWalletUrl customized spa wallet url, dev only
  */
 export function create(
-    genesisId: string,
-    spaWalletUrl: string
+    genesisId: string
 ): Pick<Connex.Driver, 'signTx' | 'signCert'> {
     return {
         signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
-            return sign('tx', msg, options, genesisId, spaWalletUrl)
+            return sign('tx', msg, options, genesisId)
         },
         signCert(msg: Connex.Vendor.CertMessage, options: Connex.Driver.CertOptions): Promise<Connex.Vendor.CertResponse> {
-            return sign('cert', msg, options, genesisId, spaWalletUrl)
+            return sign('cert', msg, options, genesisId)
         }
     }
 }
