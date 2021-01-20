@@ -22,10 +22,10 @@ import { Framework } from '@vechain/connex-framework'
 import { Driver, SimpleNet } from '@vechain/connex-driver'
 
 const net = new SimpleNet('http://localhost:8669/')
-const driver = Driver.connect(net)
+const driver = await Driver.connect(net)
 
 // now we get the ready-to-use Connex instance object
-const framework = new Framework(driver)
+const connex = new Framework(driver)
 ```
 
 ## License

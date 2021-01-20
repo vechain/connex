@@ -59,8 +59,15 @@ class VendorClass implements Connex.Vendor {
     }
 }
 
+/** options for creating Connex object */
 export type Options = {
-    nodeUrl: string
+    /** the base url of the thor node's thorREST API */
+    node: string
+    /**
+     * the expected network of the node url. defaults to 'main' if omitted.
+     * if it does not match with the actual network of the node url points to,
+     * all subsequent request will fail.
+     */
     network?: 'main' | 'test' | Connex.Thor.Block
 }
 
@@ -86,7 +93,7 @@ class ConnexClass implements Connex {
             }
         } catch { /**/ }
 
-        const driver = createFull(opts.nodeUrl, genesis)
+        const driver = createFull(opts.node, genesis)
         const framework = new Framework(driver)
         return {
             get thor() { return framework.thor },

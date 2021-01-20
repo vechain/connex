@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40vechain%2Fconnex-driver.svg)](https://badge.fury.io/js/%40vechain%2Fconnex-driver)
 
-It drives Connex Framework.
+This library implement Connex.Driver, which drives Connex Framework.
 
 ## Installation
 

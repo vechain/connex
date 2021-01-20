@@ -2,13 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40vechain%2Fconnex-types.svg)](https://badge.fury.io/js/%40vechain%2Fconnex-types)
 
-This package includes Connex interface declaration using TypeScript.
-
-## Installation
-
-```
-npm i @vechain/connex-types
-```
+This package includes Connex interface declarations presented in TypeScript.
 
 ## License
 

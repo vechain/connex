@@ -42,11 +42,11 @@ export class DriverVendorOnly implements Connex.Driver {
     }
 }
 
-
+/** fully implemented Connex.Driver */
 class FullDriver extends DriverNoVendor {
     private readonly vd: DriverVendorOnly
-    constructor(nodeUrl: string, genesis: Connex.Thor.Block) {
-        super(new SimpleNet(nodeUrl), genesis)
+    constructor(node: string, genesis: Connex.Thor.Block) {
+        super(new SimpleNet(node), genesis)
         this.vd = new DriverVendorOnly(genesis.id)
     }
     signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
@@ -61,18 +61,18 @@ const cache: Record<string, FullDriver> = {}
 
 /**
  * create full driver
- * @param nodeUrl the url of thor node
+ * @param node the url of thor node
  * @param genesis the enforced genesis block
  */
-export function createFull(nodeUrl: string, genesis: Connex.Thor.Block): Connex.Driver {
+export function createFull(node: string, genesis: Connex.Thor.Block): Connex.Driver {
     const key = blake2b256(JSON.stringify({
-        nodeUrl,
+        node,
         genesis
     })).toString('hex')
 
     let driver = cache[key]
     if (!driver) {
-        cache[key] = driver = new FullDriver(nodeUrl, genesis)
+        cache[key] = driver = new FullDriver(node, genesis)
     }
     return driver
 }
