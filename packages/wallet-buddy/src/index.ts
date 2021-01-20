@@ -1,10 +1,7 @@
 import '@vechain/connex-framework/dist/driver-interface'
-import { blake2b256 } from 'thor-devkit'
-import * as randomBytes from 'randombytes'
 import * as W from './wallet'
 
-const TOS_URL = 'https://tos.vecha.in:5678/'
-
+const DEFAULT_TOS_URL = 'https://tos.vecha.in:5678/'
 const ACCEPTED_SUFFIX = '.accepted'
 const RESP_SUFFIX = '.resp'
 
@@ -29,8 +26,8 @@ type Signal = {
     done: boolean
 }
 
-async function submitRequest(rid: string, json: string, signal: Signal) {
-    const src = new URL(rid, TOS_URL).href
+async function submitRequest(rid: string, json: string, signal: Signal, tosUrl: string) {
+    const src = new URL(rid, tosUrl).href
     for (let i = 0; i < 3 && !signal.done; i++) {
         try {
             return await fetch(src, {
@@ -47,12 +44,12 @@ async function submitRequest(rid: string, json: string, signal: Signal) {
     throw new Error('failed to submit request')
 }
 
-async function pollResponse(reqId: string, suffix: string, timeout: number, signal: Signal) {
+async function pollResponse(rid: string, suffix: string, timeout: number, signal: Signal, tosUrl: string) {
     let errCount = 0
     const deadline = Date.now() + timeout
     while (Date.now() < deadline && !signal.done) {
         try {
-            const resp = await fetch(new URL(`${reqId}${suffix}?wait=1`, TOS_URL).href)
+            const resp = await fetch(new URL(`${rid}${suffix}?wait=1`, tosUrl).href)
             const text = await resp.text()
             if (text) {
                 return text
@@ -71,7 +68,10 @@ function sign<T extends 'tx' | 'cert'>(
     type: T,
     msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage,
     options: T extends 'tx' ? Connex.Driver.TxOptions : Connex.Driver.CertOptions,
-    genesisId: string
+    genesisId: string,
+    nonce: () => string,
+    blake2b256: (val: string) => string,
+    tosUrl: string
 ): Promise<T extends 'tx' ? Connex.Vendor.TxResponse : Connex.Vendor.CertResponse> {
     const onAccepted = options.onAccepted
     const req: RelayedRequest = {
@@ -81,10 +81,10 @@ function sign<T extends 'tx' | 'cert'>(
             message: msg,
             options: { ...options, onAccepted: undefined }
         },
-        nonce: randomBytes(16).toString('hex')
+        nonce: nonce()
     }
     const json = JSON.stringify(req)
-    const rid = blake2b256(json).toString('hex')
+    const rid = blake2b256(json)
 
     const signal = {
         done: false
@@ -94,7 +94,7 @@ function sign<T extends 'tx' | 'cert'>(
         // open wallet and watch wallet closing
         (async () => {
             try {
-                const w = await W.connect(new URL(rid, TOS_URL).href)
+                const w = await W.connect(new URL(rid, tosUrl).href)
                 while (!signal.done) {
                     if (w && w.closed) {
                         throw new Error('wallet window closed')
@@ -108,18 +108,18 @@ function sign<T extends 'tx' | 'cert'>(
         // submit request and poll response
         (async () => {
             try {
-                await submitRequest(rid, json, signal)
+                await submitRequest(rid, json, signal, tosUrl)
 
                 onAccepted && void (async () => {
                     try {
-                        await pollResponse(rid, ACCEPTED_SUFFIX, 60 * 1000, signal)
+                        await pollResponse(rid, ACCEPTED_SUFFIX, 60 * 1000, signal, tosUrl)
                         !signal.done && onAccepted && onAccepted()
                     } catch (err) {
                         console.warn(err)
                     }
                 })()
 
-                const respJson = await pollResponse(rid, RESP_SUFFIX, 10 * 60 * 1000, signal)
+                const respJson = await pollResponse(rid, RESP_SUFFIX, 10 * 60 * 1000, signal, tosUrl)
                 const resp: RelayedResponse = JSON.parse(respJson)
                 if (resp.error) {
                     throw new Error(resp.error)
@@ -133,18 +133,24 @@ function sign<T extends 'tx' | 'cert'>(
 }
 
 /**
- * create a instance of wallet buddy to help make signing requests to wallet app
+ * create an instance of wallet buddy to help send signing requests to wallet app
  * @param genesisId the genesis id of requests binding to
+ * @param nonce random bytes generator
+ * @param blake2b256 blake2b256 hash function
+ * @param tosUrl the optional customized tos url
  */
 export function create(
-    genesisId: string
+    genesisId: string,
+    nonce: () => string,
+    blake2b256: (val: string) => string,
+    tosUrl?: string
 ): Pick<Connex.Driver, 'signTx' | 'signCert'> {
     return {
         signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
-            return sign('tx', msg, options, genesisId)
+            return sign('tx', msg, options, genesisId, nonce, blake2b256, tosUrl || DEFAULT_TOS_URL)
         },
         signCert(msg: Connex.Vendor.CertMessage, options: Connex.Driver.CertOptions): Promise<Connex.Vendor.CertResponse> {
-            return sign('cert', msg, options, genesisId)
+            return sign('cert', msg, options, genesisId, nonce, blake2b256, tosUrl || DEFAULT_TOS_URL)
         }
     }
 }
