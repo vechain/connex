@@ -2,6 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40vechain%2Fconnex.svg)](https://badge.fury.io/js/%40vechain%2Fconnex)
 
+Provides the bundled Connex library running in browser.
+
 ## License
 
 This package is licensed under the
