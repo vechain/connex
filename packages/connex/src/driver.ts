@@ -1,17 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { DriverNoVendor, SimpleNet } from '@vechain/connex-driver'
 import { loadLibrary } from './script-loader'
 import type * as ConnexWalletBuddy from '@vechain/connex-wallet-buddy'
+import randomBytes from 'randombytes'
+import { blake2b256 } from 'thor-devkit'
 
-const BUDDY_SRC = 'https://unpkg.com/@vechain/connex-wallet-buddy@0.0'
+const BUDDY_SRC = 'https://unpkg.com/@vechain/connex-wallet-buddy@0.1'
 const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
 
+/** the driver implements vendor methods only */
 export class DriverVendorOnly implements Connex.Driver {
     private readonly buddy: Promise<ReturnType<typeof ConnexWalletBuddy.create>>
     constructor(genesisId: string) {
         this.buddy = loadLibrary<typeof ConnexWalletBuddy>(
             BUDDY_SRC,
             BUDDY_LIB_NAME
-        ).then(lib => lib.create(genesisId))
+        ).then(lib => lib.create(
+            genesisId,
+            () => randomBytes(16).toString('hex'),
+            val => blake2b256(val).toString('hex')
+        ))
     }
     get genesis(): Connex.Thor.Block { throw new Error('not implemented') }
     get head(): Connex.Thor.Status['head'] { throw new Error('not implemented') }
@@ -51,11 +59,17 @@ class FullDriver extends DriverNoVendor {
 
 const cache: Record<string, FullDriver> = {}
 
-export function create(nodeUrl: string, genesis: Connex.Thor.Block): Connex.Driver {
-    const key = JSON.stringify({
+/**
+ * create full driver
+ * @param nodeUrl the url of thor node
+ * @param genesis the enforced genesis block
+ */
+export function createFull(nodeUrl: string, genesis: Connex.Thor.Block): Connex.Driver {
+    const key = blake2b256(JSON.stringify({
         nodeUrl,
         genesis
-    })
+    })).toString('hex')
+
     let driver = cache[key]
     if (!driver) {
         cache[key] = driver = new FullDriver(nodeUrl, genesis)

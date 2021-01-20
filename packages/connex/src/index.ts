@@ -1,9 +1,10 @@
 import { Framework } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
 import { compat1 } from './compat'
-import { create as createDriver, DriverVendorOnly } from './driver'
+import { createFull, DriverVendorOnly } from './driver'
 import { newVendor } from '@vechain/connex-framework'
 
+/** convert options.network to Connex.Thor.Block */
 function normalizeNetwork(n: Options['network']) {
     n = n || 'main'
     if (typeof n === 'string') {
@@ -17,6 +18,7 @@ function normalizeNetwork(n: Options['network']) {
     }
 }
 
+/** convert network name to genesis id */
 function normalizeGenesisId(id?: 'main' | 'test' | string) {
     id = id || 'main'
     if (/^0x[0-9a-f]{64}$/.test(id)) {
@@ -29,25 +31,29 @@ function normalizeGenesisId(id?: 'main' | 'test' | string) {
     throw new Error('invalid genesis id')
 }
 
+/** Vendor class which can work standalone to provides signing-services only */
 class VendorClass implements Connex.Vendor {
     sign !: Connex.Vendor['sign']
     constructor(genesisId?: 'main' | 'test' | string) {
         genesisId = normalizeGenesisId(genesisId)
         try {
+            // to detect injected connex
             const injected = ((window || {}) as any).connex
             if (injected && injected.thor.genesis.id === genesisId) {
+                // injected genesis id matched
                 if (/^1\./.test(injected.version)) {
+                    // wrap v1 vendor to v2
                     return compat1(injected).vendor
                 }
                 return injected.vendor
             }
         } catch { /**/ }
+
         const driver = new DriverVendorOnly(genesisId)
         const vendor = newVendor(driver)
         return {
             get sign() {
-                // eslint-disable-next-line @typescript-eslint/unbound-method
-                return vendor.sign
+                return vendor.sign.bind(vendor)
             }
         }
     }
@@ -58,6 +64,7 @@ export type Options = {
     network?: 'main' | 'test' | Connex.Thor.Block
 }
 
+/** Connex class */
 class ConnexClass implements Connex {
     static readonly Vendor = VendorClass
 
@@ -67,16 +74,19 @@ class ConnexClass implements Connex {
     constructor(opts: Options) {
         const genesis = normalizeNetwork(opts.network)
         try {
+            // to detect injected connex
             const injected = ((window || {}) as any).connex
             if (injected && injected.thor.genesis.id === genesis.id) {
+                // injected genesis id matched
                 if (/^1\./.test(injected.version)) {
+                    // wrap v1 to v2
                     return compat1(injected)
                 }
                 return injected
             }
         } catch { /**/ }
 
-        const driver = createDriver(opts.nodeUrl, genesis)
+        const driver = createFull(opts.nodeUrl, genesis)
         const framework = new Framework(driver)
         return {
             get thor() { return framework.thor },
