@@ -20,7 +20,7 @@ Just include the CDN link within a script tag. `Connex` will then be registered 
 It's recommended when your project is a bit large.
 
 ```sh
-$ npm i @vechain/connex
+npm i @vechain/connex
 ```
 
 ```ts
@@ -51,10 +51,10 @@ const connex = new Connex({
 
 ```ts
 const connex = new Connex({
-    node: <the API url of your node>,
+    node: '<the API url of your node>',
     // the genesis block of your private network
     network: {
-        id: 0x...,
+        id: '0x...',
         ...
     }
 })
@@ -62,7 +62,7 @@ const connex = new Connex({
 
 ### Create `Vendor` module only
 
-In some cases, e.g. the classic ['Buy me a coffee'](https://codepen.io/qianbin/pen/YzGBeOB) demo, you don't need the ability to access blockchain. You can opt-out `Connex.Thor` module, and just create `Connex.Vendor` module.
+In some cases, e.g. the classic ['Buy me a coffee'](https://codepen.io/qianbin/pen/YzGBeOB) demo, you don't need the ability to access the blockchain. You can opt-out `Connex.Thor` module, and just create `Connex.Vendor` module.
 
 ```ts
 const vendor = new Connex.Vendor('main')
