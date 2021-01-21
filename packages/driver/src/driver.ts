@@ -1,12 +1,8 @@
 
 import { DriverNoVendor } from './driver-no-vendor'
 import { Net, Wallet } from './interfaces'
-import { Transaction } from 'thor-devkit/dist/transaction'
-import { Certificate } from 'thor-devkit/dist/certificate'
-import { blake2b256 } from 'thor-devkit/dist/cry/blake2b'
+import { Transaction, Certificate, blake2b256 } from 'thor-devkit'
 import { randomBytes } from 'crypto'
-import { options } from './options'
-import { DriverInterface } from './driver-interface'
 
 /** class fully implements DriverInterface */
 export class Driver extends DriverNoVendor {
@@ -16,7 +12,7 @@ export class Driver extends DriverNoVendor {
      * @param net
      * @param wallet
      */
-    public static async connect(net: Net, wallet?: Wallet) {
+    public static async connect(net: Net, wallet?: Wallet): Promise<Driver> {
         const genesis: Connex.Thor.Block = await net.http('GET', 'blocks/0')
         const best: Connex.Thor.Block = await net.http('GET', 'blocks/best', {
             validateResponseHeader: headers => {
@@ -29,13 +25,15 @@ export class Driver extends DriverNoVendor {
 
         return new Driver(
             net,
-            genesis, {
-            id: best.id,
-            number: best.number,
-            timestamp: best.timestamp,
-            parentID: best.parentID,
-            txsFeatures: best.txsFeatures
-        },
+            genesis,
+            {
+                id: best.id,
+                number: best.number,
+                timestamp: best.timestamp,
+                parentID: best.parentID,
+                txsFeatures: best.txsFeatures,
+                gasLimit: best.gasLimit
+            },
             wallet)
     }
 
@@ -58,12 +56,18 @@ export class Driver extends DriverNoVendor {
     }
 
     public async signTx(
-        msg: DriverInterface.SignTxArg,
-        option: DriverInterface.SignTxOption,
-    ): Promise<DriverInterface.SignTxResult> {
-        const key = this.findKey(option.signer)
-        const clauses = msg.map(c => ({ to: c.to, value: c.value, data: c.data }))
-        const gas = option.gas ||
+        msg: Connex.Vendor.TxMessage,
+        options: Connex.Driver.TxOptions,
+    ): Promise<Connex.Vendor.TxResponse> {
+        options.onAccepted && options.onAccepted()
+
+        const key = this.findKey(options.signer)
+        const clauses = msg.map(c => ({
+            to: c.to ? c.to.toLowerCase() : null,
+            value: c.value.toString().toLowerCase(),
+            data: (c.data || '0x').toLowerCase(),
+        }))
+        const gas = options.gas ||
             (await this.estimateGas(clauses, key.address))
 
         const txBody: Transaction.Body = {
@@ -73,26 +77,27 @@ export class Driver extends DriverNoVendor {
             clauses,
             gasPriceCoef: this.txParams.gasPriceCoef,
             gas,
-            dependsOn: option.dependsOn || null,
+            dependsOn: options.dependsOn || null,
             nonce: '0x' + randomBytes(8).toString('hex')
         }
 
         let tx: Transaction | undefined
-        if (option.delegationHandler) {
+        if (options.delegator) {
             const delegatedTx = new Transaction({ ...txBody, reserved: { features: 1/* vip191 */ } })
             const originSig = await key.sign(delegatedTx.signingHash())
+            const unsigned = {
+                raw: '0x' + delegatedTx.encode().toString('hex'),
+                origin: key.address
+            }
             try {
-                const result = await option.delegationHandler({
-                    raw: '0x' + delegatedTx.encode().toString('hex'),
-                    origin: key.address
-                })
+                const result = await this.net.http('POST', options.delegator.url, { body: unsigned })
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 delegatedTx.signature = Buffer.concat([originSig, Buffer.from(result.signature.slice(2), 'hex')])
                 tx = delegatedTx
             } catch (err) {
-                if (!options.disableErrorLog) {
-                    // tslint:disable-next-line: no-console
-                    console.warn('tx delegation error: ', err)
-                }
+                // tslint:disable-next-line: no-console
+                console.warn('tx delegation error: ', err)
+
                 // fallback to non-vip191 tx
             }
         }
@@ -116,13 +121,14 @@ export class Driver extends DriverNoVendor {
             txid: tx.id!,
             signer: key.address
         }
-
     }
 
     public async signCert(
-        msg: DriverInterface.SignCertArg,
-        options: DriverInterface.SignCertOption
-    ): Promise<DriverInterface.SignCertResult> {
+        msg: Connex.Vendor.CertMessage,
+        options: Connex.Driver.CertOptions
+    ): Promise<Connex.Vendor.CertResponse> {
+        options.onAccepted && options.onAccepted()
+
         const key = this.findKey(options.signer)
 
         const annex = {
@@ -139,9 +145,6 @@ export class Driver extends DriverNoVendor {
             annex,
             signature: '0x' + signature.toString('hex')
         }
-    }
-    public isAddressOwned(addr: string) {
-        return Promise.resolve(this.wallet ? this.wallet.list.findIndex(k => k.address === addr) >= 0 : false)
     }
 
     private findKey(addr?: string) {
@@ -166,7 +169,7 @@ export class Driver extends DriverNoVendor {
             data: string
         }>,
         caller: string) {
-        const outputs: Connex.Thor.VMOutput[] = await this.explain({
+        const outputs: Connex.VM.Output[] = await this.explain({
             clauses,
             caller,
         }, this.head.id)

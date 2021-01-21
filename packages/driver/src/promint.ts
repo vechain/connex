@@ -6,7 +6,7 @@ export class PromInt {
     /**
      * interrupt all wrapped promises
      */
-    public interrupt() {
+    public interrupt(): void {
         const rejectors = this.rejectors
         this.rejectors = new Set()
 
@@ -23,7 +23,7 @@ export class PromInt {
             const rejectors = this.rejectors
             rejectors.add(reject)
 
-            p.then(resolve)
+            void p.then(resolve)
                 .catch(reject)
                 .then(() => rejectors.delete(reject))
         })

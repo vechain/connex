@@ -1,11 +1,19 @@
 # Connex
 
-Connex is the standard interface to connect VeChain apps with VeChain blockchain and users. Aiming to help developers building decentralized applications.
+Connex is the mono-repo contains libraries to help build dApps for VeChain.
 
-# Packages
+## Packages
 
-* [Connex](packages/connex/README.md) - typescript definitions of Connex interface
-* [Framework](packages/framework/README.md) - the library implements Connex interface 
-* [Driver](packages/driver/README.md) - the library helps the Framework efficiently access to VeChain node
-* [REPL](packages/repl/README.md) - the Connex playground
-* [Loader](packages/loader/README.md) - working in progress
+| package | status | desc |
+| - | - | - |
+| [connex](packages/connex) | [![npm](https://badge.fury.io/js/%40vechain%2Fconnex.svg)](https://badge.fury.io/js/%40vechain%2Fconnex) | The out of the box Connex implementation for browser |
+| [framework](packages/framework) | [![npm](https://badge.fury.io/js/%40vechain%2Fconnex-framework.svg)](https://badge.fury.io/js/%40vechain%2Fconnex-framework) | Implements Connex interface |
+| [driver](packages/driver) | [![npm](https://badge.fury.io/js/%40vechain%2Fconnex-driver.svg)](https://badge.fury.io/js/%40vechain%2Fconnex-driver) | Implements Connex.Driver interface |
+| [repl](packages/repl) | [![npm](https://badge.fury.io/js/%40vechain%2Fconnex-repl.svg)](https://badge.fury.io/js/%40vechain%2Fconnex-repl) | The REPL style command-line playground |
+| [types](packages/types) | [![npm](https://badge.fury.io/js/%40vechain%2Fconnex-types.svg)](https://badge.fury.io/js/%40vechain%2Fconnex-types) | Connex interface declarations presented in Typescript |
+
+## License
+
+This package is licensed under the
+[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
+in *LICENSE* file in the repository.

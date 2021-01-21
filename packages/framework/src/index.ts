@@ -1,8 +1,7 @@
 import { newThor } from './thor'
 import { newVendor } from './vendor'
-import { version as connexVersion } from '@vechain/connex/package.json'
 import { newDriverGuard } from './driver-guard'
-import { DriverInterface } from './driver-interface'
+
 /**
  * Class implements Connex interface
  */
@@ -14,13 +13,12 @@ export class Framework implements Connex {
      * @param errorHandler optional error handler. If omitted, error message will be printed via console.warn.
      */
     public static guardDriver(
-        driver: DriverInterface,
+        driver: Connex.Driver,
         errorHandler?: (err: Error) => void
-    ) {
+    ): Connex.Driver {
         return newDriverGuard(driver, errorHandler)
     }
 
-    public readonly version = connexVersion
     public readonly thor: Connex.Thor
     public readonly vendor: Connex.Vendor
 
@@ -28,8 +26,10 @@ export class Framework implements Connex {
      * constructor
      * @param driver the driver instance
      */
-    constructor(driver: DriverInterface) {
+    constructor(driver: Connex.Driver) {
         this.thor = newThor(driver)
         this.vendor = newVendor(driver)
     }
 }
+
+export { newVendor }

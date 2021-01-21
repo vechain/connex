@@ -1,16 +1,16 @@
 import * as LRU from 'lru-cache'
-import { Bloom } from 'thor-devkit/dist/bloom'
 import BigNumber from 'bignumber.js'
+import { newFilter } from './bloom'
 
 const WINDOW_LEN = 12
 
 type Slot = Connex.Thor.Status['head'] & {
-    bloom?: Bloom
+    bloom?: ReturnType<typeof newFilter>
     block?: Connex.Thor.Block
 
     accounts: Map<string, Account>
     txs: Map<string, Connex.Thor.Transaction>
-    receipts: Map<string, Connex.Thor.Receipt>
+    receipts: Map<string, Connex.Thor.Transaction.Receipt>
     tied: Map<string, any>
 }
 
@@ -18,7 +18,7 @@ export class Cache {
     private readonly irreversible = {
         blocks: new LRU<string | number, Connex.Thor.Block>(256),
         txs: new LRU<string, Connex.Thor.Transaction>(512),
-        receipts: new LRU<string, Connex.Thor.Receipt>(512)
+        receipts: new LRU<string, Connex.Thor.Transaction.Receipt>(512)
     }
     private readonly window: Slot[] = []
 
@@ -26,7 +26,7 @@ export class Cache {
         head: Connex.Thor.Status['head'],
         bloom?: { bits: string, k: number },
         block?: Connex.Thor.Block
-    ) {
+    ): void {
         while (this.window.length > 0) {
             const top = this.window[this.window.length - 1]
             if (top.id === head.id) {
@@ -40,12 +40,12 @@ export class Cache {
 
         this.window.push({
             ...head,
-            bloom: bloom ? new Bloom(bloom.k, Buffer.from(bloom.bits.slice(2), 'hex')) : undefined,
+            bloom: bloom ? newFilter(Buffer.from(bloom.bits.slice(2), 'hex'), bloom.k) : undefined,
             block,
-            accounts: new Map(),
-            txs: new Map(),
-            receipts: new Map(),
-            tied: new Map(),
+            accounts: new Map<string, Account>(),
+            txs: new Map<string, Connex.Thor.Transaction>(),
+            receipts: new Map<string, Connex.Thor.Transaction.Receipt>(),
+            tied: new Map<string, any>(),
         })
 
         // shift out old slots and move cached items into frozen cache
@@ -64,7 +64,7 @@ export class Cache {
     public async getBlock(
         revision: string | number,
         fetch: () => Promise<Connex.Thor.Block | null>
-    ) {
+    ): Promise<Connex.Thor.Block | null> {
         let block = this.irreversible.blocks.get(revision) || null
         if (block) {
             return block
@@ -95,7 +95,7 @@ export class Cache {
     public async getTx(
         txid: string,
         fetch: () => Promise<Connex.Thor.Transaction | null>
-    ) {
+    ): Promise<Connex.Thor.Transaction | null> {
         let tx = this.irreversible.txs.get(txid) || null
         if (tx) {
             return tx
@@ -123,8 +123,8 @@ export class Cache {
 
     public async getReceipt(
         txid: string,
-        fetch: () => Promise<Connex.Thor.Receipt | null>
-    ) {
+        fetch: () => Promise<Connex.Thor.Transaction.Receipt | null>
+    ): Promise<Connex.Thor.Transaction.Receipt | null> {
         let receipt = this.irreversible.receipts.get(txid) || null
         if (receipt) {
             return receipt
@@ -154,7 +154,7 @@ export class Cache {
         addr: string,
         revision: string,
         fetch: () => Promise<Connex.Thor.Account>
-    ) {
+    ): Promise<Connex.Thor.Account> {
         const found = this.findSlot(revision)
         for (let i = found.index; i >= 0; i--) {
             const slot = this.window[i]
@@ -191,7 +191,7 @@ export class Cache {
         revision: string,
         fetch: () => Promise<any>,
         hints?: string[]
-    ) {
+    ): Promise<any> {
         const found = this.findSlot(revision)
         for (let i = found.index; i >= 0; i--) {
             const slot = this.window[i]
@@ -236,7 +236,7 @@ export class Cache {
     }
 }
 
-function testBytesHex(bloom: Bloom, hex: string) {
+function testBytesHex(filter: ReturnType<typeof newFilter>, hex: string) {
     let buf = Buffer.from(hex.slice(2), 'hex')
     const nzIndex = buf.findIndex(v => v !== 0)
     if (nzIndex < 0) {
@@ -244,7 +244,7 @@ function testBytesHex(bloom: Bloom, hex: string) {
     } else {
         buf = buf.slice(nzIndex)
     }
-    return bloom.test(buf)
+    return filter.contains(buf)
 }
 
 const ENERGY_GROWTH_RATE = 5000000000

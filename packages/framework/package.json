@@ -1,13 +1,18 @@
 {
   "name": "@vechain/connex-framework",
-  "version": "1.1.4",
+  "version": "2.0.0",
   "description": "A library implements VeChain Connex interface",
   "main": "dist/index.js",
+  "module": "esm/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "esm"
+  ],
   "scripts": {
-    "build": "rm -rf dist/;../../node_modules/.bin/tsc -p .",
+    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -d -p . && ../../node_modules/.bin/tsc --module esnext --outDir 'esm' -p .",
     "lint": "../../node_modules/.bin/tslint -p .",
-    "prepare": "npm run build",
+    "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,8 +32,9 @@
   },
   "homepage": "https://github.com/vechain/connex/tree/master/packages/framework#readme",
   "dependencies": {
-    "@vechain/connex": "^1.4.2",
-    "thor-devkit": "^1.2.5",
+    "@vechain/connex-types": "^2.0.0",
+    "thor-devkit": "^2.0.1",
     "validator-ts": "^0.9.1"
-  }
+  },
+  "sideEffects": false
 }

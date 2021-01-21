@@ -1,28 +1,32 @@
 import * as R from './rules'
 import * as V from 'validator-ts'
-import { abi } from 'thor-devkit/dist/abi'
-import { DriverInterface } from './driver-interface'
+import { abi } from 'thor-devkit'
 
-export function newVendor(driver: DriverInterface): Connex.Vendor {
+export function newVendor(driver: Connex.Driver): Connex.Vendor {
     return {
-        sign: (kind) => {
+        sign: <T extends 'tx' | 'cert'>(kind: T, msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage): any => {
             if (kind === 'tx') {
-                return newTxSigningService(driver) as any
+                R.test(msg as Connex.Vendor.TxMessage, [clauseScheme], 'arg1')
+                return newTxSigningService(Promise.resolve(driver), msg as Connex.Vendor.TxMessage)
             } else if (kind === 'cert') {
-                return newCertSigningService(driver) as any
+                R.test(msg as Connex.Vendor.CertMessage, {
+                    purpose: v => (v === 'agreement' || v === 'identification') ?
+                        '' : `expected 'agreement' or 'identification'`,
+                    payload: {
+                        type: v => v === 'text' ? '' : `expected 'text'`,
+                        content: R.string
+                    }
+                }, 'arg1')
+                return newCertSigningService(Promise.resolve(driver), msg as Connex.Vendor.CertMessage)
             } else {
                 throw new R.BadParameter(`arg0: expected 'tx' or 'cert'`)
             }
-        },
-        owned: (addr) => {
-            addr = R.test(addr, R.address, 'arg0').toLowerCase()
-            return driver.isAddressOwned(addr)
         }
     }
 }
 
-function newTxSigningService(driver: DriverInterface): Connex.Vendor.TxSigningService {
-    const opts: DriverInterface.SignTxOption = {}
+export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.Vendor.TxMessage): Connex.Vendor.TxSigningService {
+    const opts: Connex.Driver.TxOptions = {}
 
     return {
         signer(addr) {
@@ -45,33 +49,22 @@ function newTxSigningService(driver: DriverInterface): Connex.Vendor.TxSigningSe
             opts.comment = R.test(text, R.string, 'arg0')
             return this
         },
-        delegate(handler) {
-            R.ensure(typeof handler === 'function',
-                `arg0: expected function`)
-
-            opts.delegationHandler = async unsigned => {
-                const obj = await handler(unsigned)
-                R.test(obj, {
-                    signature: v => R.isHexBytes(v, 65) ? '' : 'expected 65 bytes'
-                }, 'delegation-result')
-                return {
-                    signature: obj.signature.toLowerCase()
-                }
-            }
+        delegate(url, signer) {
+            R.ensure(typeof url === 'string', `arg0: expected url string`)
+            R.test(signer, V.optional(R.address), 'arg1')
+            opts.delegator = { url, signer: signer && signer.toLowerCase() }
             return this
         },
-        request(msg) {
-            R.test(msg, [clauseScheme], 'arg0')
-            const transformedMsg = msg.map(c => ({
-                to: c.to ? c.to.toLowerCase() : null,
-                value: c.value.toString().toLowerCase(),
-                data: (c.data || '0x').toLowerCase(),
-                comment: c.comment,
-                abi: c.abi ? JSON.parse(JSON.stringify(c.abi)) : c.abi
-            }))
+        accepted(cb) {
+            R.ensure(typeof cb === 'function', 'arg0: expected function')
+            opts.onAccepted = cb
+            return this
+        },
+        request() {
             return (async () => {
                 try {
-                    return await driver.signTx(transformedMsg, opts)
+                    const driver = await readyDriver
+                    return await driver.signTx(msg, opts)
                 } catch (err) {
                     throw new Rejected(err.message)
                 }
@@ -80,8 +73,8 @@ function newTxSigningService(driver: DriverInterface): Connex.Vendor.TxSigningSe
     }
 }
 
-function newCertSigningService(driver: DriverInterface): Connex.Vendor.CertSigningService {
-    const opts: DriverInterface.SignCertOption = {}
+function newCertSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.Vendor.CertMessage): Connex.Vendor.CertSigningService {
+    const opts: Connex.Driver.CertOptions = {}
 
     return {
         signer(addr) {
@@ -92,18 +85,15 @@ function newCertSigningService(driver: DriverInterface): Connex.Vendor.CertSigni
             opts.link = R.test(url, R.string, 'arg0')
             return this
         },
-        request(msg) {
-            R.test(msg, {
-                purpose: v => (v === 'agreement' || v === 'identification') ?
-                    '' : `expected 'agreement' or 'identification'`,
-                payload: {
-                    type: v => v === 'text' ? '' : `expected 'text'`,
-                    content: R.string
-                }
-            }, 'arg0')
-
+        accepted(cb) {
+            R.ensure(typeof cb === 'function', 'arg0: expected function')
+            opts.onAccepted = cb
+            return this
+        },
+        request() {
             return (async () => {
                 try {
+                    const driver = await readyDriver
                     return await driver.signCert(msg, opts)
                 } catch (err) {
                     throw new Rejected(err.message)
@@ -131,8 +121,7 @@ const clauseScheme: V.Scheme<Connex.Vendor.TxMessage[number]> = {
             return 'expected object'
         }
         try {
-            // tslint:disable-next-line: no-unused-expression
-            new abi.Function(v as any)
+            new abi.Function(v as any).signature
             return ''
         } catch (err) {
             return `expected valid ABI (${err.message})`

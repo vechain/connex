@@ -1,11 +1,11 @@
 import * as R from './rules'
-import * as V from 'validator-ts'
 
 const MAX_LIMIT = 256
 
 export function newFilter<T extends 'event' | 'transfer'>(
-    ctx: Context,
-    kind: T
+    readyDriver: Promise<Connex.Driver>,
+    kind: T,
+    criteria: Connex.Thor.Filter.Criteria<T>[]
 ): Connex.Thor.Filter<T> {
 
     const filterBody = {
@@ -18,39 +18,13 @@ export function newFilter<T extends 'event' | 'transfer'>(
             offset: 0,
             limit: 10
         },
-        criteriaSet: [] as Array<Connex.Thor.Event.Criteria | Connex.Thor.Transfer.Criteria>,
+        criteriaSet: criteria,
         order: 'asc'
     }
 
-    return {
-        criteria(set) {
-            if (kind === 'event') {
-                R.test(set as Connex.Thor.Event.Criteria[], [eventCriteriaScheme], 'arg0')
-                filterBody.criteriaSet = (set as Connex.Thor.Event.Criteria[])
-                    .map(c => {
-                        return {
-                            address: c.address ? c.address.toLowerCase() : undefined,
-                            topic0: c.topic0 ? c.topic0.toLowerCase() : undefined,
-                            topic1: c.topic1 ? c.topic1.toLowerCase() : undefined,
-                            topic2: c.topic2 ? c.topic2.toLowerCase() : undefined,
-                            topic3: c.topic3 ? c.topic3.toLowerCase() : undefined,
-                            topic4: c.topic4 ? c.topic4.toLowerCase() : undefined
-                        }
-                    })
-            } else {
-                R.test(set as Connex.Thor.Transfer.Criteria[], [transferCriteriaScheme], 'arg0')
-                filterBody.criteriaSet = (set as Connex.Thor.Transfer.Criteria[])
-                    .map(c => {
-                        return {
-                            txOrigin: c.txOrigin ? c.txOrigin.toLowerCase() : undefined,
-                            sender: c.sender ? c.sender.toLowerCase() : undefined,
-                            recipient: c.recipient ? c.recipient.toLowerCase() : undefined
-                        }
-                    })
+    let cacheHints: string[] | undefined
 
-            }
-            return this
-        },
+    return {
         range(range) {
             R.test(range, {
                 unit: v => (v === 'block' || v === 'time') ? '' : `expected 'block' or 'time'`,
@@ -68,6 +42,10 @@ export function newFilter<T extends 'event' | 'transfer'>(
             filterBody.order = order
             return this
         },
+        cache(hints) {
+            cacheHints = R.test(hints, [R.address], 'arg0').map(t => t.toLowerCase())
+            return this
+        },
         apply(offset, limit) {
             R.test(offset, R.uint64, 'arg0')
             R.ensure(limit >= 0 && limit <= MAX_LIMIT && Number.isInteger(limit),
@@ -77,24 +55,10 @@ export function newFilter<T extends 'event' | 'transfer'>(
             filterBody.options.limit = limit
 
             if (kind === 'transfer') {
-                return ctx.driver.filterTransferLogs(filterBody as any) as Promise<any>
+                return readyDriver.then<any>(d => d.filterTransferLogs(filterBody as any, cacheHints))
             } else {
-                return ctx.driver.filterEventLogs(filterBody as any) as Promise<any>
+                return readyDriver.then<any>(d => d.filterEventLogs(filterBody as any, cacheHints))
             }
         }
     }
-}
-
-const eventCriteriaScheme: V.Scheme<Connex.Thor.Event.Criteria> = {
-    address: V.optional(R.address),
-    topic0: V.optional(R.bytes32),
-    topic1: V.optional(R.bytes32),
-    topic2: V.optional(R.bytes32),
-    topic3: V.optional(R.bytes32),
-    topic4: V.optional(R.bytes32)
-}
-const transferCriteriaScheme: V.Scheme<Connex.Thor.Transfer.Criteria> = {
-    sender: V.optional(R.address),
-    recipient: V.optional(R.address),
-    txOrigin: V.optional(R.address)
 }

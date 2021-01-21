@@ -1,86 +1,76 @@
 # Connex
 
 [![npm version](https://badge.fury.io/js/%40vechain%2Fconnex.svg)](https://badge.fury.io/js/%40vechain%2Fconnex)
-&nbsp;&nbsp; [![TG](https://img.shields.io/badge/chat-on%20telegram-blue)](https://t.me/VeChainDevCommunity)
 
-[Connex Powered VeChain Wallets](https://env.vechain.org/)
+The out of the box Connex implementation for browser.
 
-[API Reference](https://docs.vechain.org/connex/)
+## Installation
 
-## Introduction
+### Include in `<script>` tag
 
-Connex is the standard interface to connect VeChain apps with VeChain blockchain and users. Aiming to help developers building decentralized applications.
-[Sync](https://env.vechain.org/#sync) or other connex compatible [clients](https://env.vechain.org/) will expose `connex` API by an injected object on [`Window Object`](https://developer.mozilla.org/en-US/docs/Glossary/Global_object).
-<p align="center">
-<img src="../../docs/connex.jpg" alt="Connex Overview">
-</p>
+Just include the CDN link within a script tag. `Connex` will then be registered as a global variable.
 
-## How To
-
-As `Connex` is already attached to the `Window Object`, just use it in your favourite way. Below is a sample of getting network status,
-
-``` javascript
-const el = document.createElement('h1')
-
-const status = connex.thor.status
-el.innerText = 'You are \'connexed\' to vechain, the status is ' + (status.progress === 1 ? 'synced': 'syncing')
-
-document.querySelector('body').append(el)
+```html
+<!-- install the latest v2 -->
+<script src="https://unpkg.com/@vechain/connex@2" />
 ```
 
-### TypeScript(Recommended)
+### NPM
 
-This project is the type definition of `Connex` API which can be used to in typescript projects. Install by the following command:
+It's recommended when your project is a bit large.
 
-``` bash
-npm install @vechain/connex --save-dev
+```sh
+$ npm i @vechain/connex
 ```
 
-Place following line in any .ts file of your project
-```typescript
-import '@vechain/connex'
-```
-or
-
-add `@vechain/connex` to `compilerOptions.types`  in `tsconfig.json` then you are good to go!
-
-### Bootstrap Your APP
-
-VeChain apps are usually web apps. On app load, you always need to detect `Connex` component in the environment. If `Connex` is not available, you may instruct users to setup `Connex` environment.
-
-To simplify these steps, simply perform redirection:
-
-```javascript
-if(!window.connex) {
-    location.href = 'https://env.vechain.org/r/#' + encodeURIComponent(location.href)
-}
+```ts
+import Connex from '@vechain/connex'
 ```
 
-Additionally, network can be specified:
+## Startup
 
-```javascript
-if(!window.connex) {
-    // the app prefers running on test net
-    location.href = 'https://env.vechain.org/r/#/test/' + encodeURIComponent(location.href)
-}
+### Create a Connex object connects to VeChain **mainnet**
+
+```ts
+const connex = new Connex({
+    node: 'https://mainnet.veblocks.net/', // veblocks public node, use your own if needed
+    network: 'main' // defaults to mainnet, so it can be omitted here
+})
 ```
 
-## Resources
+### Connect to **testnet**
 
-+ [Connex Framework](https://github.com/vechain/connex-framework)
-+ [Connex Driver](https://github.com/vechain/connex-driver)
-+ [Connex REPL](https://github.com/vechain/connex-repl)
+```ts
+const connex = new Connex({
+    node: 'https://testnet.veblocks.net/',
+    network: 'test'
+})
+```
 
-<details><summary>Implementation Architecture(SYNC)</summary>
-<p align="center">
+### Or connect to private network
 
-<img src="../../docs/architecture.png" alt="Connex Architecture" width=400/>
+```ts
+const connex = new Connex({
+    node: <the API url of your node>,
+    // the genesis block of your private network
+    network: {
+        id: 0x...,
+        ...
+    }
+})
+```
 
-</p>
-</details>
+### Create `Vendor` module only
+
+In some cases, e.g. the classic ['Buy me a coffee'](https://codepen.io/qianbin/pen/YzGBeOB) demo, you don't need the ability to access blockchain. You can opt-out `Connex.Thor` module, and just create `Connex.Vendor` module.
+
+```ts
+const vendor = new Connex.Vendor('main')
+```
+
 
 ## License
 
-Connex is licensed under the
+This package is licensed under the
 [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
 in *LICENSE* file in the repository.

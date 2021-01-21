@@ -1,17 +1,10 @@
 {
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "strict": true,
-      "outDir": "./dist",
-      "inlineSourceMap": true,
-      "declaration": true,
-      "moduleResolution": "node",
-      "allowSyntheticDefaultImports": true,
-      "resolveJsonModule": true,
-      "types": ["@vechain/connex"]
+        "outDir": "./dist",
+        "types": ["@vechain/connex-types"]
     },
     "include": [
-      "./src"
+        "./src"
     ]
 }

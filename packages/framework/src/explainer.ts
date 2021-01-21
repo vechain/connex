@@ -1,12 +1,12 @@
 import { decodeRevertReason } from './revert-reason'
 import * as R from './rules'
-import * as V from 'validator-ts'
 
-export function newExplainer(ctx: Context): Connex.Thor.Explainer {
+export function newExplainer(readyDriver: Promise<Connex.Driver>, clauses: Connex.VM.Clause[]): Connex.VM.Explainer {
     const opts: {
         caller?: string
         gas?: number
         gasPrice?: string
+        gasPayer?: string
     } = {}
     let cacheHints: string[] | undefined
 
@@ -23,13 +23,15 @@ export function newExplainer(ctx: Context): Connex.Thor.Explainer {
             opts.gasPrice = R.test(gp, R.bigInt, 'arg0').toString().toLowerCase()
             return this
         },
+        gasPayer(addr) {
+            opts.gasPayer = R.test(addr, R.address, 'arg0').toLowerCase()
+            return this
+        },
         cache(hints) {
             cacheHints = R.test(hints, [R.address], 'arg0').map(t => t.toLowerCase())
             return this
         },
-        execute(clauses) {
-            R.test(clauses, [clauseScheme], 'arg0')
-
+        execute() {
             const transformedClauses = clauses.map(c => {
                 return {
                     to: c.to ? c.to.toLowerCase() : null,
@@ -38,27 +40,21 @@ export function newExplainer(ctx: Context): Connex.Thor.Explainer {
                 }
             })
 
-            return ctx.driver.explain(
+            return readyDriver.then(d => d.explain(
                 {
                     clauses: transformedClauses,
                     ...opts
                 },
-                ctx.trackedHead.id, cacheHints)
+                d.head.id, cacheHints))
                 .then(outputs => {
                     return outputs.map(o => {
                         if (o.reverted) {
                             const revertReason = decodeRevertReason(o.data)
-                            return { ...o, decoded: { revertReason } }
+                            return { ...o, revertReason }
                         }
                         return o
                     })
                 })
         }
     }
-}
-
-const clauseScheme: V.Scheme<Connex.Thor.Clause> = {
-    to: V.nullable(R.address),
-    value: R.bigInt,
-    data: V.optional(R.bytes)
 }

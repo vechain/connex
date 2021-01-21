@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export function isDecString(val: string) {
     return typeof val === 'string' && /^[0-9]+$/.test(val)
 }

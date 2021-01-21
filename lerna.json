@@ -1,6 +1,10 @@
 {
   "packages": [
-    "packages/*"
+    "packages/connex",
+    "packages/driver",
+    "packages/framework",
+    "packages/repl",
+    "packages/types"
   ],
-  "version": "independent"
+  "version": "2.0.0"
 }

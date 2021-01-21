@@ -1,11 +1,10 @@
 import * as V from 'validator-ts'
 import * as R from './rules'
-import { DriverInterface } from './driver-interface'
 
 export function newDriverGuard(
-    driver: DriverInterface,
+    driver: Connex.Driver,
     errHandler?: (err: Error) => void
-): DriverInterface {
+): Connex.Driver {
 
     const test = <T>(obj: T, scheme: V.Scheme<T>, path: string) => {
         try {
@@ -43,7 +42,7 @@ export function newDriverGuard(
             return driver.getReceipt(id)
                 .then(r => r ? test(r, receiptScheme, 'getReceipt()') : r)
         },
-        getAccount(addr: string, revision: string): Promise<Connex.Thor.Account> {
+        getAccount(addr: string, revision: string) {
             return driver.getAccount(addr, revision)
                 .then(a => test(a, {
                     balance: R.hexString,
@@ -51,7 +50,7 @@ export function newDriverGuard(
                     hasCode: R.bool
                 }, 'getAccount()'))
         },
-        getCode(addr: string, revision: string): Promise<Connex.Thor.Code> {
+        getCode(addr: string, revision: string) {
             return driver.getCode(addr, revision)
                 .then(c => test(c, {
                     code: R.bytes
@@ -75,25 +74,15 @@ export function newDriverGuard(
             return driver.filterTransferLogs(arg)
                 .then(r => test(r, [transferWithMetaScheme], 'filterTransferLogs()'))
         },
-        signTx(msg, option) {
-            return driver.signTx(msg, {
-                ...option,
-                delegationHandler: option.delegationHandler ?
-                    unsigned => {
-                        test(unsigned, {
-                            raw: R.bytes,
-                            origin: R.address
-                        }, 'delegationHandler.arg')
-                        return option.delegationHandler!(unsigned)
-                    } : undefined
-            })
+        signTx(msg, options) {
+            return driver.signTx(msg, options)
                 .then(r => test(r, {
                     txid: R.bytes32,
                     signer: R.address
                 }, 'signTx()'))
         },
-        signCert(msg, option) {
-            return driver.signCert(msg, option)
+        signCert(msg, options) {
+            return driver.signCert(msg, options)
                 .then(r => test(r, {
                     annex: {
                         domain: R.string,
@@ -102,10 +91,6 @@ export function newDriverGuard(
                     },
                     signature: v => R.isHexBytes(v, 65) ? '' : 'expected 65 bytes'
                 }, 'signCert()'))
-        },
-        isAddressOwned(addr) {
-            return driver.isAddressOwned(addr)
-                .then(r => test(r, R.bool, 'isAddressOwned()'))
         }
     }
 }
@@ -115,7 +100,8 @@ const headScheme: V.Scheme<Connex.Thor.Status['head']> = {
     number: R.uint32,
     timestamp: R.uint64,
     parentID: R.bytes32,
-    txsFeatures: V.optional(R.uint32)
+    txsFeatures: V.optional(R.uint32),
+    gasLimit: R.uint64
 }
 
 const blockScheme: V.Scheme<Connex.Thor.Block> = {
@@ -161,7 +147,7 @@ const txScheme: V.Scheme<Connex.Thor.Transaction> = {
     })
 }
 
-const logMetaScheme: V.Scheme<Connex.Thor.LogMeta> = {
+const logMetaScheme: V.Scheme<Connex.Thor.Filter.WithMeta['meta']> = {
     blockID: R.bytes32,
     blockNumber: R.uint32,
     blockTimestamp: R.uint64,
@@ -170,31 +156,28 @@ const logMetaScheme: V.Scheme<Connex.Thor.LogMeta> = {
     clauseIndex: R.uint32
 }
 
-const eventScheme: V.Scheme<Connex.Thor.Event> = {
+const eventScheme: V.Scheme<Connex.VM.Event> = {
     address: R.address,
     topics: [R.bytes32],
     data: R.bytes,
-    meta: () => '',
-    decoded: () => ''
 }
-const eventWithMetaScheme: V.Scheme<Connex.Thor.Event> = {
+const eventWithMetaScheme: V.Scheme<Connex.Thor.Filter.Row<'event'>> = {
     ...eventScheme,
     meta: logMetaScheme
 }
 
-const transferScheme: V.Scheme<Connex.Thor.Transfer> = {
+const transferScheme: V.Scheme<Connex.VM.Transfer> = {
     sender: R.address,
     recipient: R.address,
     amount: R.hexString,
-    meta: () => '',
 }
 
-const transferWithMetaScheme: V.Scheme<Connex.Thor.Transfer> = {
+const transferWithMetaScheme: V.Scheme<Connex.Thor.Filter.Row<'transfer'>> = {
     ...transferScheme,
     meta: logMetaScheme
 }
 
-const receiptScheme: V.Scheme<Connex.Thor.Receipt> = {
+const receiptScheme: V.Scheme<Connex.Thor.Transaction.Receipt> = {
     gasUsed: R.uint64,
     gasPayer: R.address,
     paid: R.hexString,
@@ -214,23 +197,20 @@ const receiptScheme: V.Scheme<Connex.Thor.Receipt> = {
     }
 }
 
-const vmOutputScheme: V.Scheme<Connex.Thor.VMOutput> = {
+const vmOutputScheme: V.Scheme<Connex.VM.Output> = {
     data: R.bytes,
     vmError: R.string,
     gasUsed: R.uint64,
     reverted: R.bool,
+    revertReason: () => '',
     events: [{
         address: R.address,
         topics: [R.bytes32],
         data: R.bytes,
-        meta: () => '',
-        decoded: () => ''
     }],
     transfers: [{
         sender: R.address,
         recipient: R.address,
         amount: R.hexString,
-        meta: () => '',
-    }],
-    decoded: () => ''
+    }]
 }
