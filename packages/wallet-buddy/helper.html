@@ -1,0 +1,121 @@
+<html>
+
+<head>
+    <style type="text/css">
+        html,
+        body {
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        *,
+        :after,
+        :before {
+            box-sizing: inherit;
+        }
+
+        body {
+            font-family: Roboto, -apple-system, Helvetica Neue, Helvetica, Arial, sans-serif;
+            -ms-text-size-adjust: 100%;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+            font-size: 16px;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .lds-dual-ring {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+        }
+
+        .lds-dual-ring:after {
+            content: "";
+            display: block;
+            width: 1em;
+            height: 1em;
+            border-radius: 50%;
+            border: 0.16em solid;
+            border-color: currentColor transparent currentColor transparent;
+            animation: lds-dual-ring 0.8s linear infinite;
+        }
+
+        @keyframes lds-dual-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.7);
+            position: absolute;
+            left: 0px;
+            bottom: 0px;
+            width: 100%;
+            color: white;
+            padding: 12px 16px 24px 16px;
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .button {
+            border: 0;
+            background: #1E88E5;
+            color: white;
+            font-family: system-ui, sans-serif;
+            font-size: 1rem;
+            line-height: 1.2;
+            white-space: nowrap;
+            text-decoration: none;
+            padding: 0.25rem 1rem;
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .close {
+            border: 0;
+            background: transparent;
+            color: white;
+            font-size: 1rem;
+            text-decoration: none;
+            padding: 0.25rem 0.5rem;
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="footer">
+        <div>
+            <div class="lds-dual-ring" style="margin-right:0.5em;"></div>
+            Launching Sync2 ...
+            <button style="float:right;" class="close" onclick="post('close')">&#x2715;</button>
+        </div>
+        <div style="text-align:center;margin-top: 0.5rem;">
+            <a href="javascript:post('lite')" style="margin-right: 2rem;color:whitesmoke;font-size: 90%;">Try out
+                Sync2-lite</a>
+            <a class="button" href="https://github.com/vechain/sync2/releases" target="_blank">Install</a>
+        </div>
+    </div>
+    <script>
+        function post(msg) {
+            parent.postMessage({
+                src: 'connex-helper',
+                action: msg
+            }, '*')
+        }
+    </script>
+</body>
+
+</html>

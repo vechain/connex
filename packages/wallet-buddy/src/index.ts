@@ -1,5 +1,6 @@
 import '@vechain/connex-framework/dist/driver-interface'
-import * as W from './wallet'
+import Deferred from './deferred'
+import * as Helper from './helper'
 
 const DEFAULT_TOS_URL = 'https://tos.vecha.in:5678/'
 const ACCEPTED_SUFFIX = '.accepted'
@@ -22,35 +23,49 @@ type RelayedResponse = {
     payload?: object
 }
 
-type Signal = {
-    done: boolean
+function sleep(ms: number) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms)
+    })
 }
 
-async function submitRequest(rid: string, json: string, signal: Signal, tosUrl: string) {
+
+async function submitRequest(rid: string, json: string, tosUrl: string, abort: Promise<never>) {
     const src = new URL(rid, tosUrl).href
-    for (let i = 0; i < 3 && !signal.done; i++) {
+    for (let i = 0; i < 3; i++) {
         try {
-            return await fetch(src, {
-                method: 'POST',
-                body: json,
-                headers: new Headers({
-                    'Content-Type': 'application/json'
-                })
-            })
+            return await Promise.race([
+                abort,
+                fetch(src, {
+                    method: 'POST',
+                    body: json,
+                    headers: new Headers({
+                        'Content-Type': 'application/json'
+                    })
+                })])
         } catch {
-            await new Promise(resolve => setTimeout(resolve, 2000))
+            await Promise.race([
+                abort,
+                sleep(2000)
+            ])
         }
     }
     throw new Error('failed to submit request')
 }
 
-async function pollResponse(rid: string, suffix: string, timeout: number, signal: Signal, tosUrl: string) {
+async function pollResponse(rid: string, suffix: string, timeout: number, tosUrl: string, abort: Promise<never>) {
     let errCount = 0
     const deadline = Date.now() + timeout
-    while (Date.now() < deadline && !signal.done) {
+    while (Date.now() < deadline) {
         try {
-            const resp = await fetch(new URL(`${rid}${suffix}?wait=1`, tosUrl).href)
-            const text = await resp.text()
+            const resp = await Promise.race([
+                abort,
+                fetch(new URL(`${rid}${suffix}?wait=1`, tosUrl).href)
+            ])
+            const text = await Promise.race([
+                abort,
+                resp.text()
+            ])
             if (text) {
                 return text
             }
@@ -58,13 +73,16 @@ async function pollResponse(rid: string, suffix: string, timeout: number, signal
             if (++errCount > 2) {
                 throw new Error('failed fetch response')
             }
-            await new Promise(resolve => setTimeout(resolve, 3000))
+            await Promise.race([
+                abort,
+                sleep(3000)
+            ])
         }
     }
     throw new Error('timeout')
 }
 
-function sign<T extends 'tx' | 'cert'>(
+async function sign<T extends 'tx' | 'cert'>(
     type: T,
     msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage,
     options: T extends 'tx' ? Connex.Driver.TxOptions : Connex.Driver.CertOptions,
@@ -86,50 +104,47 @@ function sign<T extends 'tx' | 'cert'>(
     const json = JSON.stringify(req)
     const rid = blake2b256(json)
 
-    const signal = {
-        done: false
-    }
+    const src = new URL(rid, tosUrl).href
+    const abort = new Deferred<never>()
+    let shownHelper: undefined | ReturnType<typeof Helper.show>
+    let accepted = false
+    try {
+        window.location.href = `connex:sign?src=${encodeURIComponent(src)}`
+    } catch { }
 
-    return Promise.race([
-        // open wallet and watch wallet closing
-        (async () => {
-            try {
-                const w = await W.connect(new URL(rid, tosUrl).href)
-                while (!signal.done) {
-                    if (w && w.closed) {
-                        throw new Error('wallet window closed')
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 1000))
-                }
-            } finally {
-                signal.done = true
-            }
-        })(),
+    try {
         // submit request and poll response
-        (async () => {
-            try {
-                await submitRequest(rid, json, signal, tosUrl)
+        await submitRequest(rid, json, tosUrl, abort)
 
-                onAccepted && void (async () => {
-                    try {
-                        await pollResponse(rid, ACCEPTED_SUFFIX, 60 * 1000, signal, tosUrl)
-                        !signal.done && onAccepted && onAccepted()
-                    } catch (err) {
-                        console.warn(err)
-                    }
-                })()
-
-                const respJson = await pollResponse(rid, RESP_SUFFIX, 10 * 60 * 1000, signal, tosUrl)
-                const resp: RelayedResponse = JSON.parse(respJson)
-                if (resp.error) {
-                    throw new Error(resp.error)
-                }
-                return resp.payload as any
-            } finally {
-                signal.done = true
+        void (async () => {
+            await sleep(2000)
+            if (!accepted) {
+                shownHelper = Helper.show(src)
             }
         })()
-    ])
+
+        void (async () => {
+            try {
+                await pollResponse(rid, ACCEPTED_SUFFIX, 60 * 1000, tosUrl, abort)
+                accepted = true
+                shownHelper && shownHelper.hide()
+                onAccepted && onAccepted()
+            } catch (err) {
+                console.warn(err)
+            }
+        })()
+
+
+        const respJson = await pollResponse(rid, RESP_SUFFIX, 10 * 60 * 1000, tosUrl, abort)
+        const resp: RelayedResponse = JSON.parse(respJson)
+        if (resp.error) {
+            throw new Error(resp.error)
+        }
+        return resp.payload as any
+    } finally {
+        shownHelper && shownHelper.hide()
+        abort.reject('aborted')
+    }
 }
 
 /**
