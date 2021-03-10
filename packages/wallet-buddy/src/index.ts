@@ -106,34 +106,29 @@ async function sign<T extends 'tx' | 'cert'>(
 
     const src = new URL(rid, tosUrl).href
     const abort = new Deferred<never>()
-    let shownHelper: undefined | ReturnType<typeof Helper.show>
+    const helper = Helper.connect(src)
+
     let accepted = false
-    try {
-        window.location.href = `connex:sign?src=${encodeURIComponent(src)}`
-    } catch { }
 
     try {
         // submit request and poll response
         await submitRequest(rid, json, tosUrl, abort)
 
         void (async () => {
-            await sleep(2000)
-            if (!accepted) {
-                shownHelper = Helper.show(src)
-            }
+            await sleep(1500)
+            !accepted && helper.show()
         })()
 
         void (async () => {
             try {
                 await pollResponse(rid, ACCEPTED_SUFFIX, 60 * 1000, tosUrl, abort)
                 accepted = true
-                shownHelper && shownHelper.hide()
+                helper.hide()
                 onAccepted && onAccepted()
             } catch (err) {
                 console.warn(err)
             }
         })()
-
 
         const respJson = await pollResponse(rid, RESP_SUFFIX, 10 * 60 * 1000, tosUrl, abort)
         const resp: RelayedResponse = JSON.parse(respJson)
@@ -142,8 +137,8 @@ async function sign<T extends 'tx' | 'cert'>(
         }
         return resp.payload as any
     } finally {
-        shownHelper && shownHelper.hide()
         abort.reject('aborted')
+        helper.hide()
     }
 }
 

@@ -23,37 +23,68 @@ function openLiteWallet(src: string): Window | null {
         options.features)
 }
 
-export function show(src: string) {
+const getHiddenIframe = (() => {
+    let iframe = null as HTMLIFrameElement | null
+    return () => {
+        if (!iframe || !iframe.parentElement) {
+            iframe = document.createElement("iframe")
+            iframe.style.display = "none"
+            document.body.appendChild(iframe)
+        }
+        return iframe
+    }
+})()
+
+function createActionIframe() {
     const iframe = document.createElement('iframe')
 
     iframe.style.border = 'none'
     iframe.style.position = 'fixed'
-    iframe.style.zIndex = '999'
+    iframe.style.zIndex = '9999'
     iframe.style.width = '100vw'
     iframe.style.height = '110px'
     iframe.style.left = iframe.style.bottom = '0px'
     iframe.src = URL.createObjectURL(new Blob([html], { type: 'text/html' }))
 
-    document.body.appendChild(iframe)
-    let hide = () => {
-        document.body.removeChild(iframe)
-        hide = () => { }
-    }
+    return iframe
+}
 
-    window.addEventListener('message', ev => {
+export function connect(src: string) {
+    try {
+        getHiddenIframe().contentWindow!.location.href = `connex:sign?src=${encodeURIComponent(src)}`
+    } catch { }
+
+    const actionFrame = createActionIframe()
+
+    const msgHandler = (ev: MessageEvent<any>) => {
         if (ev.data && ev.data.src === 'connex-helper' && ev.data.action) {
             switch (ev.data.action) {
                 case 'close':
-                    hide()
+                    if (actionFrame.parentNode) {
+                        actionFrame.parentNode.removeChild(actionFrame)
+                        window.removeEventListener('message', msgHandler)
+                    }
                     return
                 case 'lite':
                     openLiteWallet(src)
                     return
             }
         }
-    })
+    }
+
     return {
-        hide() { hide() }
+        show() {
+            if (!actionFrame.parentNode) {
+                document.body.appendChild(actionFrame)
+                window.addEventListener('message', msgHandler)
+            }
+        },
+        hide() {
+            if (actionFrame.parentNode) {
+                actionFrame.parentNode.removeChild(actionFrame)
+                window.removeEventListener('message', msgHandler)
+            }
+        }
     }
 }
 
