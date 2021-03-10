@@ -8,6 +8,14 @@ module.exports = {
         library: 'ConnexWalletBuddy',
         libraryTarget: 'umd'
     },
+    module: {
+      rules: [
+        {
+          test: /\.html$/i,
+          loader: 'html-loader',
+        },
+      ],
+    },
     mode: 'production',
     devtool: 'source-map'
 }

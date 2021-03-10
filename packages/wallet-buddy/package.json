@@ -2,17 +2,16 @@
   "name": "@vechain/connex-wallet-buddy",
   "version": "0.1.0",
   "description": "to bridge connex sign request to wallet",
-  "main": "dist/index.js",
-  "module": "esm/index.js",
+  "main": "dist/bundle.min.js",
   "unpkg": "dist/bundle.min.js",
   "jsdelivr": "dist/bundle.min.js",
-  "types": "dist/index.d.ts",
+  "types": "esm/index.d.ts",
   "files": [
     "dist",
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -d -p . && ../../node_modules/.bin/tsc --module esnext --outDir 'esm' -p . && webpack",
+    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && webpack",
     "lint": "../../node_modules/.bin/tslint -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,6 +27,7 @@
   },
   "devDependencies": {
     "@vechain/connex-framework": "^2.0.0-beta.38",
+    "html-loader": "^2.1.1",
     "webpack": "^5.2.0",
     "webpack-cli": "^4.1.0"
   }
