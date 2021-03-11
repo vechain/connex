@@ -68,6 +68,9 @@ export function connect(src: string) {
                 case 'lite':
                     openLiteWallet(src)
                     return
+                case 'install':
+                    window.open('https://github.com/vechain/sync2/releases')
+                    return
             }
         }
     }
