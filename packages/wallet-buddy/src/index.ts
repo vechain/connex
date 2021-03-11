@@ -2,7 +2,7 @@ import '@vechain/connex-framework/dist/driver-interface'
 import Deferred from './deferred'
 import * as Helper from './helper'
 
-const DEFAULT_TOS_URL = 'https://tos.vecha.in:5678/'
+const DEFAULT_TOS_URL = 'https://tos.vecha.in/'
 const ACCEPTED_SUFFIX = '.accepted'
 const RESP_SUFFIX = '.resp'
 
