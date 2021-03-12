@@ -6,9 +6,7 @@ const baseConfig = {
     entry: './esm/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        library: 'Connex',
-        libraryTarget: 'umd',
-        libraryExport: 'default'
+        libraryTarget: 'umd'
     },
     resolve: {
         fallback: {
