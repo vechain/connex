@@ -82,6 +82,8 @@ async function pollResponse(rid: string, suffix: string, timeout: number, tosUrl
     throw new Error('timeout')
 }
 
+let _abort: Deferred<never> | null = null
+
 async function sign<T extends 'tx' | 'cert'>(
     type: T,
     msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage,
@@ -91,6 +93,12 @@ async function sign<T extends 'tx' | 'cert'>(
     blake2b256: (val: string) => string,
     tosUrl: string
 ): Promise<T extends 'tx' ? Connex.Vendor.TxResponse : Connex.Vendor.CertResponse> {
+    if (_abort) {
+        _abort.reject(new Error('aborted'))
+    }
+
+    const abort = _abort = new Deferred<never>()
+
     const onAccepted = options.onAccepted
     const req: RelayedRequest = {
         type,
@@ -105,7 +113,6 @@ async function sign<T extends 'tx' | 'cert'>(
     const rid = blake2b256(json)
 
     const src = new URL(rid, tosUrl).href
-    const abort = new Deferred<never>()
     const helper = Helper.connect(src)
 
     let accepted = false
@@ -115,8 +122,13 @@ async function sign<T extends 'tx' | 'cert'>(
         await submitRequest(rid, json, tosUrl, abort)
 
         void (async () => {
-            await sleep(1500)
-            !accepted && helper.show()
+            try {
+                await Promise.race([
+                    abort,
+                    sleep(1500)
+                ])
+                !accepted && helper.show()
+            } catch { }
         })()
 
         void (async () => {
@@ -125,9 +137,7 @@ async function sign<T extends 'tx' | 'cert'>(
                 accepted = true
                 helper.hide()
                 onAccepted && onAccepted()
-            } catch (err) {
-                console.warn(err)
-            }
+            } catch { }
         })()
 
         const respJson = await pollResponse(rid, RESP_SUFFIX, 10 * 60 * 1000, tosUrl, abort)
@@ -137,7 +147,7 @@ async function sign<T extends 'tx' | 'cert'>(
         }
         return resp.payload as any
     } finally {
-        abort.reject('aborted')
+        abort.reject(new Error('aborted'))
         helper.hide()
     }
 }
