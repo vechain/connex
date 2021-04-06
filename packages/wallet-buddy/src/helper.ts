@@ -53,7 +53,12 @@ function createActionIframe() {
 
 export function connect(src: string) {
     try {
-        getHiddenIframe().contentWindow!.location.href = `connex:sign?src=${encodeURIComponent(src)}`
+        const href = `connex:sign?src=${encodeURIComponent(src)}`
+        if (browser && browser.os === 'android') {
+            window.location.href = href
+        } else {
+            getHiddenIframe().contentWindow!.location.href = href
+        }
     } catch { }
 
     const actionFrame = createActionIframe()
