@@ -10,6 +10,7 @@ function openLiteWallet(src: string): Window | null {
         switch (browser && browser.os) {
             case 'iOS':
             case 'android':
+            case 'Android OS':
                 return {}
             default:
                 return {
@@ -54,7 +55,7 @@ function createActionIframe() {
 export function connect(src: string) {
     try {
         const href = `connex:sign?src=${encodeURIComponent(src)}`
-        if (browser && browser.os === 'android') {
+        if (browser && (browser.os === 'android' || browser.os === 'Android OS')) {
             window.location.href = href
         } else {
             getHiddenIframe().contentWindow!.location.href = href
