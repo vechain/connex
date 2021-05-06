@@ -52,13 +52,24 @@ function createActionIframe() {
     return iframe
 }
 
-export function connect(src: string) {
+interface Helper {
+    show(): void
+    hide(): void
+}
+
+export function connect(src: string): Helper {
     try {
         const href = `connex:sign?src=${encodeURIComponent(src)}`
-        if (browser && (browser.os === 'android' || browser.os === 'Android OS')) {
-            window.location.href = href
-        } else {
+        const os = (browser && browser.os) || ''
+        if (os === 'Mac OS' || os === 'Linux' || os.startsWith('Windows')) {
+            // desktop oses have native sync2 supported, try to launch in hidden iframe
             getHiddenIframe().contentWindow!.location.href = href
+        } else {
+            openLiteWallet(src)
+            return {
+                show() { },
+                hide() { }
+            }
         }
     } catch { }
 
