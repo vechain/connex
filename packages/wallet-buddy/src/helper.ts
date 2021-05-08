@@ -88,7 +88,7 @@ export function connect(src: string): Helper {
                     openLiteWallet(src)
                     return
                 case 'install':
-                    window.open('https://github.com/vechain/sync2/releases')
+                    window.open('https://sync.vecha.in/')
                     return
             }
         }
