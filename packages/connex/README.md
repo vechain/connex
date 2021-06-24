@@ -65,7 +65,7 @@ const connex = new Connex({
 In some cases, e.g. the classic ['Buy me a coffee'](https://codepen.io/qianbin/pen/YzGBeOB) demo, you don't need the ability to access the blockchain. You can opt-out `Connex.Thor` module, and just create `Connex.Vendor` module.
 
 ```ts
-const vendor = new Connex.Vendor('main') # 'main','test' or genesis ID if it's private network
+const vendor = new Connex.Vendor('main') //'main','test' or genesis ID if it's private network
 ```
 
 
