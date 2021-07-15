@@ -69,6 +69,9 @@ export type Options = {
      * all subsequent request will fail.
      */
     network?: 'main' | 'test' | Connex.Thor.Block
+
+    /** the flag to disable the compatibility with connex1 environment */
+    noV1Compat?: boolean
 }
 
 /** Connex class */
@@ -80,18 +83,19 @@ class ConnexClass implements Connex {
 
     constructor(opts: Options) {
         const genesis = normalizeNetwork(opts.network)
-        try {
-            // to detect injected connex
-            const injected = ((window || {}) as any).connex
-            if (injected && injected.thor.genesis.id === genesis.id) {
-                // injected genesis id matched
-                if (/^1\./.test(injected.version)) {
-                    // wrap v1 to v2
-                    return compat1(injected)
+        if (!opts.noV1Compat) {
+            try {
+                // to detect injected connex
+                const injected = ((window || {}) as any).connex
+                if (injected && injected.thor.genesis.id === genesis.id) {
+                    // injected genesis id matched
+                    if (/^1\./.test(injected.version)) {
+                        // wrap v1 to v2
+                        return compat1(injected)
+                    }
                 }
-                return injected
-            }
-        } catch { /**/ }
+            } catch { /**/ }
+        }
 
         const driver = createFull(opts.node, genesis)
         const framework = new Framework(driver)
