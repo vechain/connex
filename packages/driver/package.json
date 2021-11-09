@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-driver",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Connex framework driver implementation",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
