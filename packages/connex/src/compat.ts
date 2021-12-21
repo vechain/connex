@@ -1,3 +1,5 @@
+import { abi } from 'thor-devkit'
+
 /** ports connex v1 to connex v2 */
 export function compat1(connex1: Connex1): Connex {
     const t1 = connex1.thor
@@ -29,49 +31,8 @@ export function compat1(connex1: Connex1): Connex {
                         get: () => a1.get(),
                         getCode: () => a1.getCode(),
                         getStorage: key => a1.getStorage(key),
-                        method: abi => {
-                            const m1 = a1.method(abi)
-                            return {
-                                value(val) { m1.value(val); return this },
-                                caller(addr) { m1.caller(addr); return this },
-                                gas(gas) { m1.gas(gas); return this },
-                                gasPrice(gp) { m1.gasPrice(gp); return this },
-                                gasPayer(addr) { console.warn("gasPayer is not supported in compat mode"); return this },
-                                cache(hints) { m1.cache(hints); return this },
-                                asClause: (...args) => m1.asClause(...args) as Connex.Thor.Transaction['clauses'][0],
-                                call: (...args) => {
-                                    return m1.call(...args).
-                                        then(r => {
-                                            return {
-                                                ...r,
-                                                decoded: r.decoded!,
-                                                revertReason: r.decoded!.revertReason
-                                            }
-                                        })
-                                },
-                                transact: (...args) => {
-                                    const clause = m1.asClause(...args)
-                                    return this.vendor.sign('tx', [clause])
-                                }
-                            }
-                        },
-                        event: abi => {
-                            const e1 = a1.event(abi)
-                            return {
-                                asCriteria: indexed => e1.asCriteria(indexed),
-                                filter: (indexed) => {
-                                    const f1 = e1.filter(indexed)
-                                    return {
-                                        range(r) { f1.range(r); return this },
-                                        order(o) { f1.order(o); return this },
-                                        cache() { console.warn('cache is not supported in compat mode'); return this },
-                                        apply(offset, limit) {
-                                            return f1.apply(offset, limit) as any
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        method: jsonABI => newMethod(a1, jsonABI, this),
+                        event: jsonABI => newEvent(a1, jsonABI, this)
                     }
                 },
                 block: rev => t1.block(rev),
@@ -82,7 +43,7 @@ export function compat1(connex1: Connex1): Connex {
                     return {
                         range(r) { f1.range(r); return this },
                         order(o) { f1.order(o); return this },
-                        cache() { console.warn('cache is not supported in compat mode'); return this },
+                        cache() { console.warn('filter :cache is not supported in compat mode'); return this },
                         apply(offset, limit): Promise<any> {
                             return f1.apply(offset, limit)
                         }
@@ -95,7 +56,7 @@ export function compat1(connex1: Connex1): Connex {
                         gas(gas) { e1.gas(gas); return this },
                         gasPrice(gp) { e1.gasPrice(gp); return this },
                         gasPayer(addr) { console.warn("gasPayer is not supported in compat mode"); return this },
-                        cache() { console.warn('cache is not supported in compat mode'); return this },
+                        cache() { console.warn('explainer :cache is not supported in compat mode'); return this },
                         execute: () => e1.execute(clauses)
                     }
                 }
@@ -441,3 +402,94 @@ declare namespace Connex1 {
     type ErrorType = 'BadParameter' | 'Rejected'
 }
 
+const newMethod = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Connex): Connex.Thor.Account.Method => {
+    // let v1 do the validation
+    const m1 = acc.method(jsonABI)
+    const coder = new abi.Function(JSON.parse(JSON.stringify(jsonABI)))
+
+    const opts: {
+        caller?: string
+        gas?: number
+        gasPrice?: string | number
+    } = {}
+
+    return {
+        value(val) { m1.value(val); return this },
+        caller(addr) { m1.caller(addr); opts.caller = addr; return this },
+        gas(gas) { m1.gas(gas); opts.gas = gas; return this },
+        gasPrice(gp) { m1.gasPrice(gp); opts.gasPrice = gp; return this },
+        gasPayer(addr) { console.warn("gasPayer is not supported in compat mode"); return this },
+        cache(hints) { console.warn("account.method :cache is not supported in compat mode"); return this },
+        asClause: (...args) => {
+            const clause = m1.asClause(...args) as Connex.Thor.Transaction['clauses'][0]
+            // re-encode the data as some older version of connex v1 does not have the capability of encoding ABIv2 objects
+            clause.data = coder.encode(...args)
+            return clause
+        },
+        call(...args) {
+            const clause = this.asClause(...args)
+            const explainer = connex.thor.explain([clause])
+
+            if (opts.caller) explainer.caller(opts.caller)
+            if (opts.gas) explainer.gas(opts.gas)
+            if (opts.gasPrice) explainer.gasPrice(opts.gasPrice)
+
+            return explainer.execute().then(outputs => {
+                const out: Connex.VM.Output & Connex.Thor.Account.WithDecoded = { ...outputs[0], decoded: {} }
+
+                if (!out.reverted && out.data !== '0x') {
+                    out.decoded = coder.decode(out.data)
+                }
+
+                return out
+            })
+        },
+        transact(...args) {
+            const clause = this.asClause(...args)
+            return connex.vendor.sign('tx', [clause])
+        }
+    }
+}
+
+const newEvent = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Connex): Connex.Thor.Account.Event => {
+    // let v1 do the validation
+    const e1 = acc.event(jsonABI)
+    const coder = new abi.Event(JSON.parse(JSON.stringify(jsonABI)))
+    return {
+        asCriteria: indexed => {
+            e1.asCriteria(indexed)
+
+            const topics = coder.encode(indexed)
+            return {
+                address: acc.address,
+                topic0: topics[0] || undefined,
+                topic1: topics[1] || undefined,
+                topic2: topics[2] || undefined,
+                topic3: topics[3] || undefined,
+                topic4: topics[4] || undefined
+            }
+        },
+        filter(indexed) {
+            e1.filter(indexed)
+
+            if (indexed.length === 0) {
+                indexed = [{}]
+            }
+
+            const criteriaSet = indexed.map((o, i) => this.asCriteria(o))
+            const filter = connex.thor.filter('event', criteriaSet)
+            return {
+                range(r) { filter.range(r); return this },
+                order(o) { filter.order(o); return this },
+                cache() { console.warn('account.event :cache is not supported in compat mode'); return this },
+                apply(offset, limit) {
+                    return filter.apply(offset, limit).then(events => events.map(e => {
+                        const event:Connex.Thor.Filter.Row<'event'> & Connex.Thor.Account.WithDecoded = {...e, decoded: {}}
+                        event.decoded = coder.decode(event.data, event.topics)
+                        return event
+                    }))
+                }
+            }
+        }
+    }
+}
