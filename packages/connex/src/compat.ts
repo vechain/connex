@@ -1,4 +1,5 @@
 import { abi } from 'thor-devkit'
+import * as R from '@vechain/connex-framework/dist/rules'
 
 /** ports connex v1 to connex v2 */
 export function compat1(connex1: Connex1): Connex {
@@ -403,10 +404,9 @@ declare namespace Connex1 {
 }
 
 const newMethod = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Connex): Connex.Thor.Account.Method => {
-    // let v1 do the validation
-    const m1 = acc.method(jsonABI)
     const coder = new abi.Function(JSON.parse(JSON.stringify(jsonABI)))
 
+    let value: string | number = 0
     const opts: {
         caller?: string
         gas?: number
@@ -414,17 +414,37 @@ const newMethod = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Co
     } = {}
 
     return {
-        value(val) { m1.value(val); return this },
-        caller(addr) { m1.caller(addr); opts.caller = addr; return this },
-        gas(gas) { m1.gas(gas); opts.gas = gas; return this },
-        gasPrice(gp) { m1.gasPrice(gp); opts.gasPrice = gp; return this },
+        value(val) {
+            value = R.test(val, R.bigInt, 'arg0')
+            return this
+        },
+        caller(addr) {
+            opts.caller = R.test(addr, R.address, 'arg0').toLowerCase()
+            return this
+        },
+        gas(gas) {
+            opts.gas = R.test(gas, R.uint64, 'arg0')
+            return this
+        },
+        gasPrice(gp) {
+            opts.gasPrice = R.test(gp, R.bigInt, 'arg0').toString().toLowerCase()
+            return this
+        },
         gasPayer(addr) { console.warn("gasPayer is not supported in compat mode"); return this },
         cache(hints) { console.warn("account.method :cache is not supported in compat mode"); return this },
         asClause: (...args) => {
-            const clause = m1.asClause(...args) as Connex.Thor.Transaction['clauses'][0]
-            // re-encode the data as some older version of connex v1 does not have the capability of encoding ABIv2 objects
-            clause.data = coder.encode(...args)
-            return clause
+            const inputsLen = (coder.definition.inputs || []).length
+            R.ensure(inputsLen === args.length, `args count expected ${inputsLen}`)
+            try {
+                const data = coder.encode(...args)
+                return {
+                    to: acc.address,
+                    value: value.toString().toLowerCase(),
+                    data
+                }
+            } catch (err) {
+                throw new R.BadParameter(`args can not be encoded (${err.message})`)
+            }
         },
         call(...args) {
             const clause = this.asClause(...args)
@@ -452,31 +472,41 @@ const newMethod = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Co
 }
 
 const newEvent = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Connex): Connex.Thor.Account.Event => {
-    // let v1 do the validation
-    const e1 = acc.event(jsonABI)
     const coder = new abi.Event(JSON.parse(JSON.stringify(jsonABI)))
+    const encode = (indexed: object) => {
+        const topics = coder.encode(indexed)
+        return {
+            address: acc.address,
+            topic0: topics[0] || undefined,
+            topic1: topics[1] || undefined,
+            topic2: topics[2] || undefined,
+            topic3: topics[3] || undefined,
+            topic4: topics[4] || undefined
+        }
+    }
+
     return {
         asCriteria: indexed => {
-            e1.asCriteria(indexed)
-
-            const topics = coder.encode(indexed)
-            return {
-                address: acc.address,
-                topic0: topics[0] || undefined,
-                topic1: topics[1] || undefined,
-                topic2: topics[2] || undefined,
-                topic3: topics[3] || undefined,
-                topic4: topics[4] || undefined
+            try {
+                return encode(indexed)
+            } catch (err) {
+                throw new R.BadParameter(`arg0: can not be encoded (${err.message})`)
             }
         },
         filter(indexed) {
-            e1.filter(indexed)
+            R.test(indexed, [{}], 'arg0')
 
             if (indexed.length === 0) {
                 indexed = [{}]
             }
 
-            const criteriaSet = indexed.map((o, i) => this.asCriteria(o))
+            const criteriaSet = indexed.map((o, i) => {
+                try {
+                    return encode(o)
+                } catch (err) {
+                    throw new R.BadParameter(`arg0.#${i}: can not be encoded (${err.message})`)
+                }
+            })
             const filter = connex.thor.filter('event', criteriaSet)
             return {
                 range(r) { filter.range(r); return this },
