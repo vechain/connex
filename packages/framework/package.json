@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-framework",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "A library implements VeChain Connex interface",
   "main": "dist/index.js",
   "module": "esm/index.js",
