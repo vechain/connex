@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40vechain%2Fconnex.svg)](https://badge.fury.io/js/%40vechain%2Fconnex)
 
-The out of the box Connex implementation for browser.
+The out of the box Connex implementation for **browser**.
 
 ## Installation
 
@@ -68,6 +68,9 @@ In some cases, e.g. the classic ['Buy me a coffee'](https://codepen.io/qianbin/p
 const vendor = new Connex.Vendor('main') //'main','test' or genesis ID if it's private network
 ```
 
+## Using in Node.js environment
+
+This package, **@vechain/connex** is designed only working in browser, if you are interested running it in Node.js, try [@vechain/connex-framework](https://github.com/vechain/connex/tree/master/packages/framework).
 
 ## License
 

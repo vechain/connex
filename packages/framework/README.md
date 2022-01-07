@@ -6,7 +6,7 @@ Connex Framework is a library implements Connex interface.
 
 ## Installation
 
-It always works along with the package @vechain/connex-driver.
+It always works along with the package [@vechain/connex-driver](https://github.com/vechain/connex/tree/master/packages/driver).
 
 ```sh
 npm i @vechain/connex-framework @vechain/connex-driver
