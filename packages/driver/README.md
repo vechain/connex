@@ -13,7 +13,7 @@ npm i @vechain/connex-framework @vechain/connex-driver
 
 ## Usage
 
-The [REPL playground](https://github.com/vechain/connex-repl) is a good start.
+The [REPL playground](https://github.com/vechain/connex/tree/master/packages/repl) is a good start.
 
 
 ```typescript
