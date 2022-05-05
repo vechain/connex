@@ -70,7 +70,7 @@ const vendor = new Connex.Vendor('main') //'main','test' or genesis ID if it's p
 
 ## Using in Node.js environment
 
-This package, **@vechain/connex** is designed only working in browser, if you are interested running it in Node.js, try [@vechain/connex-framework](https://github.com/vechain/connex/tree/master/packages/framework).
+This package, **@vechain/connex** is designed only work in the browser, if you are interested in running it in Node.js, try [@vechain/connex-framework](https://github.com/vechain/connex/tree/master/packages/framework).
 
 ## License
 
