@@ -76,8 +76,19 @@ export function compat1(connex1: Connex1): Connex {
                             dependsOn(txid) { s1.dependsOn(txid); return this },
                             link(url) { s1.link(url); return this },
                             comment(text) { s1.comment(text); return this },
-                            delegate(/*url, signer */) {
-                                console.warn('delegate is not supported in compat mode')
+                            delegate(url) {
+                                R.ensure(typeof url === 'string', `arg0: expected url string`)
+                                s1.delegate(async (unsignedTx) => {
+                                    const res = await fetch(url, {
+                                        method: 'POST',
+                                        body: JSON.stringify(unsignedTx),
+                                        headers: {
+                                            "Content-Type": 'application/json'
+                                        }
+                                    })
+
+                                    return res.json()
+                                })
                                 return this
                             },
                             accepted(cb) { onAccepted = cb; return this },
