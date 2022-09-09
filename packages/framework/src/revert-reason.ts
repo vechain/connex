@@ -1,15 +1,18 @@
-import { abi } from 'thor-devkit'
+import { abi, keccak256 } from 'thor-devkit'
 
-// https://solidity.readthedocs.io/en/v0.5.5/control-structures.html#error-handling-assert-require-revert-and-exceptions
-// 0x08c379a0
-// Function selector for Error(string)
+// https://docs.soliditylang.org/en/v0.8.16/control-structures.html#error-handling-assert-require-revert-and-exceptions
+// builtin errors in solidity, Error(string) and Panic(uint256)
 
-const errorSig = '0x08c379a0'
+const errorSelector = '0x' + keccak256('Error(string)').toString('hex').slice(0, 8)
+const panicSelector = '0x' + keccak256('Panic(uint256)').toString('hex').slice(0, 8)
 
 export function decodeRevertReason(data: string): string {
     try {
-        if (data.startsWith(errorSig)) {
-            return abi.decodeParameter('string', '0x' + data.slice(errorSig.length)) as string
+        if (data.startsWith(errorSelector)) {
+            return abi.decodeParameter('string', '0x' + data.slice(errorSelector.length)) as string
+        } else if (data.startsWith(panicSelector)) {
+            const decoded = abi.decodeParameter('uint256', '0x' + data.slice(panicSelector.length)) as string
+            return `Panic(0x${parseInt(decoded).toString(16).padStart(2, '0')})`
         }
         return ''
     } catch {
