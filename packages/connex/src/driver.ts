@@ -58,7 +58,7 @@ export class DriverVendorOnly implements Connex.Driver {
         return this.getSigner().then(s => s.signCert(msg, options))
     }
 
-    getSigner(): Promise<ConnexSigner> {
+    private getSigner(): Promise<ConnexSigner> {
         if (!this.noExtension && window.vechain?.getSigner) {
             if (!this.extensionSigner){
                 //Initiate the signer on the first call
