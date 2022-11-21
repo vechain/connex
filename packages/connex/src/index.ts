@@ -72,6 +72,9 @@ export type Options = {
 
     /** the flag to disable the compatibility with connex1 environment */
     noV1Compat?: boolean
+
+    /** the flag to disable the vechain browser extension */
+    noExtension?: boolean
 }
 
 /** Connex class */
@@ -97,7 +100,7 @@ class ConnexClass implements Connex {
             } catch { /**/ }
         }
 
-        const driver = createFull(opts.node, genesis)
+        const driver = createFull(opts, genesis)
         const framework = new Framework(driver)
         return {
             get thor() { return framework.thor },
