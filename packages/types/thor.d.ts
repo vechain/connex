@@ -57,6 +57,8 @@ declare namespace Connex {
                 /** block gas limit */
                 gasLimit: number
             }
+            /** id of finalized block */
+            finalized: string
         }
 
         /** the ticker interface, to watch new blocks */

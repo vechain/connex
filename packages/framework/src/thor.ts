@@ -24,7 +24,8 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
         get status() {
             return {
                 head: headTracker.head,
-                progress: headTracker.progress
+                progress: headTracker.progress,
+                finalized: headTracker.finalized
             }
         },
         ticker: () => headTracker.ticker(),

@@ -119,6 +119,8 @@ const blockScheme: V.Scheme<Connex.Thor.Block> = {
     stateRoot: R.bytes32,
     receiptsRoot: R.bytes32,
     signer: R.address,
+    com: V.optional(R.bool),
+    isFinalized: V.optional(R.bool),
     isTrunk: R.bool,
     transactions: [R.bytes32]
 }

@@ -16,7 +16,8 @@ export function compat1(connex1: Connex1): Connex {
                         head: {
                             ...s.head,
                             gasLimit: 20000000
-                        }
+                        },
+                        finalized: '0000000000000000000000000000000000000000000000000000000000000000'
                     }
                 },
                 ticker: () => {
@@ -233,6 +234,8 @@ declare namespace Connex1 {
             receiptsRoot: string
             signer: string
             transactions: string[]
+            com?: boolean
+            isFinalized?: boolean
             isTrunk: boolean
         }
 

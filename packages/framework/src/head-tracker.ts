@@ -1,6 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+const checkpointInterval = 180
+
 export function newHeadTracker(driver: Connex.Driver) {
     let head = { ...driver.head }
+    let finalized = driver.genesis.id
     let resolvers: Array<(head: Connex.Thor.Status['head']) => void> = [];
 
     void (async () => {
@@ -8,6 +11,14 @@ export function newHeadTracker(driver: Connex.Driver) {
             try {
                 const newHead = await driver.pollHead()
                 if (newHead.id !== head.id && newHead.number >= head.number) {
+                    if (head.number === 0 || (newHead.number + 1) % checkpointInterval === 0) {
+                        try {
+                            const finalizedBlk = await driver.getBlock('finalized')
+                            if (finalizedBlk && finalizedBlk.id != finalized) {
+                                finalized = finalizedBlk.id
+                            }
+                        } catch { void 0 }
+                    }
                     head = { ...newHead }
                     const resolversCopy = resolvers
                     resolvers = []
@@ -36,6 +47,7 @@ export function newHeadTracker(driver: Connex.Driver) {
             const p = (headTsMs - genesisTsMs) / (nowTsMs - genesisTsMs)
             return p < 0 ? NaN : p
         },
+        get finalized() { return finalized },
         ticker: () => {
             let lastHeadId = head.id
             return {

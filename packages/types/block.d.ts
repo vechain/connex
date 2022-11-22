@@ -16,6 +16,8 @@ declare namespace Connex.Thor {
         receiptsRoot: string
         signer: string
         transactions: string[]
+        com?: boolean
+        isFinalized?: boolean
         isTrunk: boolean
     }
 
