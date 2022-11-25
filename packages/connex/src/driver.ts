@@ -12,7 +12,7 @@ type ConnexSigner = ReturnType<typeof ConnexWalletBuddy.create>
 declare global {
     interface Window {
         vechain?: {
-            getConnexSigner?: (genesisId: string) => ConnexSigner
+            newConnexSigner?: (genesisId: string) => ConnexSigner
         }
     }
 }
@@ -44,8 +44,8 @@ export class DriverVendorOnly implements Connex.Driver {
     }
 
     private initSigner(genesisId: string, useExtension: boolean): Promise<ConnexSigner> {
-        if (useExtension && window.vechain?.getConnexSigner) {
-            return Promise.resolve(window.vechain.getConnexSigner(genesisId))
+        if (useExtension && window.vechain?.newConnexSigner) {
+            return Promise.resolve(window.vechain.newConnexSigner(genesisId))
         }
 
         return loadLibrary<typeof ConnexWalletBuddy>(
