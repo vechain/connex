@@ -86,8 +86,7 @@ class ConnexClass implements Connex {
 
     constructor(opts: Options) {
         const genesis = normalizeNetwork(opts.network)
-        //True unless explicitly set to false
-        const useExtension = opts.noExtension !== false
+        const useExtension = !opts.noExtension
         if (!opts.noV1Compat) {
             try {
                 // to detect injected connex
