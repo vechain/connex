@@ -7,14 +7,10 @@ import { blake2b256 } from 'thor-devkit'
 
 const BUDDY_SRC = 'https://unpkg.com/@vechain/connex-wallet-buddy@0.1'
 const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
-type ConnexSigner = ReturnType<typeof ConnexWalletBuddy.create>
 
-declare global {
-    interface Window {
-        vechain: {
-            newConnexSigner: (genesisId: string) => ConnexSigner
-        }
-    }
+type ConnexSigner = ReturnType<typeof ConnexWalletBuddy.create>
+export type ExtensionSigner = {
+    newConnexSigner: (genesisId: string) => ConnexSigner
 }
 
 /** the driver implements vendor methods only */
@@ -45,7 +41,7 @@ export class DriverVendorOnly implements Connex.Driver {
 
     private initSigner(genesisId: string, useExtension: boolean): Promise<ConnexSigner> {
         if (useExtension) {
-            return Promise.resolve(window.vechain.newConnexSigner(genesisId))
+            return Promise.resolve((window as Required<globalThis.Window>).vechain.newConnexSigner(genesisId))
         }
 
         return loadLibrary<typeof ConnexWalletBuddy>(
@@ -84,7 +80,8 @@ const cache: Record<string, FullDriver> = {}
 export function createFull(node: string, genesis: Connex.Thor.Block, useExtension: boolean): Connex.Driver {
     const key = blake2b256(JSON.stringify({
         node,
-        genesis
+        genesis,
+        useExtension
     })).toString('hex')
 
     let driver = cache[key]
