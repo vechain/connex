@@ -119,7 +119,7 @@ function newMethod(
         },
         transact(...args) {
             const clause = this.asClause(...args)
-            return newTxSigningService(readyDriver, [clause])
+            return newTxSigningService(readyDriver, [{...clause, abi: coder.definition}])
         }
     }
 }
