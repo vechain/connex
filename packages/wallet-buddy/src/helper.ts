@@ -5,7 +5,7 @@ export const browser = detect()
 
 const LITE_WALLET_URL = 'https://lite.sync.vecha.in/'
 
-function openLiteWallet(src: string): Window | null {
+function openLiteWallet(src: string): void {
     const options = (() => {
         switch (browser && browser.os) {
             case 'iOS':
@@ -20,10 +20,12 @@ function openLiteWallet(src: string): Window | null {
         }
     })()
 
-    return window.open(
-        new URL(`#/sign?src=${encodeURIComponent(src)}`, LITE_WALLET_URL).href,
-        options.target,
-        options.features)
+    setTimeout(() => {
+        window.open(
+            new URL(`#/sign?src=${encodeURIComponent(src)}`, LITE_WALLET_URL).href,
+            options.target,
+            options.features)
+    })
 }
 
 const getHiddenIframe = (() => {
