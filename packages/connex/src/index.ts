@@ -43,23 +43,24 @@ function normalizeGenesisId(id?: 'main' | 'test' | string) {
 /** Vendor class which can work standalone to provides signing-services only */
 class VendorClass implements Connex.Vendor {
     sign !: Connex.Vendor['sign']
-    constructor(genesisId?: 'main' | 'test' | string) {
+    constructor(genesisId?: 'main' | 'test' | string, noV1Compat = false, noExtension = false) {
         genesisId = normalizeGenesisId(genesisId)
-        try {
-            // to detect injected connex
-            const injected = ((window || {}) as any).connex
-            if (injected && injected.thor.genesis.id === genesisId) {
-                // injected genesis id matched
-                if (/^1\./.test(injected.version)) {
-                    // wrap v1 vendor to v2
-                    return compat1(injected).vendor
+        if (!noV1Compat) { 
+            try {
+                // to detect injected connex
+                const injected = window.connex
+                if (injected && injected.thor.genesis.id === genesisId) {
+                    // injected genesis id matched
+                    if (/^1\./.test(injected.version)) {
+                        // wrap v1 vendor to v2
+                        return compat1(injected).vendor
+                    }
                 }
-                return injected.vendor
-            }
-        } catch { /**/ }
+            } catch { /**/ }
+        }
 
         // detect the extension injected vechain
-        const useExtension = !!window.vechain
+        const useExtension = !noExtension && !!window.vechain
         const driver = new DriverVendorOnly(genesisId, useExtension)
         const vendor = newVendor(driver)
         return {
@@ -100,7 +101,7 @@ class ConnexClass implements Connex {
         if (!opts.noV1Compat) {
             try {
                 // to detect injected connex
-                const injected = ((window || {}) as any).connex
+                const injected = window.connex
                 if (injected && injected.thor.genesis.id === genesis.id) {
                     // injected genesis id matched
                     if (/^1\./.test(injected.version)) {
