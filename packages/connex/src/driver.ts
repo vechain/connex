@@ -8,18 +8,16 @@ import { blake2b256 } from 'thor-devkit'
 const BUDDY_SRC = 'https://unpkg.com/@vechain/connex-wallet-buddy@0.1'
 const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
 
+type ConnexSigner = ReturnType<typeof ConnexWalletBuddy.create>
+export type ExtensionSigner = {
+    newConnexSigner: (genesisId: string) => ConnexSigner
+}
+
 /** the driver implements vendor methods only */
 export class DriverVendorOnly implements Connex.Driver {
-    private readonly buddy: Promise<ReturnType<typeof ConnexWalletBuddy.create>>
-    constructor(genesisId: string) {
-        this.buddy = loadLibrary<typeof ConnexWalletBuddy>(
-            BUDDY_SRC,
-            BUDDY_LIB_NAME
-        ).then(lib => lib.create(
-            genesisId,
-            () => randomBytes(16).toString('hex'),
-            val => blake2b256(val).toString('hex')
-        ))
+    private readonly signer: Promise<ConnexSigner>
+    constructor(genesisId: string, useExtension: boolean) {
+        this.signer = this.initSigner(genesisId, useExtension)
     }
     get genesis(): Connex.Thor.Block { throw new Error('not implemented') }
     get head(): Connex.Thor.Status['head'] { throw new Error('not implemented') }
@@ -35,19 +33,34 @@ export class DriverVendorOnly implements Connex.Driver {
     filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg): Promise<Connex.Thor.Filter.Row<'transfer'>[]> { throw new Error('not implemented') }
 
     signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
-        return this.buddy.then(b => b.signTx(msg, options))
+        return this.signer.then(b => b.signTx(msg, options))
     }
     signCert(msg: Connex.Vendor.CertMessage, options: Connex.Driver.CertOptions): Promise<Connex.Vendor.CertResponse> {
-        return this.buddy.then(b => b.signCert(msg, options))
+        return this.signer.then(b => b.signCert(msg, options))
+    }
+
+    private initSigner(genesisId: string, useExtension: boolean): Promise<ConnexSigner> {
+        if (useExtension) {
+            return Promise.resolve((window as Required<globalThis.Window>).vechain.newConnexSigner(genesisId))
+        }
+
+        return loadLibrary<typeof ConnexWalletBuddy>(
+          BUDDY_SRC,
+          BUDDY_LIB_NAME
+        ).then(lib => lib.create(
+            genesisId,
+            () => randomBytes(16).toString('hex'),
+            val => blake2b256(val).toString('hex')
+        ))
     }
 }
 
 /** fully implemented Connex.Driver */
 class FullDriver extends DriverNoVendor {
     private readonly vd: DriverVendorOnly
-    constructor(node: string, genesis: Connex.Thor.Block) {
+    constructor(node: string, genesis: Connex.Thor.Block, useExtension: boolean) {
         super(new SimpleNet(node), genesis)
-        this.vd = new DriverVendorOnly(genesis.id)
+        this.vd = new DriverVendorOnly(genesis.id, useExtension)
     }
     signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
         return this.vd.signTx(msg, options)
@@ -64,15 +77,16 @@ const cache: Record<string, FullDriver> = {}
  * @param node the url of thor node
  * @param genesis the enforced genesis block
  */
-export function createFull(node: string, genesis: Connex.Thor.Block): Connex.Driver {
+export function createFull(node: string, genesis: Connex.Thor.Block, useExtension: boolean): Connex.Driver {
     const key = blake2b256(JSON.stringify({
         node,
-        genesis
+        genesis,
+        useExtension
     })).toString('hex')
 
     let driver = cache[key]
     if (!driver) {
-        cache[key] = driver = new FullDriver(node, genesis)
+        cache[key] = driver = new FullDriver(node, genesis, useExtension)
     }
     return driver
 }

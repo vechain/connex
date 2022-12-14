@@ -1,8 +1,17 @@
 import { Framework } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
-import { compat1 } from './compat'
-import { createFull, DriverVendorOnly } from './driver'
+import { compat1, Connex1 } from './compat'
+import { createFull, DriverVendorOnly, ExtensionSigner } from './driver'
 import { newVendor } from '@vechain/connex-framework'
+
+declare global {
+    interface Window {
+        /* connex@1.x, injected by Sync@1, VeChainThor mobile wallet*/
+        connex?: Connex1;
+        /* injected by extension wallet */
+        vechain?: ExtensionSigner;
+    }
+}
 
 /** convert options.network to Connex.Thor.Block */
 function normalizeNetwork(n: Options['network']) {
@@ -49,7 +58,9 @@ class VendorClass implements Connex.Vendor {
             }
         } catch { /**/ }
 
-        const driver = new DriverVendorOnly(genesisId)
+        // detect the extension injected vechain
+        const useExtension = !!window.vechain
+        const driver = new DriverVendorOnly(genesisId, useExtension)
         const vendor = newVendor(driver)
         return {
             get sign() {
@@ -72,6 +83,9 @@ export type Options = {
 
     /** the flag to disable the compatibility with connex1 environment */
     noV1Compat?: boolean
+
+    /** the flag to disable compatible vechain browser extensions */
+    noExtension?: boolean
 }
 
 /** Connex class */
@@ -97,7 +111,9 @@ class ConnexClass implements Connex {
             } catch { /**/ }
         }
 
-        const driver = createFull(opts.node, genesis)
+        // detect the extension injected vechain
+        const useExtension = !opts.noExtension && !!window.vechain
+        const driver = createFull(opts.node, genesis, useExtension)
         const framework = new Framework(driver)
         return {
             get thor() { return framework.thor },

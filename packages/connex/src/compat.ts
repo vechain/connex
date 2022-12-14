@@ -121,13 +121,13 @@ export function compat1(connex1: Connex1): Connex {
     }
 }
 
-declare interface Connex1 {
+export declare interface Connex1 {
     readonly version: string
     readonly thor: Connex1.Thor
     readonly vendor: Connex1.Vendor
 }
 
-declare namespace Connex1 {
+export declare namespace Connex1 {
     interface Thor {
         readonly genesis: Thor.Block
         readonly status: Thor.Status
