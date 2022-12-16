@@ -8,7 +8,7 @@ import { blake2b256 } from 'thor-devkit'
 const BUDDY_SRC = 'https://unpkg.com/@vechain/connex-wallet-buddy@0.1'
 const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
 
-type ConnexSigner = ReturnType<typeof ConnexWalletBuddy.create>
+type ConnexSigner = Pick<Connex.Driver, 'signTx' | 'signCert'>
 export type ExtensionSigner = {
     newConnexSigner: (genesisId: string) => ConnexSigner
 }
