@@ -43,9 +43,9 @@ function normalizeGenesisId(id?: 'main' | 'test' | string) {
 /** Vendor class which can work standalone to provides signing-services only */
 class VendorClass implements Connex.Vendor {
     sign !: Connex.Vendor['sign']
-    constructor(genesisId?: 'main' | 'test' | string, noV1Compat = false, noExtension = false) {
+    constructor(genesisId?: 'main' | 'test' | string, opts?: Pick<Options, 'noV1Compat' | 'noExtension'>) {
         genesisId = normalizeGenesisId(genesisId)
-        if (!noV1Compat) { 
+        if (!(opts && opts.noV1Compat)) {
             try {
                 // to detect injected connex
                 const injected = window.connex
@@ -60,7 +60,8 @@ class VendorClass implements Connex.Vendor {
         }
 
         // detect the extension injected vechain
-        const useExtension = !noExtension && !!window.vechain
+        const useExtension = !(opts && opts.noExtension) && !!window.vechain
+
         const driver = new DriverVendorOnly(genesisId, useExtension)
         const vendor = newVendor(driver)
         return {
