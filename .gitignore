@@ -104,3 +104,4 @@ typings/
 
 dist/
 esm/
+.idea
