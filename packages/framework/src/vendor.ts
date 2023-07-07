@@ -27,7 +27,7 @@ export function newVendor(driver: Connex.Driver): Connex.Vendor {
 }
 
 export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.Vendor.TxMessage): Connex.Vendor.TxSigningService {
-    const opts: Connex.Driver.TxOptions = {}
+    const opts: Connex.Signer.TxOptions = {}
 
     return {
         signer(addr) {
@@ -79,7 +79,7 @@ export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Co
 }
 
 function newCertSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.Vendor.CertMessage): Connex.Vendor.CertSigningService {
-    const opts: Connex.Driver.CertOptions = {}
+    const opts: Connex.Signer.CertOptions = {}
 
     return {
         signer(addr) {

@@ -1,16 +1,41 @@
 import { Framework } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
-import { compat1, Connex1 } from './compat'
-import { createFull, DriverVendorOnly, ExtensionSigner } from './driver'
-import { newVendor } from '@vechain/connex-framework'
+import { createFull, LazyDriver } from './driver'
+import { createSync, createSync2, createVeworldExtension, Connex1 } from './signer'
 
 declare global {
     interface Window {
         /* connex@1.x, injected by Sync@1, VeChainThor mobile wallet*/
         connex?: Connex1;
-        /* injected by extension wallet */
-        vechain?: ExtensionSigner;
+        /* injected by veworld extension wallet */
+        vechain?: {
+            newConnexSigner: Connex.NewSigner
+        };
     }
+}
+
+export enum BuiltinSigner {
+    Sync = 'Sync',
+    Sync2 = 'Sync2',
+    VeworldExtension = 'VeworldExtension'
+}
+
+/** options for creating Connex object */
+export type Options = {
+    /** the base url of the thor node's thorREST API */
+    node: string
+    /**
+     * the expected network of the node url. defaults to 'main' if omitted.
+     * if it does not match with the actual network of the node url points to,
+     * all subsequent request will fail.
+     */
+    network?: 'main' | 'test' | Connex.Thor.Block
+
+    /** 
+     * designated signer, either builtin signer or a new signer function
+     * defaults to sync2 if omitted
+     */
+    signer?: BuiltinSigner | Connex.NewSigner
 }
 
 /** convert options.network to Connex.Thor.Block */
@@ -40,82 +65,66 @@ function normalizeGenesisId(id?: 'main' | 'test' | string) {
     throw new Error('invalid genesis id')
 }
 
+/** convert options.signer to a signer creation function */
+function normalizeNewSigner(signer: Options['signer'], genesisId: string) {
+    if (typeof signer === 'function') {
+        return signer
+    }
+
+    if (signer === BuiltinSigner.Sync) {
+        if (!window.connex) {
+            throw new Error('Sync not found')
+        }
+
+        if (window.connex.thor.genesis.id !== genesisId) {
+            throw new Error('Network mismatch')
+        }
+    }
+
+    if (signer === BuiltinSigner.VeworldExtension && (!window.vechain || !window.vechain.newConnexSigner)) {
+        throw new Error('VeworldExtension not found')
+    }
+
+    switch (signer) {
+        case BuiltinSigner.Sync:
+            return createSync
+        case BuiltinSigner.VeworldExtension:
+            return createVeworldExtension
+        default:
+            return createSync2
+    }
+}
+
 /** Vendor class which can work standalone to provides signing-services only */
 class VendorClass implements Connex.Vendor {
     sign !: Connex.Vendor['sign']
-    constructor(genesisId?: 'main' | 'test' | string, opts?: Pick<Options, 'noV1Compat' | 'noExtension'>) {
+    constructor(genesisId?: 'main' | 'test' | string, opts?: Pick<Options, 'signer'>) {
         genesisId = normalizeGenesisId(genesisId)
-        if (!(opts && opts.noV1Compat)) {
-            try {
-                // to detect injected connex
-                const injected = window.connex
-                if (injected && injected.thor.genesis.id === genesisId) {
-                    // injected genesis id matched
-                    if (/^1\./.test(injected.version)) {
-                        // wrap v1 vendor to v2
-                        return compat1(injected).vendor
-                    }
-                }
-            } catch { /**/ }
-        }
+        const newSigner = normalizeNewSigner(opts?.signer, genesisId)
 
-        // detect the extension injected vechain
-        const useExtension = !(opts && opts.noExtension) && !!window.vechain
-
-        const driver = new DriverVendorOnly(genesisId, useExtension)
-        const vendor = newVendor(driver)
+        const driver = new LazyDriver(newSigner(genesisId))
+        const framework = new Framework(driver)
         return {
             get sign() {
-                return vendor.sign.bind(vendor)
+                return framework.vendor.sign.bind(framework.vendor)
             }
         }
     }
 }
 
-/** options for creating Connex object */
-export type Options = {
-    /** the base url of the thor node's thorREST API */
-    node: string
-    /**
-     * the expected network of the node url. defaults to 'main' if omitted.
-     * if it does not match with the actual network of the node url points to,
-     * all subsequent request will fail.
-     */
-    network?: 'main' | 'test' | Connex.Thor.Block
-
-    /** the flag to disable the compatibility with connex1 environment */
-    noV1Compat?: boolean
-
-    /** the flag to disable compatible vechain browser extensions */
-    noExtension?: boolean
-}
-
 /** Connex class */
 class ConnexClass implements Connex {
     static readonly Vendor = VendorClass
+    static readonly BuiltinSigner = BuiltinSigner
 
     thor!: Connex.Thor
     vendor!: Connex.Vendor
 
     constructor(opts: Options) {
         const genesis = normalizeNetwork(opts.network)
-        if (!opts.noV1Compat) {
-            try {
-                // to detect injected connex
-                const injected = window.connex
-                if (injected && injected.thor.genesis.id === genesis.id) {
-                    // injected genesis id matched
-                    if (/^1\./.test(injected.version)) {
-                        // wrap v1 to v2
-                        return compat1(injected)
-                    }
-                }
-            } catch { /**/ }
-        }
+        const newSigner = normalizeNewSigner(opts.signer, genesis.id)
 
-        // detect the extension injected vechain
-        const useExtension = !opts.noExtension && !!window.vechain
-        const driver = createFull(opts.node, genesis, useExtension)
+        const driver = createFull(opts.node, genesis, newSigner)
         const framework = new Framework(driver)
         return {
             get thor() { return framework.thor },

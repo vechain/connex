@@ -31,5 +31,3 @@ export class Framework implements Connex {
         this.vendor = newVendor(driver)
     }
 }
-
-export { newVendor }

@@ -1,7 +1,7 @@
 
 /** Connex driver interface */
 declare namespace Connex {
-    interface Driver {
+    interface Driver extends Connex.Signer {
         readonly genesis: Thor.Block
         /** current known head */
         readonly head: Thor.Status['head']
@@ -24,10 +24,6 @@ declare namespace Connex {
 
         filterEventLogs(arg: Driver.FilterEventLogsArg, cacheHints?: string[]): Promise<Thor.Filter.Row<'event'>[]>
         filterTransferLogs(arg: Driver.FilterTransferLogsArg, cacheHints?: string[]): Promise<Thor.Filter.Row<'transfer'>[]>
-
-        // vendor methods
-        signTx(msg: Vendor.TxMessage, options: Driver.TxOptions): Promise<Vendor.TxResponse>
-        signCert(msg: Vendor.CertMessage, option: Driver.CertOptions): Promise<Vendor.CertResponse>
     }
 
     namespace Driver {
@@ -56,22 +52,6 @@ declare namespace Connex {
             }
             criteriaSet: Thor.Filter.Criteria<'transfer'>[]
             order: 'asc' | 'desc'
-        }
-
-        type TxOptions = {
-            signer?: string
-            gas?: number
-            dependsOn?: string
-            link?: string
-            comment?: string
-            delegator?: { url: string, signer?: string }
-            onAccepted?: () => void
-        }
-
-        type CertOptions = {
-            signer?: string
-            link?: string
-            onAccepted?: () => void
         }
     }
 }
