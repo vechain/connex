@@ -1,6 +1,6 @@
 import { Framework } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
-import { createFull, LazyDriver } from './driver'
+import { createFull, createNoVendor, LazyDriver } from './driver'
 import { createSync, createSync2, createVeworldExtension, Connex1 } from './signer'
 
 declare global {
@@ -95,7 +95,7 @@ function normalizeNewSigner(signer: Options['signer'], genesisId: string) {
     }
 }
 
-/** Vendor class which can work standalone to provides signing-services only */
+/** Vendor class which can work standalone to provide signing-services only */
 class VendorClass implements Connex.Vendor {
     sign !: Connex.Vendor['sign']
     constructor(genesisId?: 'main' | 'test' | string, opts?: Pick<Options, 'signer'>) {
@@ -112,8 +112,39 @@ class VendorClass implements Connex.Vendor {
     }
 }
 
+/** Thor class which can work stand alone to provide reading-services only */
+class ThorClass implements Connex.Thor{
+    genesis !: Connex.Thor['genesis']
+    status !: Connex.Thor['status']
+    ticker !: Connex.Thor['ticker']
+    account !: Connex.Thor['account']
+    block !: Connex.Thor['block']
+    transaction !: Connex.Thor['transaction']
+    filter !: Connex.Thor['filter']
+    explain !: Connex.Thor['explain']
+
+    constructor(opts: Omit<Options, 'signer'>) {
+        const genesis = normalizeNetwork(opts.network)
+        
+        const driver = createNoVendor(opts.node, genesis)
+        const framework = new Framework(driver)
+
+        return {
+            get genesis() { return framework.thor.genesis },
+            get status() { return framework.thor.status },
+            get ticker() { return framework.thor.ticker.bind(framework.thor) },
+            get account() { return framework.thor.account.bind(framework.thor) },
+            get block() { return framework.thor.block.bind(framework.thor) },
+            get transaction() { return framework.thor.transaction.bind(framework.thor) },
+            get filter() { return framework.thor.filter.bind(framework.thor) },
+            get explain() { return framework.thor.explain.bind(framework.thor) }
+        }
+    }
+}
+
 /** Connex class */
 class ConnexClass implements Connex {
+    static readonly Thor = ThorClass
     static readonly Vendor = VendorClass
     static readonly BuiltinSigner = BuiltinSigner
 
