@@ -8,5 +8,13 @@
     "lerna": "^3.20.2",
     "ts-node": "^8.8.1",
     "typescript": "^4.0.2"
+  },
+  "scripts": {
+    "install:connex": "cd packages/connex && npm install",
+    "install:driver": "cd packages/driver && npm install",
+    "install:framework": "cd packages/framework && npm install",
+    "install:repl": "cd packages/repl && npm install",
+    "install:wallet-buddy": "cd packages/wallet-buddy && npm install",
+    "postinstall": "npm run install:connex && npm run install:driver && npm run install:framework && npm run install:repl && npm run install:wallet-buddy"
   }
 }
