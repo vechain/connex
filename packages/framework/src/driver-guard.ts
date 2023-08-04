@@ -11,10 +11,14 @@ export function newDriverGuard(
             V.validate(obj, scheme, path)
         } catch (err) {
             if (errHandler) {
-                errHandler(err)
+                errHandler(err as Error)
             } else {
                 // tslint:disable-next-line:no-console
-                console.warn(`Connex-Driver[MALFORMED RESPONSE]: ${err.message}`)
+                console.warn(
+                    `Connex-Driver[MALFORMED RESPONSE]: ${
+                        (err as Error).message
+                    }`,
+                )
             }
         }
         return obj

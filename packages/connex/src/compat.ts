@@ -457,7 +457,7 @@ const newMethod = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Co
                     data
                 }
             } catch (err) {
-                throw new R.BadParameter(`args can not be encoded (${err.message})`)
+                throw new R.BadParameter(`args can not be encoded (${(err as Error).message})`)
             }
         },
         call(...args) {
@@ -504,7 +504,9 @@ const newEvent = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Con
             try {
                 return encode(indexed)
             } catch (err) {
-                throw new R.BadParameter(`arg0: can not be encoded (${err.message})`)
+                throw new R.BadParameter(
+                    `arg0: can not be encoded (${(err as Error).message})`,
+                )
             }
         },
         filter(indexed) {
@@ -518,7 +520,11 @@ const newEvent = (acc: Connex1.Thor.AccountVisitor, jsonABI: object, connex: Con
                 try {
                     return encode(o)
                 } catch (err) {
-                    throw new R.BadParameter(`arg0.#${i}: can not be encoded (${err.message})`)
+                    throw new R.BadParameter(
+                        `arg0.#${i}: can not be encoded (${
+                            (err as Error).message
+                        })`,
+                    )
                 }
             })
             const filter = connex.thor.filter('event', criteriaSet)
