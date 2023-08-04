@@ -6,6 +6,5 @@
     "packages/repl",
     "packages/types"
   ],
-  "version": "2.0.14",
-  "$schema": "node_modules/lerna/schemas/lerna-schema.json"
+  "version": "2.0.14"
 }
