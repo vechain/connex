@@ -11,7 +11,7 @@
   },
   "scripts": {
     "lint": "npx eslint .",
-    "prepare": "npx lerna bootstrap",
+    "postinstall": "npx lerna bootstrap",
     "build": "npx lerna run build"
   }
 }
