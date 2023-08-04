@@ -2,14 +2,15 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.3.0",
-    "eslint": "^7.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "eslint": "^8.46.0",
     "lerna": "^3.20.2",
     "ts-node": "^8.8.1",
-    "typescript": "^4.0.2"
+    "typescript": "^5.1.6"
   },
   "scripts": {
+    "lint": "npx eslint .",
     "install:connex": "cd packages/connex && npm install",
     "install:driver": "cd packages/driver && npm install",
     "install:framework": "cd packages/framework && npm install",
