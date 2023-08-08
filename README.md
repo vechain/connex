@@ -17,3 +17,16 @@ Connex is the mono-repo contains libraries to help build dApps for VeChain.
 This package is licensed under the
 [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
 in *LICENSE* file in the repository.
+
+# Run
+This project uses Lerna to handle monorepo.
+
+## Install
+* `npx lerna bootstrap`
+
+## Commands
+* `npx lerna run {command}`
+
+Available commands:
+* build
+* lint
