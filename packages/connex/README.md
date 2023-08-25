@@ -77,10 +77,3 @@ This package, **@vechain/connex** is designed only work in the browser, if you a
 This package is licensed under the
 [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
 in *LICENSE* file in the repository.
-
-# Build from sources
-## 1 - Install repos
-run `npm install` command
-
-## 2 - Build and prepack content
-run `npx lerna run prepack` command

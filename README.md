@@ -18,13 +18,13 @@ This package is licensed under the
 [GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
 in *LICENSE* file in the repository.
 
-# Run
+## Run
 This project uses Lerna to handle monorepo.
 
-## Install
+### Install
 * `npx lerna bootstrap`
 
-## Commands
+### Commands
 * `npx lerna run {command}`
 
 Available commands:
