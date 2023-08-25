@@ -25,7 +25,9 @@ export function newAccountVisitor(
             try {
                 coder = new abi.Function(JSON.parse(JSON.stringify(jsonABI)))
             } catch (err) {
-                throw new R.BadParameter(`arg0: expected valid ABI (${err.message})`)
+                throw new R.BadParameter(
+                    `arg0: expected valid ABI (${(err as Error).message})`,
+                )
             }
             return newMethod(readyDriver, addr, coder)
         },
@@ -34,7 +36,9 @@ export function newAccountVisitor(
             try {
                 coder = new abi.Event(JSON.parse(JSON.stringify(jsonABI)))
             } catch (err) {
-                throw new R.BadParameter(`arg0: expected valid ABI (${err.message})`)
+                throw new R.BadParameter(
+                    `arg0: expected valid ABI (${(err as Error).message})`,
+                )
             }
             return newEvent(readyDriver, addr, coder)
         }
@@ -93,7 +97,9 @@ function newMethod(
                     data
                 }
             } catch (err) {
-                throw new R.BadParameter(`args can not be encoded (${err.message})`)
+                throw new R.BadParameter(
+                    `args can not be encoded (${(err as Error).message})`,
+                )
             }
         },
         call(...args) {
@@ -147,7 +153,9 @@ function newEvent(
             try {
                 return encode(indexed)
             } catch (err) {
-                throw new R.BadParameter(`arg0: can not be encoded (${err.message})`)
+                throw new R.BadParameter(
+                    `arg0: can not be encoded (${(err as Error).message})`,
+                )
             }
         },
         filter: (indexed) => {
@@ -161,7 +169,11 @@ function newEvent(
                 try {
                     return encode(o)
                 } catch (err) {
-                    throw new R.BadParameter(`arg0.#${i}: can not be encoded (${err.message})`)
+                    throw new R.BadParameter(
+                        `arg0.#${i}: can not be encoded (${
+                            (err as Error).message
+                        })`,
+                    )
                 }
             })
             const filter = newFilter(readyDriver, 'event', criteria)

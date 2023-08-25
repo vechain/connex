@@ -71,7 +71,7 @@ export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Co
                     const driver = await readyDriver
                     return await driver.signTx(transformedMsg, opts)
                 } catch (err) {
-                    throw new Rejected(err.message)
+                    throw new Rejected((err as Error).message)
                 }
             })()
         }
@@ -101,7 +101,7 @@ function newCertSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.
                     const driver = await readyDriver
                     return await driver.signCert(msg, opts)
                 } catch (err) {
-                    throw new Rejected(err.message)
+                    throw new Rejected((err as Error).message)
                 }
             })()
         }
@@ -129,7 +129,7 @@ const clauseScheme: V.Scheme<Connex.Vendor.TxMessage[number]> = {
             new abi.Function(v as any).signature
             return ''
         } catch (err) {
-            return `expected valid ABI (${err.message})`
+            return `expected valid ABI (${(err as Error).message})`
         }
     })
 }

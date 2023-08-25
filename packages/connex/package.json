@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && webpack",
-    "lint": "../../node_modules/.bin/tslint -p .",
+    "lint": "npx ../../node_modules/.bin/eslint .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

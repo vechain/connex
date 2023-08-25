@@ -14,7 +14,7 @@ export class SimpleWebSocketReader implements Net.WebSocketReader {
                 this.callbacks = []
                 cbs.forEach(cb => cb(ev.data))
             } catch (err) {
-                this.setError(err)
+                this.setError(err as Error)
                 this.ws.close()
             }
         }
