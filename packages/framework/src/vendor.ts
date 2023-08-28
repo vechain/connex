@@ -3,7 +3,7 @@ import * as V from 'validator-ts'
 import { abi } from 'thor-devkit'
 import BigNumber from 'bignumber.js'
 
-export function newVendor(driver: Connex.Driver): Connex.Vendor {
+export function newVendor(driver: Connex.Signer): Connex.Vendor {
     return {
         sign: <T extends 'tx' | 'cert'>(kind: T, msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage): any => {
             if (kind === 'tx') {
@@ -26,8 +26,8 @@ export function newVendor(driver: Connex.Driver): Connex.Vendor {
     }
 }
 
-export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.Vendor.TxMessage): Connex.Vendor.TxSigningService {
-    const opts: Connex.Driver.TxOptions = {}
+export function newTxSigningService(readyDriver: Promise<Connex.Signer>, msg: Connex.Vendor.TxMessage): Connex.Vendor.TxSigningService {
+    const opts: Connex.Signer.TxOptions = {}
 
     return {
         signer(addr) {
@@ -78,8 +78,8 @@ export function newTxSigningService(readyDriver: Promise<Connex.Driver>, msg: Co
     }
 }
 
-function newCertSigningService(readyDriver: Promise<Connex.Driver>, msg: Connex.Vendor.CertMessage): Connex.Vendor.CertSigningService {
-    const opts: Connex.Driver.CertOptions = {}
+function newCertSigningService(readyDriver: Promise<Connex.Signer>, msg: Connex.Vendor.CertMessage): Connex.Vendor.CertSigningService {
+    const opts: Connex.Signer.CertOptions = {}
 
     return {
         signer(addr) {

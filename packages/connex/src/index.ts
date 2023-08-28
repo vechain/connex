@@ -1,15 +1,16 @@
 import { Framework } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
-import { compat1, Connex1 } from './compat'
-import { createFull, DriverVendorOnly, ExtensionSigner } from './driver'
-import { newVendor } from '@vechain/connex-framework'
+import { createFull, createNoVendor, LazyDriver } from './driver'
+import { Connex1, createSync, createSync2, createVeWorldExtension, NewSignerFunc } from './signer'
 
 declare global {
     interface Window {
         /* connex@1.x, injected by Sync@1, VeChainThor mobile wallet*/
         connex?: Connex1;
         /* injected by extension wallet */
-        vechain?: ExtensionSigner;
+        vechain?: {
+            newConnexSigner: NewSignerFunc
+        };
     }
 }
 
@@ -40,37 +41,30 @@ function normalizeGenesisId(id?: 'main' | 'test' | string) {
     throw new Error('invalid genesis id')
 }
 
-/** Vendor class which can work standalone to provides signing-services only */
-class VendorClass implements Connex.Vendor {
-    sign !: Connex.Vendor['sign']
-    constructor(genesisId?: 'main' | 'test' | string, opts?: Pick<Options, 'noV1Compat' | 'noExtension'>) {
-        genesisId = normalizeGenesisId(genesisId)
-        if (!(opts && opts.noV1Compat)) {
-            try {
-                // to detect injected connex
-                const injected = window.connex
-                if (injected && injected.thor.genesis.id === genesisId) {
-                    // injected genesis id matched
-                    if (/^1\./.test(injected.version)) {
-                        // wrap v1 vendor to v2
-                        return compat1(injected).vendor
-                    }
-                }
-            } catch { /**/ }
-        }
-
-        // detect the extension injected vechain
-        const useExtension = !(opts && opts.noExtension) && !!window.vechain
-
-        const driver = new DriverVendorOnly(genesisId, useExtension)
-        const vendor = newVendor(driver)
-        return {
-            get sign() {
-                return vendor.sign.bind(vendor)
+/** convert options.signer to a signer creation function */
+function normalizeSigner(genesisId: string, signer: BuiltinSigner) {
+    switch (signer.toLocaleLowerCase()) {
+        case 'sync':
+            if (!window.connex) {
+                throw new Error('Sync not found')
             }
-        }
+            if (window.connex.thor.genesis.id !== genesisId) {
+                throw new Error('Network mismatch')
+            }
+            return createSync
+        case 'sync2':
+            return createSync2
+        case 'veworldextension':
+            if (!window.vechain || !window.vechain.newConnexSigner) {
+                throw new Error('VeWorldExtension not found')
+            }
+            return createVeWorldExtension
+        default:
+            throw new Error('unsupported signer')
     }
 }
+
+export type BuiltinSigner = 'sync' | 'sync2' | 'veworldextension'
 
 /** options for creating Connex object */
 export type Options = {
@@ -82,12 +76,27 @@ export type Options = {
      * all subsequent request will fail.
      */
     network?: 'main' | 'test' | Connex.Thor.Block
+    /** 
+     * designated wallet to connect, Sync, Sync2 or VeWorldExtension supported, Sync2 if omitted.
+     */
+    signer? : BuiltinSigner
+}
 
-    /** the flag to disable the compatibility with connex1 environment */
-    noV1Compat?: boolean
+/** Vendor class which can work standalone to provides signing-services only */
+class VendorClass implements Connex.Vendor {
+    sign !: Connex.Vendor['sign']
+    constructor(genesisId: 'main' | 'test' | string, signer: BuiltinSigner = 'sync2') {
+        genesisId = normalizeGenesisId(genesisId)
+        const newSigner = normalizeSigner(genesisId,signer)
 
-    /** the flag to disable compatible vechain browser extensions */
-    noExtension?: boolean
+        const driver = new LazyDriver(newSigner(genesisId))
+        const framework = new Framework(driver)
+        return {
+            get sign() {
+                return framework.vendor.sign.bind(framework.vendor)
+            }
+        }
+    }
 }
 
 /** Connex class */
@@ -99,23 +108,9 @@ class ConnexClass implements Connex {
 
     constructor(opts: Options) {
         const genesis = normalizeNetwork(opts.network)
-        if (!opts.noV1Compat) {
-            try {
-                // to detect injected connex
-                const injected = window.connex
-                if (injected && injected.thor.genesis.id === genesis.id) {
-                    // injected genesis id matched
-                    if (/^1\./.test(injected.version)) {
-                        // wrap v1 to v2
-                        return compat1(injected)
-                    }
-                }
-            } catch { /**/ }
-        }
+        const newSigner = normalizeSigner(genesis.id, opts.signer??'sync2')
 
-        // detect the extension injected vechain
-        const useExtension = !opts.noExtension && !!window.vechain
-        const driver = createFull(opts.node, genesis, useExtension)
+        const driver = createFull(opts.node, genesis, newSigner)
         const framework = new Framework(driver)
         return {
             get thor() { return framework.thor },
