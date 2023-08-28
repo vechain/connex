@@ -3,7 +3,7 @@ import { genesisBlocks } from './config'
 import { compat1, Connex1 } from './compat'
 import { createFull, DriverVendorOnly, ExtensionSigner } from './driver'
 import { newVendor, newThor } from '@vechain/connex-framework'
-import { DriverNoVendor, SimpleNet } from '@vechain/connex-driver'
+import { DriverNoVendor, SimpleNet, Driver } from '@vechain/connex-driver'
 
 declare global {
     interface Window {
@@ -134,6 +134,7 @@ export {
     ConnexClass as Connex, 
     VendorClass as Vendor,
     Sync2Vendor,
+    Driver,
     DriverVendorOnly,
     DriverNoVendor,
     SimpleNet,
