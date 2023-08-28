@@ -139,4 +139,5 @@ export {
     SimpleNet,
     newVendor,
     newThor,
+    genesisBlocks,
 }
