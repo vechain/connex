@@ -32,4 +32,4 @@ export class Framework implements Connex {
     }
 }
 
-export { newVendor }
+export { newVendor, newThor }

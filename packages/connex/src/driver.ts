@@ -11,6 +11,7 @@ const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
 type ConnexSigner = Pick<Connex.Driver, 'signTx' | 'signCert'>
 export type ExtensionSigner = {
     newConnexSigner: (genesisId: string) => ConnexSigner
+    newConnexVendor: (genesisId: string) => Connex.Vendor
 }
 
 /** the driver implements vendor methods only */

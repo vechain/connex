@@ -2,7 +2,8 @@ import { Framework } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
 import { compat1, Connex1 } from './compat'
 import { createFull, DriverVendorOnly, ExtensionSigner } from './driver'
-import { newVendor } from '@vechain/connex-framework'
+import { newVendor, newThor } from '@vechain/connex-framework'
+import { DriverNoVendor, SimpleNet } from '@vechain/connex-driver'
 
 declare global {
     interface Window {
@@ -124,9 +125,18 @@ class ConnexClass implements Connex {
     }
 }
 
+const Sync2Vendor = (genesisId?: 'main' | 'test' | string): Connex.Vendor => 
+    new VendorClass(genesisId, { noV1Compat: true, noExtension: true })
+
 export default ConnexClass
 
 export { 
     ConnexClass as Connex, 
-    VendorClass as Vendor 
+    VendorClass as Vendor,
+    Sync2Vendor,
+    DriverVendorOnly,
+    DriverNoVendor,
+    SimpleNet,
+    newVendor,
+    newThor,
 }
