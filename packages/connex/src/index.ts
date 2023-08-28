@@ -125,4 +125,8 @@ class ConnexClass implements Connex {
 }
 
 export default ConnexClass
-export { ConnexClass as Connex }
+
+export { 
+    ConnexClass as Connex, 
+    VendorClass as Vendor 
+}
