@@ -93,13 +93,13 @@ export class DriverNoVendor implements Connex.Driver {
     }
     public signTx(
         msg: Connex.Vendor.TxMessage,
-        options: Connex.Driver.TxOptions
+        options: Connex.Signer.TxOptions
     ): Promise<Connex.Vendor.TxResponse> {
         throw new Error('not implemented')
     }
     public signCert(
         msg: Connex.Vendor.CertMessage,
-        options: Connex.Driver.CertOptions
+        options: Connex.Signer.CertOptions
     ): Promise<Connex.Vendor.CertResponse> {
         throw new Error('not implemented')
     }

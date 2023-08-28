@@ -57,7 +57,7 @@ export class Driver extends DriverNoVendor {
 
     public async signTx(
         msg: Connex.Vendor.TxMessage,
-        options: Connex.Driver.TxOptions,
+        options: Connex.Signer.TxOptions,
     ): Promise<Connex.Vendor.TxResponse> {
         options.onAccepted && options.onAccepted()
 
@@ -125,7 +125,7 @@ export class Driver extends DriverNoVendor {
 
     public async signCert(
         msg: Connex.Vendor.CertMessage,
-        options: Connex.Driver.CertOptions
+        options: Connex.Signer.CertOptions
     ): Promise<Connex.Vendor.CertResponse> {
         options.onAccepted && options.onAccepted()
 

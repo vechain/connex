@@ -1,93 +1,97 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { DriverNoVendor, SimpleNet } from '@vechain/connex-driver'
-import { loadLibrary } from './script-loader'
-import type * as ConnexWalletBuddy from '@vechain/connex-wallet-buddy'
-import randomBytes from 'randombytes'
 import { blake2b256 } from 'thor-devkit'
+import { NewSignerFunc } from './signer'
 
-const BUDDY_SRC = 'https://unpkg.com/@vechain/connex-wallet-buddy@0.1'
-const BUDDY_LIB_NAME = 'ConnexWalletBuddy'
-
-type ConnexSigner = Pick<Connex.Driver, 'signTx' | 'signCert'>
-export type ExtensionSigner = {
-    newConnexSigner: (genesisId: string) => ConnexSigner
-}
-
-/** the driver implements vendor methods only */
-export class DriverVendorOnly implements Connex.Driver {
-    private readonly signer: Promise<ConnexSigner>
-    constructor(genesisId: string, useExtension: boolean) {
-        this.signer = this.initSigner(genesisId, useExtension)
+/** the LazyDriver implements vendor methods at construction but allows attaching NoVendorDriver later to be a full one*/
+export class LazyDriver implements Connex.Driver {
+    private _driver: DriverNoVendor|null = null
+    constructor(private readonly signer: Promise<Connex.Signer>) { }
+    
+    private get noVendor(): DriverNoVendor { 
+        if (!this._driver) {
+            throw new Error('driver no vendor is not ready')
+        }
+        return this._driver
     }
-    get genesis(): Connex.Thor.Block { throw new Error('not implemented') }
-    get head(): Connex.Thor.Status['head'] { throw new Error('not implemented') }
-    pollHead(): Promise<Connex.Thor.Status['head']> { throw new Error('not implemented') }
-    getBlock(revision: string | number): Promise<Connex.Thor.Block | null> { throw new Error('not implemented') }
-    getTransaction(id: string, allowPending: boolean): Promise<Connex.Thor.Transaction | null> { throw new Error('not implemented') }
-    getReceipt(id: string): Promise<Connex.Thor.Transaction.Receipt | null> { throw new Error('not implemented') }
-    getAccount(addr: string, revision: string): Promise<Connex.Thor.Account> { throw new Error('not implemented') }
-    getCode(addr: string, revision: string): Promise<Connex.Thor.Account.Code> { throw new Error('not implemented') }
-    getStorage(addr: string, key: string, revision: string): Promise<Connex.Thor.Account.Storage> { throw new Error('not implemented') }
-    explain(arg: Connex.Driver.ExplainArg, revision: string, cacheHints?: string[]): Promise<Connex.VM.Output[]> { throw new Error('not implemented') }
-    filterEventLogs(arg: Connex.Driver.FilterEventLogsArg): Promise<Connex.Thor.Filter.Row<'event'>[]> { throw new Error('not implemented') }
-    filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg): Promise<Connex.Thor.Filter.Row<'transfer'>[]> { throw new Error('not implemented') }
+    setNoVendor(driver: DriverNoVendor):void {
+        this._driver = driver
+    }
 
-    signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
+    get genesis(): Connex.Thor.Block {
+        return this.noVendor.genesis
+    }
+    get head(): Connex.Thor.Status['head'] {
+        return this.noVendor.head
+    }
+    pollHead(): Promise<Connex.Thor.Status['head']> { 
+        return this.noVendor.pollHead()
+     }
+    getBlock(revision: string | number): Promise<Connex.Thor.Block | null> {
+        return this.noVendor.getBlock(revision)
+    }
+    getTransaction(id: string, allowPending: boolean): Promise<Connex.Thor.Transaction | null> { 
+        return this.noVendor.getTransaction(id, allowPending)
+     }
+    getReceipt(id: string): Promise<Connex.Thor.Transaction.Receipt | null> { 
+        return this.noVendor.getReceipt(id)
+     }
+    getAccount(addr: string, revision: string): Promise<Connex.Thor.Account> { 
+        return this.noVendor.getAccount(addr, revision)
+     }
+    getCode(addr: string, revision: string): Promise<Connex.Thor.Account.Code> {
+        return this.noVendor.getCode(addr, revision)
+    }
+    getStorage(addr: string, key: string, revision: string): Promise<Connex.Thor.Account.Storage> { 
+        return this.noVendor.getStorage(addr, key, revision)
+     }
+    explain(arg: Connex.Driver.ExplainArg, revision: string, cacheHints?: string[]): Promise<Connex.VM.Output[]> { 
+        return this.noVendor.explain(arg, revision, cacheHints)
+     }
+    filterEventLogs(arg: Connex.Driver.FilterEventLogsArg): Promise<Connex.Thor.Filter.Row<'event'>[]> { 
+        return this.noVendor.filterEventLogs(arg)
+     }
+    filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg): Promise<Connex.Thor.Filter.Row<'transfer'>[]> { 
+        return this.noVendor.filterTransferLogs(arg)
+     }
+
+    async signTx(msg: Connex.Vendor.TxMessage, options: Connex.Signer.TxOptions): Promise<Connex.Vendor.TxResponse> {
         return this.signer.then(b => b.signTx(msg, options))
     }
-    signCert(msg: Connex.Vendor.CertMessage, options: Connex.Driver.CertOptions): Promise<Connex.Vendor.CertResponse> {
+    async signCert(msg: Connex.Vendor.CertMessage, options: Connex.Signer.CertOptions): Promise<Connex.Vendor.CertResponse> {
         return this.signer.then(b => b.signCert(msg, options))
     }
-
-    private initSigner(genesisId: string, useExtension: boolean): Promise<ConnexSigner> {
-        if (useExtension) {
-            return Promise.resolve((window as Required<globalThis.Window>).vechain.newConnexSigner(genesisId))
-        }
-
-        return loadLibrary<typeof ConnexWalletBuddy>(
-          BUDDY_SRC,
-          BUDDY_LIB_NAME
-        ).then(lib => lib.create(
-            genesisId,
-            () => randomBytes(16).toString('hex'),
-            val => blake2b256(val).toString('hex')
-        ))
-    }
 }
 
-/** fully implemented Connex.Driver */
-class FullDriver extends DriverNoVendor {
-    private readonly vd: DriverVendorOnly
-    constructor(node: string, genesis: Connex.Thor.Block, useExtension: boolean) {
-        super(new SimpleNet(node), genesis)
-        this.vd = new DriverVendorOnly(genesis.id, useExtension)
-    }
-    signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
-        return this.vd.signTx(msg, options)
-    }
-    signCert(msg: Connex.Vendor.CertMessage, options: Connex.Driver.CertOptions): Promise<Connex.Vendor.CertResponse> {
-        return this.vd.signCert(msg, options)
-    }
-}
-
-const cache: Record<string, FullDriver> = {}
+const cache: Record<string, DriverNoVendor> = {}
 
 /**
- * create full driver
+ * create a no vendor driver
  * @param node the url of thor node
  * @param genesis the enforced genesis block
  */
-export function createFull(node: string, genesis: Connex.Thor.Block, useExtension: boolean): Connex.Driver {
+export function createNoVendor(node: string, genesis: Connex.Thor.Block): DriverNoVendor {
     const key = blake2b256(JSON.stringify({
         node,
-        genesis,
-        useExtension
+        genesis
     })).toString('hex')
 
     let driver = cache[key]
     if (!driver) {
-        cache[key] = driver = new FullDriver(node, genesis, useExtension)
+        cache[key] = driver = new DriverNoVendor(new SimpleNet(node), genesis)
     }
     return driver
 }
 
+/**
+ * create a full driver
+ * @param node the url of thor node
+ * @param genesis the enforced genesis block
+ * @param newSigner a function to create signer
+ */
+export function createFull(node: string, genesis: Connex.Thor.Block, newSigner: NewSignerFunc): Connex.Driver {
+    const driver = new LazyDriver(newSigner(genesis.id))
+    driver.setNoVendor(createNoVendor(node, genesis))
+
+    return driver
+}
