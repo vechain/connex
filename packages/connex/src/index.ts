@@ -82,6 +82,36 @@ export type Options = {
     signer? : BuiltinSigner
 }
 
+/** Thor class which can work stand alone to provide reading-services only */
+class ThorClass implements Connex.Thor {
+    genesis !: Connex.Thor['genesis']
+    status !: Connex.Thor['status']
+    ticker !: Connex.Thor['ticker']
+    account !: Connex.Thor['account']
+    block !: Connex.Thor['block']
+    transaction !: Connex.Thor['transaction']
+    filter !: Connex.Thor['filter']
+    explain !: Connex.Thor['explain']
+
+    constructor(opts: Omit<Options, 'signer'>) {
+        const genesis = normalizeNetwork(opts.network)
+
+        const driver = createNoVendor(opts.node, genesis)
+        const framework = new Framework(driver)
+
+        return {
+            get genesis() { return framework.thor.genesis },
+            get status() { return framework.thor.status },
+            get ticker() { return framework.thor.ticker.bind(framework.thor) },
+            get account() { return framework.thor.account.bind(framework.thor) },
+            get block() { return framework.thor.block.bind(framework.thor) },
+            get transaction() { return framework.thor.transaction.bind(framework.thor) },
+            get filter() { return framework.thor.filter.bind(framework.thor) },
+            get explain() { return framework.thor.explain.bind(framework.thor) }
+        }
+    }
+}
+
 /** Vendor class which can work standalone to provides signing-services only */
 class VendorClass implements Connex.Vendor {
     sign !: Connex.Vendor['sign']
@@ -101,6 +131,7 @@ class VendorClass implements Connex.Vendor {
 
 /** Connex class */
 class ConnexClass implements Connex {
+    static readonly Thor = ThorClass
     static readonly Vendor = VendorClass
 
     thor!: Connex.Thor
