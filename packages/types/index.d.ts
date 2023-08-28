@@ -5,6 +5,7 @@
 /// <reference path="block.d.ts" />
 /// <reference path="tx.d.ts" />
 /// <reference path="filter.d.ts" />
+/// <reference path="signer.d.ts" />
 
 /** The VeChain Connex interface */
 declare interface Connex {
