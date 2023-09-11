@@ -4,6 +4,8 @@ Connex is the mono-repo contains libraries to help build dApps for VeChain.
 
 ## Packages
 
+It is recommended to start from [Connex](packages/connex) package.
+
 | package | status | desc |
 | - | - | - |
 | [connex](packages/connex) | [![npm](https://badge.fury.io/js/%40vechain%2Fconnex.svg)](https://badge.fury.io/js/%40vechain%2Fconnex) | The out of the box Connex implementation for browser |
@@ -15,5 +17,4 @@ Connex is the mono-repo contains libraries to help build dApps for VeChain.
 ## License
 
 This package is licensed under the
-[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included
-in *LICENSE* file in the repository.
+[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.html), also included in *LICENSE* file in the repository.
