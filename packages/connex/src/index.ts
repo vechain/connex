@@ -1,16 +1,12 @@
 import { Framework } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
 import { createFull, createNoVendor, LazyDriver } from './driver'
-import { Connex1, createSync, createSync2, createVeWorldExtension, NewSignerFunc } from './signer'
+import { Connex1, createSync, createSync2 } from './signer'
 
 declare global {
     interface Window {
         /* connex@1.x, injected by Sync@1, VeChainThor mobile wallet*/
         connex?: Connex1;
-        /* injected by extension wallet */
-        vechain?: {
-            newConnexSigner: NewSignerFunc
-        };
     }
 }
 
@@ -54,17 +50,12 @@ function normalizeSigner(genesisId: string, signer: BuiltinSigner) {
             return createSync
         case 'sync2':
             return createSync2
-        case 'veworldextension':
-            if (!window.vechain || !window.vechain.newConnexSigner) {
-                throw new Error('VeWorldExtension not found')
-            }
-            return createVeWorldExtension
         default:
             throw new Error('unsupported signer')
     }
 }
 
-export type BuiltinSigner = 'sync' | 'sync2' | 'veworldextension'
+export type BuiltinSigner = 'sync' | 'sync2'
 
 /** options for creating Connex object */
 export type Options = {

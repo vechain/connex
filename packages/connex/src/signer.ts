@@ -58,10 +58,6 @@ export const createSync: NewSignerFunc = async (genesisId: string) => {
     })
 }
 
-export const createVeWorldExtension: NewSignerFunc = (genesisId: string) => { 
-    return (window as Required<globalThis.Window>).vechain.newConnexSigner(genesisId)
-}
-
 export declare interface Connex1 {
     readonly vendor: Connex1.Vendor
     readonly thor: Connex1.Thor
