@@ -10,7 +10,7 @@ export class LazyDriver implements Connex.Driver {
     
     private get noVendor(): DriverNoVendor { 
         if (!this._driver) {
-            throw new Error('driver no vendor is not ready')
+            throw new Error('thor driver is not ready')
         }
         return this._driver
     }
