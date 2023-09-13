@@ -1,4 +1,4 @@
-import { Framework } from '@vechain/connex-framework'
+import { Framework, newVendor } from '@vechain/connex-framework'
 import { genesisBlocks } from './config'
 import { createFull, createNoVendor, LazyDriver } from './driver'
 import { Connex1, createSync, createSync2 } from './signer'
@@ -111,10 +111,11 @@ class VendorClass implements Connex.Vendor {
         const newSigner = normalizeSigner(genesisId,signer)
 
         const driver = new LazyDriver(newSigner(genesisId))
-        const framework = new Framework(driver)
+        const vendor = newVendor(driver)
+        
         return {
             get sign() {
-                return framework.vendor.sign.bind(framework.vendor)
+                return vendor.sign.bind(vendor)
             }
         }
     }
