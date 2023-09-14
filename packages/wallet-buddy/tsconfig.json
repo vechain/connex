@@ -3,7 +3,8 @@
     "compilerOptions": {
         "module": "ESNext",
         "declaration": true,
-        "outDir": "./esm"
+        "outDir": "./esm",
+        "types": ["@vechain/connex-types"]
     },
     "include": [
         "./src"

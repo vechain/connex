@@ -1,4 +1,3 @@
-import '@vechain/connex-framework/dist/driver-interface'
 import Deferred from './deferred'
 import * as Helper from './helper'
 
@@ -87,7 +86,7 @@ let _abort: Deferred<never> | null = null
 async function sign<T extends 'tx' | 'cert'>(
     type: T,
     msg: T extends 'tx' ? Connex.Vendor.TxMessage : Connex.Vendor.CertMessage,
-    options: T extends 'tx' ? Connex.Driver.TxOptions : Connex.Driver.CertOptions,
+    options: T extends 'tx' ? Connex.Signer.TxOptions : Connex.Signer.CertOptions,
     genesisId: string,
     nonce: () => string,
     blake2b256: (val: string) => string,
@@ -164,12 +163,12 @@ export function create(
     nonce: () => string,
     blake2b256: (val: string) => string,
     tosUrl?: string
-): Pick<Connex.Driver, 'signTx' | 'signCert'> {
+): Connex.Signer {
     return {
-        signTx(msg: Connex.Vendor.TxMessage, options: Connex.Driver.TxOptions): Promise<Connex.Vendor.TxResponse> {
+        signTx(msg: Connex.Vendor.TxMessage, options: Connex.Signer.TxOptions): Promise<Connex.Vendor.TxResponse> {
             return sign('tx', msg, options, genesisId, nonce, blake2b256, tosUrl || DEFAULT_TOS_URL)
         },
-        signCert(msg: Connex.Vendor.CertMessage, options: Connex.Driver.CertOptions): Promise<Connex.Vendor.CertResponse> {
+        signCert(msg: Connex.Vendor.CertMessage, options: Connex.Signer.CertOptions): Promise<Connex.Vendor.CertResponse> {
             return sign('cert', msg, options, genesisId, nonce, blake2b256, tosUrl || DEFAULT_TOS_URL)
         }
     }
