@@ -84,6 +84,7 @@ const vendor = new Connex.Vendor('test'， 'sync')  // sync or vechainthor mobil
 - [Sync2](https://sync.vecha.in/) - Option `sync2`
 - [Sync](https://env.vechain.org/#sync) - Option `sync`
 - [VeChainThor Wallet](https://env.vechain.org/#thor-wallet) - Option `sync`
+- [VeWorld Extension](https://www.veworld.com/) - See [below](#creating-a-veworld-extension-vendor)
 
 ### Create Full Connex
 
@@ -109,6 +110,71 @@ const {thor, vendor} = connex
 ## Note for Node.js
 
 This package, **@vechain/connex** is designed only work in the browser, if you are interested in running it in Node.js, try [@vechain/connex-framework](https://github.com/vechain/connex/tree/master/packages/framework).
+
+## Creating a custom Connex Vendor
+
+```typescript
+/// <reference types="@vechain/connex-types" />
+import { newVendor } from "@vechain/connex-framework"
+import { LazyDriver } from "@vechain/connex/esm/driver"
+
+const myCustomSigner: Connex.Signer = {
+  signCert: async (
+    cert: Connex.Vendor.CertMessage,
+    options: Connex.Signer.CertOptions
+  ) => {
+    // TODO: Implement
+  },
+  signTx: async (
+    tx: Connex.Vendor.TxMessage,
+    options: Connex.Signer.TxOptions
+  ) => {
+    // TODO: Implement
+  },
+}
+
+// Convert a Connex.Signer -> Connex.Vendor
+const createVendorFromSigner = (signer: Connex.Signer): Connex.Vendor =>
+    newVendor(new LazyDriver(Promise.resolve(signer)))
+
+
+const myCustomVendor: Connex.Vendor = createVendorFromSigner(myCustomSigner)
+```
+
+## Creating a VeWorld Extension Vendor
+
+```typescript
+/// <reference types="@vechain/connex-types" />
+import { newVendor } from "@vechain/connex-framework"
+import { LazyDriver } from "@vechain/connex/esm/driver"
+
+declare global {
+  interface Window {
+    vechain: {
+      newConnexSigner: (genesisId: string) => Connex.Signer
+    }
+  }
+}
+
+// Convert a Connex.Signer -> Connex.Vendor
+const createVendorFromSigner = (signer: Connex.Signer): Connex.Vendor =>
+    newVendor(new LazyDriver(Promise.resolve(signer)))
+
+/**
+ * Get the extension's vendor
+ * @param genesisId - The genesis ID of the network
+ * @returns Connex.Vendor
+ * @throws Error if the extension is not installed
+ */
+const getExtensionVendor = (genesisId: string): Connex.Vendor => {
+  if (!window.vechain) throw new Error("VeWorld is not installed")
+
+  const extensionSigner = window.vechain.newConnexSigner(genesisId)
+
+  return createVendorFromSigner(extensionSigner)
+}
+```
+
 
 ## License
 
