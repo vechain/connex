@@ -26,7 +26,7 @@
     "detect-browser": "^5.2.0"
   },
   "devDependencies": {
-    "@vechain/connex-framework": "^2.0.0-beta.38",
+    "@vechain/connex-types": "^2.1.0",
     "html-loader": "^2.1.1",
     "webpack": "^5.2.0",
     "webpack-cli": "^4.1.0"
