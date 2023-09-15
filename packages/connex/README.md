@@ -115,8 +115,7 @@ This package, **@vechain/connex** is designed only work in the browser, if you a
 
 ```typescript
 /// <reference types="@vechain/connex-types" />
-import { newVendor } from "@vechain/connex-framework"
-import { LazyDriver } from "@vechain/connex/esm/driver"
+import { newVendor } from "@vechain/connex-framework" //Version: ^2.1.0
 
 const myCustomSigner: Connex.Signer = {
   signCert: async (
@@ -133,20 +132,14 @@ const myCustomSigner: Connex.Signer = {
   },
 }
 
-// Convert a Connex.Signer -> Connex.Vendor
-const createVendorFromSigner = (signer: Connex.Signer): Connex.Vendor =>
-    newVendor(new LazyDriver(Promise.resolve(signer)))
-
-
-const myCustomVendor: Connex.Vendor = createVendorFromSigner(myCustomSigner)
+const myCustomVendor: Connex.Vendor = newVendor(myCustomSigner)
 ```
 
 ## Creating a VeWorld Extension Vendor
 
 ```typescript
 /// <reference types="@vechain/connex-types" />
-import { newVendor } from "@vechain/connex-framework"
-import { LazyDriver } from "@vechain/connex/esm/driver"
+import { newVendor } from "@vechain/connex-framework" //Version: ^2.1.0
 
 declare global {
   interface Window {
@@ -155,10 +148,6 @@ declare global {
     }
   }
 }
-
-// Convert a Connex.Signer -> Connex.Vendor
-const createVendorFromSigner = (signer: Connex.Signer): Connex.Vendor =>
-    newVendor(new LazyDriver(Promise.resolve(signer)))
 
 /**
  * Get the extension's vendor
@@ -171,10 +160,9 @@ const getExtensionVendor = (genesisId: string): Connex.Vendor => {
 
   const extensionSigner = window.vechain.newConnexSigner(genesisId)
 
-  return createVendorFromSigner(extensionSigner)
+  return newVendor(extensionSigner)
 }
 ```
-
 
 ## License
 
