@@ -18,6 +18,7 @@ declare namespace Connex.Thor {
         transactions: string[]
         com?: boolean
         isFinalized?: boolean
+        baseFeePerGas?: string
         isTrunk: boolean
     }
 
