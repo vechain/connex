@@ -56,6 +56,8 @@ declare namespace Connex {
                 txsFeatures?: number
                 /** block gas limit */
                 gasLimit: number
+                /** block base fee per gas */
+                baseFeePerGas?: string
             }
             /** id of finalized block */
             finalized: string

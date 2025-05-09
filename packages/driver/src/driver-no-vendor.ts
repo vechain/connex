@@ -243,5 +243,6 @@ interface Beat2 {
     bloom: string
     k: number
     txsFeatures?: number
+    baseFeePerGas?: string
     obsolete: boolean
 }

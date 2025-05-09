@@ -101,7 +101,8 @@ const headScheme: V.Scheme<Connex.Thor.Status['head']> = {
     timestamp: R.uint64,
     parentID: R.bytes32,
     txsFeatures: V.optional(R.uint32),
-    gasLimit: R.uint64
+    gasLimit: R.uint64,
+    baseFeePerGas: V.optional(R.hexString)
 }
 
 const blockScheme: V.Scheme<Connex.Thor.Block> = {
@@ -122,15 +123,19 @@ const blockScheme: V.Scheme<Connex.Thor.Block> = {
     com: V.optional(R.bool),
     isFinalized: V.optional(R.bool),
     isTrunk: R.bool,
+    baseFeePerGas: V.optional(R.hexString),
     transactions: [R.bytes32]
 }
 
 const txScheme: V.Scheme<Connex.Thor.Transaction> = {
     id: R.bytes32,
+    type: V.optional(R.uint8),
     chainTag: R.uint8,
     blockRef: R.bytes8,
     expiration: R.uint32,
     gasPriceCoef: R.uint8,
+    maxPriorityFeePerGas: V.optional(R.hexString),
+    maxFeePerGas: V.optional(R.hexString),
     gas: R.uint64,
     origin: R.address,
     delegator: V.nullable(V.optional(R.address)),
@@ -180,6 +185,7 @@ const transferWithMetaScheme: V.Scheme<Connex.Thor.Filter.Row<'transfer'>> = {
 }
 
 const receiptScheme: V.Scheme<Connex.Thor.Transaction.Receipt> = {
+    type: V.optional(R.uint8),
     gasUsed: R.uint64,
     gasPayer: R.address,
     paid: R.hexString,

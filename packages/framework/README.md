@@ -4,6 +4,12 @@
 
 Connex Framework is a library implements Connex interface.
 
+## ⚠️ Repository Notice: End-of-Life (EOL)
+
+**This repository now has reached its end-of-life (EOL).** We have transitioned to brand new and comprehensive [VeChain SDK](https://github.com/vechain/vechain-sdk-js) that will continue to receive updates, support, and new features.
+
+For any further questions or migration guidance, please reach out using our [support portal](https://support.vechain.org/support/home).
+
 ## Installation
 
 It always works along with the package [@vechain/connex-driver](https://github.com/vechain/connex/tree/master/packages/driver).

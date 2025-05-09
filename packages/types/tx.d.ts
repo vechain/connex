@@ -17,6 +17,9 @@ declare namespace Connex.Thor {
         nonce: string
         dependsOn: string | null
         size: number
+        type?: number
+        maxPriorityFeePerGas?: string
+        maxFeePerGas?: string
         meta: {
             blockID: string
             blockNumber: number
@@ -42,6 +45,7 @@ declare namespace Connex.Thor {
 
         /** the transaction receipt model */
         type Receipt = {
+            type?: number
             gasUsed: number
             gasPayer: string
             paid: string
