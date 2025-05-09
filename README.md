@@ -4,20 +4,7 @@ Connex is the mono-repo contains libraries to help build dApps for VeChain.
 
 ## ⚠️ Repository Notice: End-of-Life (EOL)
 
-**This repository is now archived and has reached its end-of-life (EOL).** We have transitioned to a new and improved repository that will continue to receive updates, support, and new features.
-
-### Important Dates:
-- **Final Version Release:** November 4th, 2024
-- **End-of-Support Date:** December 31st, 2024
-- **Repository Archive Date:** December 31st, 2024
-
-### New Repository
-You can start using the [VeChain SDK](https://github.com/vechain/vechain-sdk-js) for the latest updates and developments.
-
-### Thank You
-Thank you to all contributors and users for supporting this project. We appreciate your interest and encourage you to explore the new repository for ongoing improvements and features.
-
----
+**This repository now has reached its end-of-life (EOL).** We have transitioned to brand new and comprehensive [VeChain SDK](https://github.com/vechain/vechain-sdk-js) that will continue to receive updates, support, and new features.
 
 For any further questions or migration guidance, please reach out using our [support portal](https://support.vechain.org/support/home).
 

@@ -4,6 +4,12 @@
 
 The out of the box Connex implementation for **browser**.
 
+## ⚠️ Repository Notice: End-of-Life (EOL)
+
+**This repository now has reached its end-of-life (EOL).** We have transitioned to brand new and comprehensive [VeChain SDK](https://github.com/vechain/vechain-sdk-js) that will continue to receive updates, support, and new features.
+
+For any further questions or migration guidance, please reach out using our [support portal](https://support.vechain.org/support/home).
+
 ## Installation
 
 ### Include in `<script>` tag
