@@ -32,6 +32,8 @@ const connex = new Framework(driver)
 // config tx parameters, e.g. expiration, gasPriceCoef
 driver.txParams.expiration = 18
 driver.txParams.gasPriceCoef = 128
+driver.txParams.maxPriorityFeePerGas = 100 // 100 Wei for tipping the miner
+driver.txParams.txType = Transaction.Type.DynamicFee // txType to use
 
 // watch committed tx
 driver.onTxCommit = txObj => {
