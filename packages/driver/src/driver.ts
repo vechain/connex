@@ -44,7 +44,8 @@ export class Driver extends DriverNoVendor {
     public txParams = {
         expiration: 18,
         gasPriceCoef: 0,
-        maxPriorityFeePerGas: 0
+        maxPriorityFeePerGas: 0,
+        maxFeePerGas: 0
     }
 
     constructor(
