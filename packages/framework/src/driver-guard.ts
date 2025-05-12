@@ -220,5 +220,9 @@ const vmOutputScheme: V.Scheme<Connex.VM.Output> = {
         sender: R.address,
         recipient: R.address,
         amount: R.hexString,
-    }]
+    }],
+    effectiveGasPrice: V.optional(R.hexString),
+    maxFeePerGas: V.optional(R.hexString),
+    maxPriorityFeePerGas: V.optional(R.hexString),
+    type: V.optional(R.uint8)
 }

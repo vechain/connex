@@ -8,6 +8,9 @@ export function newExplainer(readyDriver: Promise<Connex.Driver>, clauses: Conne
         gas?: number
         gasPrice?: string
         gasPayer?: string
+        type?: Connex.Thor.TransactionType
+        maxPriorityFeePerGas?: string
+        maxFeePerGas?: string
     } = {}
     let cacheHints: string[] | undefined
 
@@ -30,6 +33,18 @@ export function newExplainer(readyDriver: Promise<Connex.Driver>, clauses: Conne
         },
         cache(hints) {
             cacheHints = R.test(hints, [R.address], 'arg0').map(t => t.toLowerCase())
+            return this
+        },
+        type(type) {
+            opts.type = R.test(type, R.uint8, 'arg0')
+            return this
+        },
+        maxPriorityFeePerGas(fee) {
+            opts.maxPriorityFeePerGas = R.test(fee, R.bigInt, 'arg0').toString().toLowerCase()
+            return this
+        },
+        maxFeePerGas(fee) {
+            opts.maxFeePerGas = R.test(fee, R.bigInt, 'arg0').toString().toLowerCase()
             return this
         },
         execute() {

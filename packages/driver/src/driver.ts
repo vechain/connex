@@ -43,7 +43,8 @@ export class Driver extends DriverNoVendor {
     /** params for tx construction */
     public txParams = {
         expiration: 18,
-        gasPriceCoef: 0
+        gasPriceCoef: 0,
+        maxPriorityFeePerGas: 0
     }
 
     constructor(
@@ -67,21 +68,41 @@ export class Driver extends DriverNoVendor {
             value: c.value.toString().toLowerCase(),
             data: (c.data || '0x').toLowerCase(),
         }))
-        const gas = options.gas ||
-            (await this.estimateGas(clauses, key.address))
+        const gas = options.gas || (await this.estimateGas(clauses, key.address))
 
-        const txBody: Transaction.Body = {
+        // Base transaction body
+        const baseTxBody = {
             chainTag: Number.parseInt(this.genesis.id.slice(-2), 16),
             blockRef: this.head.id.slice(0, 18),
             expiration: this.txParams.expiration,
             clauses,
-            gasPriceCoef: this.txParams.gasPriceCoef,
             gas,
             dependsOn: options.dependsOn || null,
             nonce: '0x' + randomBytes(8).toString('hex')
         }
 
-        let tx: Transaction | undefined
+        // Determine transaction type and create appropriate body
+        const txType = options.type ?? 0
+        let txBody: any
+
+        if (txType === Transaction.Type.DynamicFee) {
+            // Dynamic fee transaction
+            txBody = {
+                ...baseTxBody,
+                type: Transaction.Type.DynamicFee,
+                maxPriorityFeePerGas: options.maxPriorityFeePerGas?.toString() ?? '0',
+                maxFeePerGas: options.maxFeePerGas?.toString() ?? '0'
+            }
+        } else {
+            // Legacy transaction
+            txBody = {
+                ...baseTxBody,
+                type: Transaction.Type.Legacy,
+                gasPriceCoef: options.gasPriceCoef ?? this.txParams.gasPriceCoef
+            }
+        }
+
+        let tx: Transaction<any>
         if (options.delegator) {
             const delegatedTx = new Transaction({ ...txBody, reserved: { features: 1/* vip191 */ } })
             const originSig = await key.sign(delegatedTx.signingHash())
@@ -97,11 +118,11 @@ export class Driver extends DriverNoVendor {
             } catch (err) {
                 // tslint:disable-next-line: no-console
                 console.warn('tx delegation error: ', err)
-
                 // fallback to non-vip191 tx
+                tx = new Transaction(txBody)
+                tx.signature = await key.sign(tx.signingHash())
             }
-        }
-        if (!tx) {
+        } else {
             tx = new Transaction(txBody)
             tx.signature = await key.sign(tx.signingHash())
         }

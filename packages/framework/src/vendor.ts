@@ -74,7 +74,27 @@ export function newTxSigningService(readyDriver: Promise<Connex.Signer>, msg: Co
                     throw new Rejected(err.message)
                 }
             })()
-        }
+        },
+        type(type: Connex.Thor.TransactionType) {
+            opts.type = type
+            return this
+        },
+        // Legacy fee methods
+        gasPriceCoef(coef: number) {
+            opts.gasPriceCoef = coef
+            return this
+        },
+        // Dynamic fee methods
+        maxPriorityFeePerGas(fee: string | number) {
+            opts.maxPriorityFeePerGas = fee
+            return this
+        },
+        maxFeePerGas(fee: string | number) {
+            opts.maxFeePerGas = fee
+            return this
+        },
+
+
     }
 }
 

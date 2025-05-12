@@ -1,6 +1,13 @@
 declare namespace Connex.Thor {
-    /** the transaction model */
-    type Transaction = {
+
+    /** Transaction types */
+    enum TransactionType {
+        LEGACY = 0,
+        DYNAMIC_FEE = 81
+    }
+
+    /** Base transaction model */
+    type BaseTransaction = {
         id: string
         chainTag: number
         blockRef: string
@@ -10,16 +17,12 @@ declare namespace Connex.Thor {
             value: string
             data: string
         }>
-        gasPriceCoef: number
         gas: number
         origin: string
         delegator?: string | null
         nonce: string
         dependsOn: string | null
         size: number
-        type?: number
-        maxPriorityFeePerGas?: string
-        maxFeePerGas?: string
         meta: {
             blockID: string
             blockNumber: number
@@ -27,7 +30,24 @@ declare namespace Connex.Thor {
         }
     }
 
+    /** Legacy transaction model */
+    type LegacyTransaction = BaseTransaction & {
+        type: TransactionType.LEGACY
+        gasPriceCoef: number
+    }
+
+    /** Dynamic fee transaction model */
+    type DynamicFeeTransaction = BaseTransaction & {
+        type: TransactionType.DYNAMIC_FEE
+        maxPriorityFeePerGas: string
+        maxFeePerGas: string
+    }
+
+    /** Union type for all transaction types */
+    type Transaction = LegacyTransaction | DynamicFeeTransaction
+
     namespace Transaction {
+
         /** the transaction visitor interface */
         interface Visitor {
             /** the transaction id to be visited */
