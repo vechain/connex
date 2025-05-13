@@ -8,9 +8,6 @@ export function newExplainer(readyDriver: Promise<Connex.Driver>, clauses: Conne
         gas?: number
         gasPrice?: string
         gasPayer?: string
-        type?: Connex.Thor.TransactionType
-        maxPriorityFeePerGas?: string
-        maxFeePerGas?: string
     } = {}
     let cacheHints: string[] | undefined
 
