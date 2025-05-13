@@ -39,18 +39,6 @@ declare namespace Connex {
             /** register a callback function fired when the request is accepted by user wallet */
             accepted(cb: () => void): this
 
-            /** sets the transaction type */
-            type(type: Connex.Thor.TransactionType): this
-
-            /** sets the gas price coef for legacy transactions */
-            gasPriceCoef(coef: number): this
-
-            /** sets the maxPriorityFeePerGas for dynamic fee transactions */
-            maxPriorityFeePerGas(fee: string | number): this
-
-            /** sets the maxFeePerGas for dynamic fee transactions */
-            maxFeePerGas(fee: string | number): this
-
             /** send the request */
             request(): Promise<TxResponse>
         }

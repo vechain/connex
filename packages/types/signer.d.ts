@@ -21,13 +21,6 @@ declare namespace Connex {
                 signer?: string;
             };
             onAccepted?: () => void;
-            // Fee options
-            type?: Connex.Thor.TransactionType;
-            // Legacy fee options
-            gasPriceCoef?: number;
-            // Dynamic fee options
-            maxPriorityFeePerGas?: string | number;
-            maxFeePerGas?: string | number;
         };
         type CertOptions = {
             signer?: string;

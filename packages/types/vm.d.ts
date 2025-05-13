@@ -7,20 +7,11 @@ declare namespace Connex.VM {
         /** set max allowed gas */
         gas(gas: number): this
 
-        /** set gas price for legacy transactions */
+        /** set gas price as the VM context */
         gasPrice(gp: string | number): this
-
-        /** set max priority fee per gas for dynamic fee transactions */
-        maxPriorityFeePerGas(fee: string | number): this
-
-        /** set max fee per gas for dynamic fee transactions */
-        maxFeePerGas(fee: string | number): this
 
         /** set gas payer */
         gasPayer(addr: string): this
-
-        /** set transaction type */
-        type(type: Connex.Thor.TransactionType): this
 
         /**
          * turn on result cache
@@ -46,11 +37,6 @@ declare namespace Connex.VM {
         revertReason?: string
         events: Event[]
         transfers: Transfer[]
-        // Add fee-related fields
-        effectiveGasPrice?: string
-        maxFeePerGas?: string
-        maxPriorityFeePerGas?: string
-        type?: Connex.Thor.TransactionType
     }
 
     type Event = {

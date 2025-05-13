@@ -35,18 +35,6 @@ export function newExplainer(readyDriver: Promise<Connex.Driver>, clauses: Conne
             cacheHints = R.test(hints, [R.address], 'arg0').map(t => t.toLowerCase())
             return this
         },
-        type(type) {
-            opts.type = R.test(type, R.uint8, 'arg0')
-            return this
-        },
-        maxPriorityFeePerGas(fee) {
-            opts.maxPriorityFeePerGas = R.test(fee, R.bigInt, 'arg0').toString().toLowerCase()
-            return this
-        },
-        maxFeePerGas(fee) {
-            opts.maxFeePerGas = R.test(fee, R.bigInt, 'arg0').toString().toLowerCase()
-            return this
-        },
         execute() {
             const transformedClauses = clauses.map(c => {
                 return {
