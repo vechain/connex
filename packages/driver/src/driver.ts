@@ -46,7 +46,7 @@ export class Driver extends DriverNoVendor {
         expiration: 18,
         gasPriceCoef: 0,
         maxPriorityFeePerGas: 0 as string|number,
-        txType: Connex.Thor.Transaction.Type.LEGACY
+        txType: Transaction.Type.Legacy
     }
 
     constructor(
@@ -85,13 +85,13 @@ export class Driver extends DriverNoVendor {
 
         // Determine transaction type and create appropriate body
         let txType = this.txParams.txType
-        if (txType === Connex.Thor.Transaction.Type.DYNAMIC_FEE && !this.head.baseFeePerGas) {
+        if (txType === Transaction.Type.DynamicFee && !this.head.baseFeePerGas) {
             // If baseFeePerGas is not available, means dynamic fee is not enabled
             // in the current block, fallback to legacy transaction
-           txType = Connex.Thor.Transaction.Type.LEGACY
+           txType = Transaction.Type.Legacy
         }
         let txBody: Transaction.LegacyBody | Transaction.DynamicFeeBody
-        if (txType === Connex.Thor.Transaction.Type.DYNAMIC_FEE) {
+        if (txType === Transaction.Type.DynamicFee) {
             // Dynamic fee transaction
             txBody = {
                 ...baseTxBody,
