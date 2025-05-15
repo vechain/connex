@@ -108,6 +108,7 @@ export class Cache {
         if (range && range.baseFeePerGas.length > 0) {
             // Key change for the case where we are starting a network with less blocks than the blockCount
             // Also this could happen for cases including the backtrace limit
+            // i.e. backtrace limit is 2, we have 7 blocks, we request 4 from 'best'
             if (range.baseFeePerGas.length < blockCount) {
                 key = `${newestBlock}-${blockCount - range.baseFeePerGas.length}`
             }
