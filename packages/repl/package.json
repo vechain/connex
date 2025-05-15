@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-repl",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "",
   "main": "dist/index.js",
   "engines": {
@@ -29,9 +29,9 @@
   },
   "homepage": "https://github.com/vechain/connex/tree/master/packages/repl#readme",
   "dependencies": {
-    "@vechain/connex-driver": "^2.1.0",
-    "@vechain/connex-framework": "^2.1.0",
-    "@vechain/connex-types": "^2.1.0",
+    "@vechain/connex-driver": "^2.2.0",
+    "@vechain/connex-framework": "^2.2.0",
+    "@vechain/connex-types": "^2.2.0",
     "bignumber.js": "^9.0.0",
     "repl.history": "^0.1.4"
   }
