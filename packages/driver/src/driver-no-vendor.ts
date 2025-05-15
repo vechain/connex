@@ -30,6 +30,9 @@ export class DriverNoVendor implements Connex.Driver {
                 txsFeatures: genesis.txsFeatures,
                 gasLimit: genesis.gasLimit
             }
+            if (genesis.baseFeePerGas) {
+                this.head.baseFeePerGas = genesis.baseFeePerGas
+            }
         }
         void this.headTrackerLoop()
     }
@@ -174,6 +177,9 @@ export class DriverNoVendor implements Connex.Driver {
                         txsFeatures: best.txsFeatures,
                         gasLimit: best.gasLimit
                     }
+                    if (best.baseFeePerGas) {
+                        this.head.baseFeePerGas = best.baseFeePerGas
+                    }
                     this.cache.handleNewBlock(this.head, undefined, best)
                     this.emitNewHead()
 
@@ -223,6 +229,9 @@ export class DriverNoVendor implements Connex.Driver {
                         parentID: beat.parentID,
                         txsFeatures: beat.txsFeatures,
                         gasLimit: beat.gasLimit
+                    }
+                    if (beat.baseFeePerGas) {
+                        this.head.baseFeePerGas = beat.baseFeePerGas
                     }
                     this.cache.handleNewBlock(this.head, { k: beat.k, bits: beat.bloom })
                     this.emitNewHead()

@@ -24,17 +24,22 @@ export class Driver extends DriverNoVendor {
             }
         })
 
+        const head: Connex.Thor.Status['head'] = {
+            id: best.id,
+            number: best.number,
+            timestamp: best.timestamp,
+            parentID: best.parentID,
+            txsFeatures: best.txsFeatures,
+            gasLimit: best.gasLimit,
+        }
+        if (best.baseFeePerGas) {
+            head.baseFeePerGas = best.baseFeePerGas
+        }
+
         return new Driver(
             net,
             genesis,
-            {
-                id: best.id,
-                number: best.number,
-                timestamp: best.timestamp,
-                parentID: best.parentID,
-                txsFeatures: best.txsFeatures,
-                gasLimit: best.gasLimit
-            },
+            head,
             wallet)
     }
 
