@@ -46,7 +46,7 @@ export class Driver extends DriverNoVendor {
         expiration: 18,
         gasPriceCoef: 0,
         maxPriorityFeePerGas: 0 as string|number,
-        txType: Transaction.Type.Legacy
+        txType: TransactionType.DynamicFee
     }
 
     constructor(
@@ -85,25 +85,25 @@ export class Driver extends DriverNoVendor {
 
         // Determine transaction type and create appropriate body
         let txType = this.txParams.txType
-        if (txType === Transaction.Type.DynamicFee && !this.head.baseFeePerGas) {
+        if (txType === TransactionType.DynamicFee && !this.head.baseFeePerGas) {
             // If baseFeePerGas is not available, means dynamic fee is not enabled
             // in the current block, fallback to legacy transaction
-           txType = Transaction.Type.Legacy
+           txType = TransactionType.Legacy
         }
         let txBody: Transaction.LegacyBody | Transaction.DynamicFeeBody
-        if (txType === Transaction.Type.DynamicFee) {
+        if (txType === TransactionType.DynamicFee) {
             // Dynamic fee transaction
             txBody = {
                 ...baseTxBody,
-                type: Transaction.Type.DynamicFee,
+                type: TransactionType.DynamicFee,
                 maxPriorityFeePerGas: this.txParams.maxPriorityFeePerGas.toString(),
-                maxFeePerGas: new BigNumber(this.txParams.maxPriorityFeePerGas).plus(this.head.baseFeePerGas!).toString(),
+                maxFeePerGas: new BigNumber(this.txParams.maxPriorityFeePerGas).plus(this.head.baseFeePerGas as string).toString(),
             } as Transaction.DynamicFeeBody
         } else {
             // Legacy transaction
             txBody = {
                 ...baseTxBody,
-                type: Transaction.Type.Legacy,
+                type: TransactionType.Legacy,
                 gasPriceCoef: this.txParams.gasPriceCoef
             } as Transaction.LegacyBody
         }
@@ -208,6 +208,7 @@ export class Driver extends DriverNoVendor {
     }
 }
 
+export const TransactionType = Transaction.Type
 export interface TxObject {
     id: string
     raw: string
