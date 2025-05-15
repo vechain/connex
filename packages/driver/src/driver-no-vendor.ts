@@ -53,17 +53,11 @@ export class DriverNoVendor implements Connex.Driver {
     }
 
     public getFees(newestBlock: string | number, blockCount: number): Promise<Connex.Thor.Fees | null> {
-        return this.getBlock(newestBlock)
-            .then(block => {
-                if (!block) {
-                    return null
-                }
-                return this.cache.getFees(block.id, blockCount, () =>
-                    this.httpGet('fees/history', { 
-                        newestBlock: block.id,
-                        blockCount: blockCount.toString()
-                    }))
-            })
+        return this.cache.getFees(newestBlock, blockCount, () =>
+            this.httpGet('fees/history', { 
+                newestBlock: newestBlock.toString(),
+                blockCount: blockCount.toString()
+            }))
     }
 
     public getPriorityFeeSuggestion(): Promise<Connex.Thor.PriorityFeeSuggestion | null> {
