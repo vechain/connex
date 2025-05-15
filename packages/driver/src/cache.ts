@@ -19,7 +19,7 @@ export class Cache {
         blocks: new LRU<string | number, Connex.Thor.Block>(256),
         txs: new LRU<string, Connex.Thor.Transaction>(512),
         receipts: new LRU<string, Connex.Thor.Transaction.Receipt>(512),
-        fees: new LRU<string, Connex.Thor.Fees>(256)
+        fees: new LRU<string, Connex.Thor.Fees>(512)
     }
     private readonly window: Slot[] = []
 
