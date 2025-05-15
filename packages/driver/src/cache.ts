@@ -98,14 +98,19 @@ export class Cache {
         blockCount: number,
         fetch: () => Promise<Connex.Thor.Fees>
     ): Promise<Connex.Thor.Fees> {
-        const key = `${newestBlock}-${blockCount}`
+        let key = `${newestBlock}-${blockCount}`
         const cachedRange = this.irreversible.fees.get(key)
         if (cachedRange) {
             return cachedRange
         }
 
         const range = await fetch()
-        if (range) {
+        if (range && range.baseFeePerGas.length > 0) {
+            // Key change for the case where we are starting a network with less blocks than the blockCount
+            // Also this could happen for cases including the backtrace limit
+            if (range.baseFeePerGas.length < blockCount) {
+                key = `${newestBlock}-${blockCount - range.baseFeePerGas.length}`
+            }
             this.irreversible.fees.set(key, range)
         }
         return range
