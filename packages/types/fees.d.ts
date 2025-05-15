@@ -1,6 +1,7 @@
 declare namespace Connex.Thor {
     /** the fees model */
     type Fees = {
+        oldestBlock: string
         baseFeePerGas: string[]
         gasUsedRatio: number[]
         reward?: string[][]

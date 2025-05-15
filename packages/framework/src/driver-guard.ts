@@ -232,6 +232,7 @@ const vmOutputScheme: V.Scheme<Connex.VM.Output> = {
 }
 
 const feeScheme: V.Scheme<Connex.Thor.Fees> = {
+    oldestBlock: R.bytes32,
     baseFeePerGas: [R.hexString],
     gasUsedRatio: [R.uint64],
     reward: V.optional([[R.hexString]])
