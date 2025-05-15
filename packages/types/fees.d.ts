@@ -1,0 +1,21 @@
+declare namespace Connex.Thor {
+    /** the fees model */
+    type Fees = {
+        baseFeePerGas: string[]
+        gasUsedRatio: number[]
+        reward?: string[][]
+    }
+
+    namespace Fees {
+        /** the block visitor interface */
+        interface Visitor {
+            /** id or number of the fees to be visited */
+            readonly newestBlock: string | number
+
+            readonly blockCount: number
+
+            /** query the fees */
+            get(): Promise<Fees | null>
+        }
+    }
+}

@@ -1,5 +1,5 @@
-import * as LRU from 'lru-cache'
 import BigNumber from 'bignumber.js'
+import * as LRU from 'lru-cache'
 import { newFilter } from './bloom'
 
 const WINDOW_LEN = 12
@@ -18,7 +18,8 @@ export class Cache {
     private readonly irreversible = {
         blocks: new LRU<string | number, Connex.Thor.Block>(256),
         txs: new LRU<string, Connex.Thor.Transaction>(512),
-        receipts: new LRU<string, Connex.Thor.Transaction.Receipt>(512)
+        receipts: new LRU<string, Connex.Thor.Transaction.Receipt>(512),
+        fees: new LRU<string, Connex.Thor.Fees>(256)
     }
     private readonly window: Slot[] = []
 
@@ -90,6 +91,24 @@ export class Cache {
             }
         }
         return block
+    }
+
+    public async getFees(
+        newestBlock: string | number,
+        blockCount: number,
+        fetch: () => Promise<Connex.Thor.Fees>
+    ): Promise<Connex.Thor.Fees> {
+        const key = `${newestBlock}-${blockCount}`
+        const cachedRange = this.irreversible.fees.get(key)
+        if (cachedRange) {
+            return cachedRange
+        }
+
+        const range = await fetch()
+        if (range) {
+            this.irreversible.fees.set(key, range)
+        }
+        return range
     }
 
     public async getTx(

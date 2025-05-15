@@ -35,6 +35,13 @@ declare namespace Connex {
 
         /** create an explainer to simulate tx execution */
         explain(clauses: VM.Clause[]): VM.Explainer
+
+        /**
+         * create a visitor to the fees specified by the given revision
+         * @param newestBlock block id or number
+         * @param blockCount number of blocks to query
+         */
+        fees(newestBlock: string | number, blockCount: number): Thor.Fees.Visitor
     }
 
     namespace Thor {

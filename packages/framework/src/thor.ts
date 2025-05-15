@@ -1,11 +1,12 @@
+import * as V from 'validator-ts'
 import { newAccountVisitor } from './account-visitor'
 import { newBlockVisitor } from './block-visitor'
-import { newTxVisitor } from './tx-visitor'
+import { newExplainer } from './explainer'
+import { newFeesVisitor } from './fees-visitor'
 import { newFilter } from './filter'
 import { newHeadTracker } from './head-tracker'
-import { newExplainer } from './explainer'
 import * as R from './rules'
-import * as V from 'validator-ts'
+import { newTxVisitor } from './tx-visitor'
 
 export function newThor(driver: Connex.Driver): Connex.Thor {
     const headTracker = newHeadTracker(driver)
@@ -77,6 +78,23 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
         explain: (clauses) => {
             R.test(clauses, [clauseScheme], 'arg0')
             return newExplainer(readyDriver, clauses)
+        },
+        fees: (newestBlock, blockCount) => {
+            if (typeof newestBlock === 'undefined') {
+                newestBlock = driver.head.id
+            } else {
+                R.ensure(typeof newestBlock === 'string' ? R.isHexBytes(newestBlock, 32) : R.isUInt(newestBlock, 32),
+                    'arg0: expected bytes32 or unsigned 32-bit integer')
+            }
+
+            if (typeof blockCount === 'undefined') {
+                blockCount = 1
+            } else {
+                R.ensure(R.isUInt(blockCount, 32),
+                    'arg0: expected unsigned 32-bit integer')
+            }
+
+            return newFeesVisitor(driver, newestBlock, blockCount)
         }
     }
 }

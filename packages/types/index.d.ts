@@ -3,6 +3,7 @@
 /// <reference path="vm.d.ts" />
 /// <reference path="account.d.ts" />
 /// <reference path="block.d.ts" />
+/// <reference path="fees.d.ts" />
 /// <reference path="tx.d.ts" />
 /// <reference path="filter.d.ts" />
 /// <reference path="signer.d.ts" />

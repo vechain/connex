@@ -1,8 +1,8 @@
-import { Net } from './interfaces'
-import { PromInt, InterruptedError } from './promint'
-import { Cache } from './cache'
 import { blake2b256 } from 'thor-devkit'
+import { Cache } from './cache'
 import { sleep } from './common'
+import { Net } from './interfaces'
+import { InterruptedError, PromInt } from './promint'
 
 /** class implements Connex.Driver leaves out Vendor related methods */
 export class DriverNoVendor implements Connex.Driver {
@@ -51,6 +51,21 @@ export class DriverNoVendor implements Connex.Driver {
         return this.cache.getBlock(revision, () =>
             this.httpGet(`blocks/${revision}`))
     }
+
+    public getFees(newestBlock: string | number, blockCount: number): Promise<Connex.Thor.Fees | null> {
+        return this.getBlock(newestBlock)
+            .then(block => {
+                if (!block) {
+                    return null
+                }
+                return this.cache.getFees(block.id, blockCount, () =>
+                    this.httpGet('fees/history', { 
+                        newestBlock: block.id,
+                        blockCount: blockCount.toString()
+                    }))
+            })
+    }
+
     public getTransaction(id: string, allowPending: boolean): Promise<Connex.Thor.Transaction | null> {
         return this.cache.getTx(id, () => {
             const query: Record<string, string> = { head: this.head.id }
