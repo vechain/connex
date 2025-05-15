@@ -95,6 +95,10 @@ export function newDriverGuard(
         getFees(newestBlock, blockCount) {
             return driver.getFees(newestBlock, blockCount)
                 .then(f => f ? test(f, feeScheme, 'getFees()') : f)
+        },
+        getPriorityFeeSuggestion() {
+            return driver.getPriorityFeeSuggestion()
+                .then(r => test(r, R.hexString, 'getPriorityFeeSuggestion()'))
         }
     }
 }
