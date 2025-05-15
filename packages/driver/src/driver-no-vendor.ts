@@ -52,7 +52,7 @@ export class DriverNoVendor implements Connex.Driver {
             this.httpGet(`blocks/${revision}`))
     }
 
-    public getFees(newestBlock: string | number, blockCount: number, rewardPercentiles?: number[]): Promise<Connex.Thor.Fees | null> {
+    public getFees(newestBlock: string | number, blockCount: number, rewardPercentiles?: number[]): Promise<Connex.Thor.Fees> {
         return this.cache.getFees(newestBlock, blockCount, rewardPercentiles || [], () => {
             const params: Record<string, string> = {
                 newestBlock: newestBlock.toString(),
@@ -65,7 +65,7 @@ export class DriverNoVendor implements Connex.Driver {
         })
     }
 
-    public getPriorityFeeSuggestion(): Promise<Connex.Thor.PriorityFeeSuggestion | null> {
+    public getPriorityFeeSuggestion(): Promise<Connex.Thor.PriorityFeeSuggestion> {
         // No cache since we do not have a key for it
         return this.httpGet('fees/priority')
     }
