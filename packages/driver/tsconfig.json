@@ -2,7 +2,7 @@
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "outDir": "./dist",
-        "types": ["@vechain/connex-framework/dist/driver-interface"]
+        "types": ["@vechain/connex-framework/dist/driver-interface"],
     },
     "include": [
         "./src"

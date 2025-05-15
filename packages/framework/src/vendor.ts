@@ -74,7 +74,7 @@ export function newTxSigningService(readyDriver: Promise<Connex.Signer>, msg: Co
                     throw new Rejected(err.message)
                 }
             })()
-        }
+        },
     }
 }
 

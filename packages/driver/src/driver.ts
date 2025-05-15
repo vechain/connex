@@ -3,6 +3,7 @@ import { DriverNoVendor } from './driver-no-vendor'
 import { Net, Wallet } from './interfaces'
 import { Transaction, Certificate, blake2b256 } from 'thor-devkit'
 import { randomBytes } from 'crypto'
+import BigNumber from 'bignumber.js'
 
 /** class fully implements DriverInterface */
 export class Driver extends DriverNoVendor {
@@ -43,7 +44,9 @@ export class Driver extends DriverNoVendor {
     /** params for tx construction */
     public txParams = {
         expiration: 18,
-        gasPriceCoef: 0
+        gasPriceCoef: 0,
+        maxPriorityFeePerGas: 0 as string|number,
+        txType: Transaction.Type.Legacy
     }
 
     constructor(
@@ -67,21 +70,45 @@ export class Driver extends DriverNoVendor {
             value: c.value.toString().toLowerCase(),
             data: (c.data || '0x').toLowerCase(),
         }))
-        const gas = options.gas ||
-            (await this.estimateGas(clauses, key.address))
+        const gas = options.gas || (await this.estimateGas(clauses, key.address))
 
-        const txBody: Transaction.Body = {
+        // Base transaction body
+        const baseTxBody = {
             chainTag: Number.parseInt(this.genesis.id.slice(-2), 16),
             blockRef: this.head.id.slice(0, 18),
             expiration: this.txParams.expiration,
             clauses,
-            gasPriceCoef: this.txParams.gasPriceCoef,
             gas,
             dependsOn: options.dependsOn || null,
             nonce: '0x' + randomBytes(8).toString('hex')
         }
 
-        let tx: Transaction | undefined
+        // Determine transaction type and create appropriate body
+        let txType = this.txParams.txType
+        if (txType === Transaction.Type.DynamicFee && !this.head.baseFeePerGas) {
+            // If baseFeePerGas is not available, means dynamic fee is not enabled
+            // in the current block, fallback to legacy transaction
+           txType = Transaction.Type.Legacy
+        }
+        let txBody: Transaction.LegacyBody | Transaction.DynamicFeeBody
+        if (txType === Transaction.Type.DynamicFee) {
+            // Dynamic fee transaction
+            txBody = {
+                ...baseTxBody,
+                type: Transaction.Type.DynamicFee,
+                maxPriorityFeePerGas: this.txParams.maxPriorityFeePerGas.toString(),
+                maxFeePerGas: new BigNumber(this.txParams.maxPriorityFeePerGas).plus(this.head.baseFeePerGas!).toString(),
+            } as Transaction.DynamicFeeBody
+        } else {
+            // Legacy transaction
+            txBody = {
+                ...baseTxBody,
+                type: Transaction.Type.Legacy,
+                gasPriceCoef: this.txParams.gasPriceCoef
+            } as Transaction.LegacyBody
+        }
+
+        let tx: Transaction<Transaction.LegacyBody | Transaction.DynamicFeeBody>|undefined
         if (options.delegator) {
             const delegatedTx = new Transaction({ ...txBody, reserved: { features: 1/* vip191 */ } })
             const originSig = await key.sign(delegatedTx.signingHash())
@@ -90,23 +117,24 @@ export class Driver extends DriverNoVendor {
                 origin: key.address
             }
             try {
-                const result = await this.net.http('POST', options.delegator.url, { body: unsigned })
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                const result = await this.net.http('POST', options.delegator.url, { body: unsigned }) as {signature: string}                    
                 delegatedTx.signature = Buffer.concat([originSig, Buffer.from(result.signature.slice(2), 'hex')])
                 tx = delegatedTx
             } catch (err) {
                 // tslint:disable-next-line: no-console
                 console.warn('tx delegation error: ', err)
-
                 // fallback to non-vip191 tx
             }
         }
+        
         if (!tx) {
             tx = new Transaction(txBody)
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             tx.signature = await key.sign(tx.signingHash())
         }
 
-        const raw = '0x' + tx.encode().toString('hex')
+         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        const raw = `0x${tx.encode().toString('hex')}`
         if (this.onTxCommit) {
             this.onTxCommit({
                 id: tx.id!,

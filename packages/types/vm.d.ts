@@ -7,7 +7,7 @@ declare namespace Connex.VM {
         /** set max allowed gas */
         gas(gas: number): this
 
-        /** set gas price, presented by hex/dec string or number type */
+        /** set gas price as the VM context */
         gasPrice(gp: string | number): this
 
         /** set gas payer */

@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-types",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Standard interface to connect DApp with VeChain and user",
   "main": "",
   "types": "index",

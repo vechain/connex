@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex-driver",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Connex framework driver implementation",
   "main": "dist/index.js",
   "module": "esm/index.js",
@@ -33,15 +33,15 @@
   "devDependencies": {
     "@types/lru-cache": "^5.1.0",
     "@types/ws": "^6.0.1",
-    "@vechain/connex-framework": "^2.1.0"
+    "@vechain/connex-framework": "^2.1.1"
   },
   "dependencies": {
-    "@vechain/connex-types": "^2.1.0",
+    "@vechain/connex-types": "^2.1.1",
     "axios": "^0.21.1",
     "bignumber.js": "^7.2.1",
     "isomorphic-ws": "^4.0.1",
     "lru-cache": "^5.1.1",
-    "thor-devkit": "^2.0.5",
+    "thor-devkit": "^2.1.0",
     "ws": "^7.1.0"
   },
   "sideEffects": false
