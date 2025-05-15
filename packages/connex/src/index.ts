@@ -83,6 +83,7 @@ class ThorClass implements Connex.Thor {
     transaction !: Connex.Thor['transaction']
     filter !: Connex.Thor['filter']
     explain !: Connex.Thor['explain']
+    fees !: Connex.Thor['fees']
 
     constructor(opts: Omit<Options, 'signer'>) {
         const genesis = normalizeNetwork(opts.network)
@@ -98,7 +99,8 @@ class ThorClass implements Connex.Thor {
             get block() { return framework.thor.block.bind(framework.thor) },
             get transaction() { return framework.thor.transaction.bind(framework.thor) },
             get filter() { return framework.thor.filter.bind(framework.thor) },
-            get explain() { return framework.thor.explain.bind(framework.thor) }
+            get explain() { return framework.thor.explain.bind(framework.thor) },
+            get fees() { return framework.thor.fees.bind(framework.thor) }
         }
     }
 }

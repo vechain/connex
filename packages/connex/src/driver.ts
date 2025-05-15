@@ -32,28 +32,36 @@ export class LazyDriver implements Connex.Driver {
     }
     getTransaction(id: string, allowPending: boolean): Promise<Connex.Thor.Transaction | null> { 
         return this.noVendor.getTransaction(id, allowPending)
-     }
+    }
     getReceipt(id: string): Promise<Connex.Thor.Transaction.Receipt | null> { 
         return this.noVendor.getReceipt(id)
-     }
+    }
     getAccount(addr: string, revision: string): Promise<Connex.Thor.Account> { 
         return this.noVendor.getAccount(addr, revision)
-     }
+    }
     getCode(addr: string, revision: string): Promise<Connex.Thor.Account.Code> {
         return this.noVendor.getCode(addr, revision)
     }
     getStorage(addr: string, key: string, revision: string): Promise<Connex.Thor.Account.Storage> { 
         return this.noVendor.getStorage(addr, key, revision)
-     }
+    }
     explain(arg: Connex.Driver.ExplainArg, revision: string, cacheHints?: string[]): Promise<Connex.VM.Output[]> { 
         return this.noVendor.explain(arg, revision, cacheHints)
-     }
+    }
     filterEventLogs(arg: Connex.Driver.FilterEventLogsArg): Promise<Connex.Thor.Filter.Row<'event'>[]> { 
         return this.noVendor.filterEventLogs(arg)
-     }
+    }
     filterTransferLogs(arg: Connex.Driver.FilterTransferLogsArg): Promise<Connex.Thor.Filter.Row<'transfer'>[]> { 
         return this.noVendor.filterTransferLogs(arg)
-     }
+    }
+
+    getFees(newestBlock: string | number, blockCount: number): Promise<Connex.Thor.Fees | null> {
+        return this.noVendor.getFees(newestBlock, blockCount)
+    }
+
+    getPriorityFeeSuggestion(): Promise<string | null> {
+        return this.noVendor.getPriorityFeeSuggestion()
+    }
 
     async signTx(msg: Connex.Vendor.TxMessage, options: Connex.Signer.TxOptions): Promise<Connex.Vendor.TxResponse> {
         return this.signer.then(b => b.signTx(msg, options))
