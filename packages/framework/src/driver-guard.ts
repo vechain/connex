@@ -92,8 +92,8 @@ export function newDriverGuard(
                     signature: v => R.isHexBytes(v, 65) ? '' : 'expected 65 bytes'
                 }, 'signCert()'))
         },
-        getFees(newestBlock, blockCount) {
-            return driver.getFees(newestBlock, blockCount)
+        getFees(newestBlock, blockCount, rewardPercentiles) {
+            return driver.getFees(newestBlock, blockCount, rewardPercentiles)
                 .then(f => f ? test(f, feeScheme, 'getFees()') : f)
         },
         getPriorityFeeSuggestion() {
@@ -234,7 +234,10 @@ const vmOutputScheme: V.Scheme<Connex.VM.Output> = {
 const feeScheme: V.Scheme<Connex.Thor.Fees> = {
     oldestBlock: R.bytes32,
     baseFeePerGas: [R.hexString],
-    gasUsedRatio: [R.uint64],
+    gasUsedRatio: [v => {
+        const num = Number(v);
+        return !isNaN(num) && num >= 0 && num <= 1 ? '' : 'expected a number between 0 and 1';
+    }],
     reward: V.optional([[R.hexString]])
 }
 

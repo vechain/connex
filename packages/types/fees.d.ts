@@ -19,6 +19,9 @@ declare namespace Connex.Thor {
 
             readonly blockCount: number
 
+            /** array of reward percentiles to query */
+            readonly rewardPercentiles?: number[]
+
             /** query the fees */
             get(): Promise<Fees | null>
         }

@@ -79,7 +79,7 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
             R.test(clauses, [clauseScheme], 'arg0')
             return newExplainer(readyDriver, clauses)
         },
-        fees: (newestBlock, blockCount) => {
+        fees: (newestBlock, blockCount, rewardPercentiles) => {
             if (typeof newestBlock === 'undefined') {
                 newestBlock = driver.head.id
             } else {
@@ -91,10 +91,16 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
                 blockCount = 1
             } else {
                 R.ensure(R.isUInt(blockCount, 32),
-                    'arg0: expected unsigned 32-bit integer')
+                    'arg1: expected unsigned 32-bit integer')
             }
 
-            return newFeesVisitor(driver, newestBlock, blockCount)
+            if (typeof rewardPercentiles === 'undefined') {
+                rewardPercentiles = []
+            } else {
+                R.ensure(Array.isArray(rewardPercentiles) && rewardPercentiles.every(rewardPercentile => R.isUInt(rewardPercentile, 32)),
+                    'arg2: expected an array of unsigned 32-bit integers')
+            }
+            return newFeesVisitor(driver, newestBlock, blockCount, rewardPercentiles)
         },
         priorityFeeSuggestion: () => {
             return driver.getPriorityFeeSuggestion()

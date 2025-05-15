@@ -96,9 +96,13 @@ export class Cache {
     public async getFees(
         newestBlock: string | number,
         blockCount: number,
+        rewardPercentiles: number[],
         fetch: () => Promise<Connex.Thor.Fees>
     ): Promise<Connex.Thor.Fees> {
         let key = `${newestBlock}-${blockCount}`
+        if (rewardPercentiles.length > 0) {
+            key = `${key}-${rewardPercentiles.join(',')}`
+        }
         const cachedRange = this.irreversible.fees.get(key)
         if (cachedRange) {
             return cachedRange
@@ -111,6 +115,9 @@ export class Cache {
             // i.e. backtrace limit is 2, we have 7 blocks, we request 4 from 'best'
             if (range.baseFeePerGas.length < blockCount) {
                 key = `${newestBlock}-${blockCount - range.baseFeePerGas.length}`
+                if (rewardPercentiles.length > 0) {
+                    key = `${key}-${rewardPercentiles.join(',')}`
+                }
             }
             this.irreversible.fees.set(key, range)
         }

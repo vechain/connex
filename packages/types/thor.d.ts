@@ -40,8 +40,9 @@ declare namespace Connex {
          * create a visitor to the fees specified by the given revision
          * @param newestBlock block id or number
          * @param blockCount number of blocks to query
+         * @param rewardPercentiles array of reward percentiles to query
          */
-        fees(newestBlock: string | number, blockCount: number): Thor.Fees.Visitor
+        fees(newestBlock: string | number, blockCount: number, rewardPercentiles?: number[]): Thor.Fees.Visitor
 
         /**
          * get a priority fee suggestion
