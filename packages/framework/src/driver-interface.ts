@@ -26,7 +26,7 @@ declare namespace Connex {
         filterTransferLogs(arg: Driver.FilterTransferLogsArg, cacheHints?: string[]): Promise<Thor.Filter.Row<'transfer'>[]>
 
         getFees(newestBlock: string | number, blockCount: number): Promise<Thor.Fees | null>
-        getPriorityFeeSuggestion(): Promise<string | null>
+        getPriorityFeeSuggestion(): Promise<Connex.Thor.PriorityFeeSuggestion | null>
     }
 
     namespace Driver {

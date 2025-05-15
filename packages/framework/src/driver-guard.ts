@@ -98,7 +98,7 @@ export function newDriverGuard(
         },
         getPriorityFeeSuggestion() {
             return driver.getPriorityFeeSuggestion()
-                .then(r => test(r, R.hexString, 'getPriorityFeeSuggestion()'))
+                .then(r => r ? test(r, priorityFeeSuggestionScheme, 'getPriorityFeeSuggestion()') : r)
         }
     }
 }
@@ -234,5 +234,9 @@ const vmOutputScheme: V.Scheme<Connex.VM.Output> = {
 const feeScheme: V.Scheme<Connex.Thor.Fees> = {
     baseFeePerGas: [R.hexString],
     gasUsedRatio: [R.uint64],
-    reward: [[V.optional(R.hexString)]]
+    reward: V.optional([[R.hexString]])
+}
+
+const priorityFeeSuggestionScheme: V.Scheme<Connex.Thor.PriorityFeeSuggestion> = {
+    maxPriorityFeePerGas: R.hexString
 }

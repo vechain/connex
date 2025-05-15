@@ -6,6 +6,10 @@ declare namespace Connex.Thor {
         reward?: string[][]
     }
 
+    type PriorityFeeSuggestion = {
+        maxPriorityFeePerGas: string
+    }
+
     namespace Fees {
         /** the block visitor interface */
         interface Visitor {

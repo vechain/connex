@@ -95,6 +95,9 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
             }
 
             return newFeesVisitor(driver, newestBlock, blockCount)
+        },
+        priorityFeeSuggestion: () => {
+            return driver.getPriorityFeeSuggestion()
         }
     }
 }

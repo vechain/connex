@@ -42,6 +42,11 @@ declare namespace Connex {
          * @param blockCount number of blocks to query
          */
         fees(newestBlock: string | number, blockCount: number): Thor.Fees.Visitor
+
+        /**
+         * get a priority fee suggestion
+         */
+        priorityFeeSuggestion(): Promise<Thor.PriorityFeeSuggestion | null>
     }
 
     namespace Thor {

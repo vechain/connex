@@ -59,7 +59,7 @@ export class LazyDriver implements Connex.Driver {
         return this.noVendor.getFees(newestBlock, blockCount)
     }
 
-    getPriorityFeeSuggestion(): Promise<string | null> {
+    getPriorityFeeSuggestion(): Promise<Connex.Thor.PriorityFeeSuggestion | null> {
         return this.noVendor.getPriorityFeeSuggestion()
     }
 
