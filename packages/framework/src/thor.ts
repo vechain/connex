@@ -97,8 +97,16 @@ export function newThor(driver: Connex.Driver): Connex.Thor {
             if (typeof rewardPercentiles === 'undefined') {
                 rewardPercentiles = []
             } else {
-                R.ensure(Array.isArray(rewardPercentiles) && rewardPercentiles.every(rewardPercentile => R.isUInt(rewardPercentile, 32)),
-                    'arg2: expected an array of unsigned 32-bit integers')
+                R.ensure(
+                    Array.isArray(rewardPercentiles) && 
+                    rewardPercentiles.length <= 100 &&
+                    rewardPercentiles.every((rewardPercentile, index) => {
+                        const isValid = R.isUInt(rewardPercentile, 32) && rewardPercentile >= 1 && rewardPercentile <= 100;
+                        const isAscending = index === 0 || rewardPercentile > (rewardPercentiles as number[])[index - 1];
+                        return isValid && isAscending;
+                    }),
+                    'arg2: expected an array of integers between 1 and 100, in ascending order, with maximum 100 elements'
+                )
             }
             return newFeesVisitor(driver, newestBlock, blockCount, rewardPercentiles)
         },
