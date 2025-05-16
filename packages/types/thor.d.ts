@@ -47,7 +47,7 @@ declare namespace Connex {
         /**
          * get a priority fee suggestion
          */
-        priorityFeeSuggestion(): Promise<Thor.PriorityFeeSuggestion | null>
+        priorityFeeSuggestion(): Promise<Thor.PriorityFeeSuggestion>
     }
 
     namespace Thor {

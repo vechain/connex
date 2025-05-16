@@ -23,7 +23,7 @@ declare namespace Connex.Thor {
             readonly rewardPercentiles?: number[]
 
             /** query the fees */
-            get(): Promise<Fees | null>
+            get(): Promise<Fees>
         }
     }
 }
