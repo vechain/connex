@@ -12,11 +12,12 @@ declare namespace Connex.Thor {
     }
 
     namespace Fees {
-        /** the block visitor interface */
+        /** the fees visitor interface */
         interface Visitor {
-            /** id or number of the fees to be visited */
+            /** newest block of the fees to be visited */
             readonly newestBlock: string | number
 
+            /** number of blocks to query */
             readonly blockCount: number
 
             /** array of reward percentiles to query */
