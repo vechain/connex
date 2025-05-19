@@ -11,7 +11,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && webpack",
+    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && export NODE_OPTIONS=--openssl-legacy-provider && webpack",
     "lint": "../../node_modules/.bin/tslint -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
