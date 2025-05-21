@@ -11,7 +11,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && webpack",
+    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && export NODE_OPTIONS=--openssl-legacy-provider && webpack",
     "lint": "../../node_modules/.bin/tslint -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,7 +26,7 @@
     "detect-browser": "^5.2.0"
   },
   "devDependencies": {
-    "@vechain/connex-types": "^2.1.1",
+    "@vechain/connex-types": "^2.1.0",
     "html-loader": "^2.1.1",
     "webpack": "^5.2.0",
     "webpack-cli": "^4.1.0"

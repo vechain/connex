@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Standard interface to connect DApp with VeChain and user",
   "main": "dist/connex.js",
   "unpkg": "dist/connex.min.js",
@@ -11,7 +11,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && webpack",
+    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && export NODE_OPTIONS=--openssl-legacy-provider && webpack",
     "lint": "../../node_modules/.bin/tslint -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -34,7 +34,7 @@
   "homepage": "https://github.com/vechain/connex/tree/master/packages/connex/#readme",
   "devDependencies": {
     "@types/randombytes": "^2.0.0",
-    "@vechain/connex-wallet-buddy": "^0.1.1",
+    "@vechain/connex-wallet-buddy": "^0.1.0",
     "buffer": "^5.6.1",
     "crypto-browserify": "^3.12.0",
     "stream-browserify": "^3.0.0",
@@ -43,9 +43,9 @@
     "webpack-cli": "^4.1.0"
   },
   "dependencies": {
-    "@vechain/connex-driver": "^2.1.1",
-    "@vechain/connex-framework": "^2.1.1",
+    "@vechain/connex-driver": "^2.2.0",
+    "@vechain/connex-framework": "^2.2.0",
     "randombytes": "^2.1.0",
-    "thor-devkit": "^2.1.0"
+    "thor-devkit": "^2.0.5"
   }
 }
