@@ -17,7 +17,7 @@ declare namespace Connex.Thor {
 
             get(): Promise<Fees.History>
             count(blockCount?: number): this
-            rewardPercentiles(percentile: Array<number>): this
+            rewardPercentiles(percentiles: Array<number>): this
         }
     }
 }
