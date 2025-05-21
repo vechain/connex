@@ -19,7 +19,7 @@ export class Cache {
         blocks: new LRU<string | number, Connex.Thor.Block>(256),
         txs: new LRU<string, Connex.Thor.Transaction>(512),
         receipts: new LRU<string, Connex.Thor.Transaction.Receipt>(512),
-        fees: new LRU<string, Connex.Thor.Fees>(512)
+        feesHistory: new LRU<string, Connex.Thor.Fees.History>(512)
     }
     private readonly window: Slot[] = []
 
@@ -97,13 +97,13 @@ export class Cache {
         newestBlock: string | number,
         blockCount: number,
         rewardPercentiles: number[],
-        fetch: () => Promise<Connex.Thor.Fees>
-    ): Promise<Connex.Thor.Fees> {
+        fetch: () => Promise<Connex.Thor.Fees.History>
+    ): Promise<Connex.Thor.Fees.History> {
         let key = `${newestBlock}-${blockCount}`
         if (rewardPercentiles.length > 0) {
             key = `${key}-${rewardPercentiles.join(',')}`
         }
-        const cachedRange = this.irreversible.fees.get(key)
+        const cachedRange = this.irreversible.feesHistory.get(key)
         if (cachedRange) {
             return cachedRange
         }
@@ -119,7 +119,7 @@ export class Cache {
                     key = `${key}-${rewardPercentiles.join(',')}`
                 }
             }
-            this.irreversible.fees.set(key, range)
+            this.irreversible.feesHistory.set(key, range)
         }
         return range
     }

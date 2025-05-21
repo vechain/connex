@@ -55,11 +55,11 @@ export class LazyDriver implements Connex.Driver {
         return this.noVendor.filterTransferLogs(arg)
     }
 
-    getFees(newestBlock: string | number, blockCount: number, rewardPercentiles?: number[]): Promise<Connex.Thor.Fees> {
+    getFees(newestBlock: string | number, blockCount: number, rewardPercentiles?: number[]): Promise<Connex.Thor.Fees.History> {
         return this.noVendor.getFees(newestBlock, blockCount, rewardPercentiles)
     }
 
-    getPriorityFeeSuggestion(): Promise<Connex.Thor.PriorityFeeSuggestion> {
+    getPriorityFeeSuggestion(): Promise<string> {
         return this.noVendor.getPriorityFeeSuggestion()
     }
 

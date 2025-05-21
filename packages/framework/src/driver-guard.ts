@@ -94,11 +94,11 @@ export function newDriverGuard(
         },
         getFees(newestBlock, blockCount, rewardPercentiles) {
             return driver.getFees(newestBlock, blockCount, rewardPercentiles)
-                .then(f => f ? test(f, feeScheme, 'getFees()') : f)
+                .then(f => f ? test(f, feeHistoryScheme, 'getFees()') : f)
         },
         getPriorityFeeSuggestion() {
             return driver.getPriorityFeeSuggestion()
-                .then(r => r ? test(r, priorityFeeSuggestionScheme, 'getPriorityFeeSuggestion()') : r)
+                .then(r => r ? test(r, R.hexString, 'getPriorityFeeSuggestion()') : r)
         }
     }
 }
@@ -231,7 +231,7 @@ const vmOutputScheme: V.Scheme<Connex.VM.Output> = {
     }]
 }
 
-const feeScheme: V.Scheme<Connex.Thor.Fees> = {
+const feeHistoryScheme: V.Scheme<Connex.Thor.Fees.History> = {
     oldestBlock: R.bytes32,
     baseFeePerGas: [R.hexString],
     gasUsedRatio: [v => {
@@ -239,8 +239,4 @@ const feeScheme: V.Scheme<Connex.Thor.Fees> = {
         return !isNaN(num) && num >= 0 && num <= 1 ? '' : 'expected a number between 0 and 1';
     }],
     reward: V.optional([[R.hexString]])
-}
-
-const priorityFeeSuggestionScheme: V.Scheme<Connex.Thor.PriorityFeeSuggestion> = {
-    maxPriorityFeePerGas: R.hexString
 }

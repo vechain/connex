@@ -1,30 +1,23 @@
 declare namespace Connex.Thor {
-    /** the fees model */
-    type Fees = {
-        oldestBlock: string
-        baseFeePerGas: string[]
-        gasUsedRatio: number[]
-        reward?: string[][]
-    }
-
-    type PriorityFeeSuggestion = {
-        maxPriorityFeePerGas: string
+    interface Fees {
+        history(newestBlock?: string): Fees.HistoryVisitor
+        priorityFee(): Promise<string>
     }
 
     namespace Fees {
-        /** the fees visitor interface */
-        interface Visitor {
+        interface History {
+            oldestBlock: string
+            baseFeePerGas: Array<string>
+            gasUsedRatio: Array<number>
+            reward?: Array<Array<string>>
+        }
+        interface HistoryVisitor {
             /** newest block of the fees to be visited */
             readonly newestBlock: string | number
 
-            /** number of blocks to query */
-            readonly blockCount: number
-
-            /** array of reward percentiles to query */
-            readonly rewardPercentiles?: number[]
-
-            /** query the fees */
-            get(): Promise<Fees>
+            get(): Promise<Fees.History>
+            count(blockCount?: number): this
+            rewardPercentiles(percentile: Array<number>): this
         }
     }
 }

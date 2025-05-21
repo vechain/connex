@@ -1,7 +1,7 @@
-import { Framework, newVendor } from '@vechain/connex-framework'
-import { genesisBlocks } from './config'
-import { createFull, createNoVendor, LazyDriver } from './driver'
-import { Connex1, createSync, createSync2 } from './signer'
+import { Framework, newVendor } from '@vechain/connex-framework';
+import { genesisBlocks } from './config';
+import { createFull, createNoVendor, LazyDriver } from './driver';
+import { Connex1, createSync, createSync2 } from './signer';
 
 declare global {
     interface Window {
@@ -84,7 +84,6 @@ class ThorClass implements Connex.Thor {
     filter !: Connex.Thor['filter']
     explain !: Connex.Thor['explain']
     fees !: Connex.Thor['fees']
-    priorityFeeSuggestion !: Connex.Thor['priorityFeeSuggestion']
     
     constructor(opts: Omit<Options, 'signer'>) {
         const genesis = normalizeNetwork(opts.network)
@@ -101,8 +100,10 @@ class ThorClass implements Connex.Thor {
             get transaction() { return framework.thor.transaction.bind(framework.thor) },
             get filter() { return framework.thor.filter.bind(framework.thor) },
             get explain() { return framework.thor.explain.bind(framework.thor) },
-            get fees() { return framework.thor.fees.bind(framework.thor) },
-            get priorityFeeSuggestion() { return framework.thor.priorityFeeSuggestion.bind(framework.thor) }
+            get fees() { return {
+                get history() { return framework.thor.fees.history },
+                get priorityFee() { return framework.thor.fees.priorityFee },
+            } },
         }
     }
 }
@@ -147,4 +148,5 @@ class ConnexClass implements Connex {
 }
 
 export default ConnexClass
-export { ConnexClass as Connex }
+export { ConnexClass as Connex };
+

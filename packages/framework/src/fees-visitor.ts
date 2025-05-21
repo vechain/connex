@@ -1,14 +1,24 @@
-export function newFeesVisitor(
+export function newFeesHistoryVisitor(
     driver: Connex.Driver,
     newestBlock: string | number,
-    blockCount: number,
+    blockCount = 1,
     rewardPercentiles?: number[]
-): Connex.Thor.Fees.Visitor {
+): Connex.Thor.Fees.HistoryVisitor {
+    let currentBlockCount = blockCount;
+    let currentRewardPercentiles = rewardPercentiles;
 
     return {
         get newestBlock() { return newestBlock },
-        get blockCount() { return blockCount },
-        get rewardPercentiles() { return rewardPercentiles },
-        get: () => driver.getFees(newestBlock, blockCount, rewardPercentiles)
+        count(blockCount?: number): Connex.Thor.Fees.HistoryVisitor {
+            if (blockCount !== undefined) {
+                currentBlockCount = blockCount;
+            }
+            return this;
+        },
+        rewardPercentiles(percentiles: Array<number>): Connex.Thor.Fees.HistoryVisitor {
+            currentRewardPercentiles = percentiles;
+            return this;
+        },
+        get: () => driver.getFees(newestBlock, currentBlockCount, currentRewardPercentiles)
     }
 }
