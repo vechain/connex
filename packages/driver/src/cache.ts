@@ -19,7 +19,7 @@ export class Cache {
         blocks: new LRU<string | number, Connex.Thor.Block>(256),
         txs: new LRU<string, Connex.Thor.Transaction>(512),
         receipts: new LRU<string, Connex.Thor.Transaction.Receipt>(512),
-        feesHistory: new LRU<string, Connex.Thor.Fees.History>(512)
+        feesHistory: new LRU<string, Connex.Thor.Fees.History>(256)
     }
     private readonly window: Slot[] = []
 
@@ -93,7 +93,7 @@ export class Cache {
         return block
     }
 
-    public async getFees(
+    public async getFeesHistory(
         newestBlock: string | number,
         blockCount: number,
         rewardPercentiles: number[],

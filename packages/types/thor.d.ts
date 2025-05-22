@@ -37,7 +37,7 @@ declare namespace Connex {
         explain(clauses: VM.Clause[]): VM.Explainer
 
         /** fees related operations */
-        readonly fees: Thor.Fees
+        fees: Thor.Fees
     }
 
     namespace Thor {

@@ -101,8 +101,8 @@ class ThorClass implements Connex.Thor {
             get filter() { return framework.thor.filter.bind(framework.thor) },
             get explain() { return framework.thor.explain.bind(framework.thor) },
             get fees() { return {
-                get history() { return framework.thor.fees.history },
-                get priorityFee() { return framework.thor.fees.priorityFee },
+                get history() { return framework.thor.fees.history.bind(framework.thor.fees) },
+                get priorityFee() { return framework.thor.fees.priorityFee.bind(framework.thor.fees) },
             } },
         }
     }

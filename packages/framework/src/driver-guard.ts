@@ -92,8 +92,8 @@ export function newDriverGuard(
                     signature: v => R.isHexBytes(v, 65) ? '' : 'expected 65 bytes'
                 }, 'signCert()'))
         },
-        getFees(newestBlock, blockCount, rewardPercentiles) {
-            return driver.getFees(newestBlock, blockCount, rewardPercentiles)
+        getFeesHistory(newestBlock, blockCount, rewardPercentiles) {
+            return driver.getFeesHistory(newestBlock, blockCount, rewardPercentiles)
                 .then(f => f ? test(f, feeHistoryScheme, 'getFees()') : f)
         },
         getPriorityFeeSuggestion() {

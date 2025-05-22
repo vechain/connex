@@ -55,8 +55,8 @@ export class DriverNoVendor implements Connex.Driver {
             this.httpGet(`blocks/${revision}`))
     }
 
-    public getFees(newestBlock: string | number, blockCount: number, rewardPercentiles?: number[]): Promise<Connex.Thor.Fees.History> {
-        return this.cache.getFees(newestBlock, blockCount, rewardPercentiles || [], () => {
+    public getFeesHistory(newestBlock: string | number, blockCount: number, rewardPercentiles?: number[]): Promise<Connex.Thor.Fees.History> {
+        return this.cache.getFeesHistory(newestBlock, blockCount, rewardPercentiles || [], () => {
             const params: Record<string, string> = {
                 newestBlock: newestBlock.toString(),
                 blockCount: blockCount.toString()

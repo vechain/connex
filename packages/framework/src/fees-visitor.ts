@@ -19,6 +19,6 @@ export function newFeesHistoryVisitor(
             currentRewardPercentiles = percentiles;
             return this;
         },
-        get: () => driver.getFees(newestBlock, currentBlockCount, currentRewardPercentiles)
+        get: () => driver.getFeesHistory(newestBlock, currentBlockCount, currentRewardPercentiles)
     }
 }
