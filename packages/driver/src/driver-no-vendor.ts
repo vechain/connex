@@ -1,8 +1,8 @@
-import { Net } from './interfaces'
-import { PromInt, InterruptedError } from './promint'
-import { Cache } from './cache'
 import { blake2b256 } from 'thor-devkit'
+import { Cache } from './cache'
 import { sleep } from './common'
+import { Net } from './interfaces'
+import { InterruptedError, PromInt } from './promint'
 
 /** class implements Connex.Driver leaves out Vendor related methods */
 export class DriverNoVendor implements Connex.Driver {
@@ -54,6 +54,25 @@ export class DriverNoVendor implements Connex.Driver {
         return this.cache.getBlock(revision, () =>
             this.httpGet(`blocks/${revision}`))
     }
+
+    public getFeesHistory(newestBlock: string | number, blockCount: number, rewardPercentiles?: number[]): Promise<Connex.Thor.Fees.History> {
+        return this.cache.getFeesHistory(newestBlock, blockCount, rewardPercentiles || [], () => {
+            const params: Record<string, string> = {
+                newestBlock: newestBlock.toString(),
+                blockCount: blockCount.toString()
+            }
+            if (rewardPercentiles && rewardPercentiles.length > 0) {
+                params.rewardPercentiles = rewardPercentiles.join(',')
+            }
+            return this.httpGet('fees/history', params)
+        })
+    }
+
+    public getPriorityFeeSuggestion(): Promise<string> {
+        // No cache since we do not have a key for it
+        return this.httpGet('fees/priority').then(res => res.maxPriorityFeePerGas)
+    }
+
     public getTransaction(id: string, allowPending: boolean): Promise<Connex.Thor.Transaction | null> {
         return this.cache.getTx(id, () => {
             const query: Record<string, string> = { head: this.head.id }

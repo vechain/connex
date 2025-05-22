@@ -35,6 +35,9 @@ declare namespace Connex {
 
         /** create an explainer to simulate tx execution */
         explain(clauses: VM.Clause[]): VM.Explainer
+
+        /** fees related operations */
+        fees: Thor.Fees
     }
 
     namespace Thor {

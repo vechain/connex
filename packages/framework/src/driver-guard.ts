@@ -11,10 +11,10 @@ export function newDriverGuard(
             V.validate(obj, scheme, path)
         } catch (err) {
             if (errHandler) {
-                errHandler(err)
+                errHandler(err as Error)
             } else {
                 // tslint:disable-next-line:no-console
-                console.warn(`Connex-Driver[MALFORMED RESPONSE]: ${err.message}`)
+                console.warn(`Connex-Driver[MALFORMED RESPONSE]: ${(err as Error).message}`)
             }
         }
         return obj
@@ -91,6 +91,14 @@ export function newDriverGuard(
                     },
                     signature: v => R.isHexBytes(v, 65) ? '' : 'expected 65 bytes'
                 }, 'signCert()'))
+        },
+        getFeesHistory(newestBlock, blockCount, rewardPercentiles) {
+            return driver.getFeesHistory(newestBlock, blockCount, rewardPercentiles)
+                .then(f => f ? test(f, feeHistoryScheme, 'getFees()') : f)
+        },
+        getPriorityFeeSuggestion() {
+            return driver.getPriorityFeeSuggestion()
+                .then(r => r ? test(r, R.hexString, 'getPriorityFeeSuggestion()') : r)
         }
     }
 }
@@ -221,4 +229,14 @@ const vmOutputScheme: V.Scheme<Connex.VM.Output> = {
         recipient: R.address,
         amount: R.hexString,
     }]
+}
+
+const feeHistoryScheme: V.Scheme<Connex.Thor.Fees.History> = {
+    oldestBlock: R.bytes32,
+    baseFeePerGas: [R.hexString],
+    gasUsedRatio: [v => {
+        const num = Number(v);
+        return !isNaN(num) && num >= 0 && num <= 1 ? '' : 'expected a number between 0 and 1';
+    }],
+    reward: V.optional([[R.hexString]])
 }

@@ -1,5 +1,5 @@
-import * as LRU from 'lru-cache'
 import BigNumber from 'bignumber.js'
+import * as LRU from 'lru-cache'
 import { newFilter } from './bloom'
 
 const WINDOW_LEN = 12
@@ -18,7 +18,8 @@ export class Cache {
     private readonly irreversible = {
         blocks: new LRU<string | number, Connex.Thor.Block>(256),
         txs: new LRU<string, Connex.Thor.Transaction>(512),
-        receipts: new LRU<string, Connex.Thor.Transaction.Receipt>(512)
+        receipts: new LRU<string, Connex.Thor.Transaction.Receipt>(512),
+        feesHistory: new LRU<string, Connex.Thor.Fees.History>(256)
     }
     private readonly window: Slot[] = []
 
@@ -90,6 +91,37 @@ export class Cache {
             }
         }
         return block
+    }
+
+    public async getFeesHistory(
+        newestBlock: string | number,
+        blockCount: number,
+        rewardPercentiles: number[],
+        fetch: () => Promise<Connex.Thor.Fees.History>
+    ): Promise<Connex.Thor.Fees.History> {
+        let key = `${newestBlock}-${blockCount}`
+        if (rewardPercentiles.length > 0) {
+            key = `${key}-${rewardPercentiles.join(',')}`
+        }
+        const cachedRange = this.irreversible.feesHistory.get(key)
+        if (cachedRange) {
+            return cachedRange
+        }
+
+        const range = await fetch()
+        if (range && range.baseFeePerGas.length > 0) {
+            // Key change for the case where we are starting a network with less blocks than the blockCount
+            // Also this could happen for cases including the backtrace limit
+            // i.e. backtrace limit is 2, we have 7 blocks, we request 4 from 'best'
+            if (range.baseFeePerGas.length < blockCount) {
+                key = `${newestBlock}-${blockCount - range.baseFeePerGas.length}`
+                if (rewardPercentiles.length > 0) {
+                    key = `${key}-${rewardPercentiles.join(',')}`
+                }
+            }
+            this.irreversible.feesHistory.set(key, range)
+        }
+        return range
     }
 
     public async getTx(
