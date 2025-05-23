@@ -70,7 +70,7 @@ export class DriverNoVendor implements Connex.Driver {
 
     public getPriorityFeeSuggestion(): Promise<string> {
         // No cache since we do not have a key for it
-        return this.httpGet('fees/priority').then(res => res.maxPriorityFeePerGas)
+        return this.httpGet('fees/priority').then(res => res.maxPriorityFeePerGas as string)
     }
 
     public getTransaction(id: string, allowPending: boolean): Promise<Connex.Thor.Transaction | null> {
