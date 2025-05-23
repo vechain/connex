@@ -46,6 +46,6 @@
     "@vechain/connex-driver": "^2.2.0",
     "@vechain/connex-framework": "^2.2.0",
     "randombytes": "^2.1.0",
-    "thor-devkit": "^2.0.5"
+    "thor-devkit": "^2.1.0"
   }
 }
