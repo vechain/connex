@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Connex UMD bundle – testnet manual test</title>
+  <!-- Load the pre-built UMD bundle. Exposes window.Connex namespace. -->
+  <script src="../dist/connex.js"></script>
+  <style>
+    body { font-family: monospace; padding: 1rem; }
+    .ok   { color: green; }
+    .fail { color: red; }
+    pre   { background: #f4f4f4; padding: .5rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h2>UMD bundle (<code>dist/connex.js</code>) – testnet</h2>
+  <p>Loaded via <code>&lt;script src="../dist/connex.js"&gt;</code> — no module bundler.</p>
+  <div style="margin-bottom:1rem">
+    <button id="btn-sign-cert">Sign Cert (Sync2)</button>
+    <button id="btn-sign-tx">Sign Tx (Sync2)</button>
+  </div>
+  <div id="results"></div>
+
+  <script>
+    const NODE_URL = 'https://testnet.vechain.org'
+    const out = document.getElementById('results')
+
+    function log(label, value, ok) {
+      const cls = ok ? 'ok' : 'fail'
+      const mark = ok ? '✓' : '✗'
+      out.insertAdjacentHTML('beforeend',
+        `<p class="${cls}">${mark} <strong>${label}</strong></p><pre>${JSON.stringify(value, null, 2)}</pre>`)
+    }
+
+    const ENERGY_CONTRACT = '0x0000000000000000000000000000456e65726779'
+    // balanceOf(address) ABI selector: keccak256('balanceOf(address)')[0:4]
+    const BALANCE_OF_SELECTOR = '0x70a08231'
+
+    async function run() {
+      // window.Connex is the UMD namespace: { default: ConnexClass, Connex: ConnexClass }
+      const ConnexClass = window.Connex.Connex
+      const ThorClass = ConnexClass.Thor
+
+      log('window.Connex defined', typeof window.Connex, !!window.Connex)
+      log('Connex.Thor is function', typeof ThorClass, typeof ThorClass === 'function')
+
+      try {
+        const thor = new ThorClass({ node: NODE_URL, network: 'test' })
+        log('thor.genesis.id', thor.genesis.id, typeof thor.genesis.id === 'string')
+
+        // Wait for connex to sync at least one block beyond genesis
+        while (thor.status.head.number === 0) {
+          await thor.ticker().next()
+        }
+
+        const best = await thor.block().get()
+        log('best block number', best.number, best.number > 0)
+
+        const genesis = await thor.block(0).get()
+        log('genesis block id', genesis.id, genesis.id === thor.genesis.id)
+
+        const energy = await thor.account(ENERGY_CONTRACT).get()
+        log('energy contract hasCode', energy.hasCode, energy.hasCode === true)
+
+        // filter transfer — 5 most recent VET transfers (no range restriction)
+        const filter = thor.filter('transfer', [])
+        filter.order('desc')
+        const transfers = await filter.apply(0, 5)
+        log('filter transfer count', transfers.length, transfers.length > 0)
+        if (transfers.length > 0) {
+          const t = transfers[0]
+          log('transfer[0] sender', t.sender, /^0x[0-9a-f]{40}$/i.test(t.sender))
+          log('transfer[0] recipient', t.recipient, /^0x[0-9a-f]{40}$/i.test(t.recipient))
+          log('transfer[0] amount', t.amount, /^0x/.test(t.amount))
+          log('transfer[0] meta.txID', t.meta.txID, /^0x[0-9a-f]{64}$/.test(t.meta.txID))
+        }
+
+        // explain — balanceOf(ENERGY_CONTRACT) on the VTHO contract
+        const balanceOfData = BALANCE_OF_SELECTOR + '000000000000000000000000' + ENERGY_CONTRACT.slice(2)
+        const explained = await thor.explain([{ to: ENERGY_CONTRACT, value: '0x0', data: balanceOfData }]).execute()
+        log('explain balanceOf reverted', explained[0].reverted, explained[0].reverted === false)
+        log('explain balanceOf data (32-byte hex)', explained[0].data,
+          /^0x[0-9a-f]{64}$/.test(explained[0].data))
+
+        // get transaction — look up the tx of the first transfer found above
+        if (transfers.length > 0) {
+          const txId = transfers[0].meta.txID
+          const tx = await thor.transaction(txId).get()
+          log('transaction id', tx.id, tx.id === txId)
+          log('transaction origin', tx.origin, /^0x[0-9a-f]{40}$/i.test(tx.origin))
+          log('transaction gas', tx.gas, typeof tx.gas === 'number')
+          log('transaction clauses length', tx.clauses.length, Array.isArray(tx.clauses))
+        }
+      } catch (e) {
+        log('ERROR', e.message, false)
+      }
+    }
+
+    run()
+
+    document.getElementById('btn-sign-cert').addEventListener('click', async () => {
+      const VendorClass = window.Connex.Connex.Vendor
+      try {
+        const vendor = new VendorClass('test')
+        const res = await vendor.sign('cert', {
+          purpose: 'identification',
+          payload: { type: 'text', content: 'hello connex testnet' }
+        }).request()
+        log('sign cert – signer', res.annex.signer, /^0x[0-9a-f]{40}$/i.test(res.annex.signer))
+        log('sign cert – signature', res.signature, /^0x[0-9a-f]+$/i.test(res.signature))
+      } catch (e) {
+        log('sign cert ERROR', e.message, false)
+      }
+    })
+
+    document.getElementById('btn-sign-tx').addEventListener('click', async () => {
+      const VendorClass = window.Connex.Connex.Vendor
+      try {
+        const vendor = new VendorClass('test')
+        const recipient = '0x' + 'ab'.repeat(20)
+        const res = await vendor.sign('tx', [
+          { to: recipient, value: '0x1', data: '0x' }
+        ]).comment('Test VET transfer from UMD page').request()
+        log('sign tx – txid', res.txid, /^0x[0-9a-f]{64}$/i.test(res.txid))
+        log('sign tx – signer', res.signer, /^0x[0-9a-f]{40}$/i.test(res.signer))
+      } catch (e) {
+        log('sign tx ERROR', e.message, false)
+      }
+    })
+  </script>
+</body>
+</html>

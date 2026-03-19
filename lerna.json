@@ -1,4 +1,6 @@
 {
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "version": "2.2.1",
   "packages": [
     "packages/connex",
     "packages/driver",
@@ -6,5 +8,5 @@
     "packages/repl",
     "packages/types"
   ],
-  "version": "2.2.1"
+  "npmClient": "npm"
 }

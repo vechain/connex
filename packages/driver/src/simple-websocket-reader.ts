@@ -1,4 +1,4 @@
-import * as WebSocket from 'isomorphic-ws'
+import WebSocket from 'isomorphic-ws'
 import { Net } from './interfaces'
 
 export class SimpleWebSocketReader implements Net.WebSocketReader {
@@ -14,7 +14,7 @@ export class SimpleWebSocketReader implements Net.WebSocketReader {
                 this.callbacks = []
                 cbs.forEach(cb => cb(ev.data))
             } catch (err) {
-                this.setError(err)
+                this.setError(err instanceof Error ? err : new Error(String(err)))
                 this.ws.close()
             }
         }

@@ -40,10 +40,10 @@ export class SimpleNet implements Net {
             }
             return resp.data
         } catch (err) {
-            if (err.isAxiosError) {
+            if (Axios.isAxiosError(err)) {
                 throw convertError(err)
             }
-            throw new Error(`${method} ${resolve(this.baseURL, path)}: ${err.message}`)
+            throw new Error(`${method} ${resolve(this.baseURL, path)}: ${err instanceof Error ? err.message : String(err)}`)
         }
     }
     public openWebSocketReader(path: string): Net.WebSocketReader {

@@ -1,12 +1,33 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "test": "vitest run --project framework --project driver --project connex",
+    "test:all": "TESTNET=true vitest run --project framework --project driver --project connex --project connex-browser --project connex-browser-testnet",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "INTEGRATION=true vitest run --project framework-integration --project driver-integration",
+    "test:browser": "vitest run --project connex-browser",
+    "test:browser:ui": "vitest --project connex-browser --ui",
+    "test:browser:testnet": "TESTNET=true vitest run --project connex-browser-testnet",
+    "test:browser:testnet:ui": "TESTNET=true vitest --project connex-browser-testnet --ui",
+    "serve:test-pages": "npx serve packages/connex -p 3000",
+    "solo:up": "docker compose -f docker/docker-compose.yml up -d",
+    "solo:down": "docker compose -f docker/docker-compose.yml down"
+  },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.3.0",
-    "eslint": "^7.10.0",
-    "lerna": "^3.20.2",
-    "ts-node": "^8.8.1",
-    "typescript": "^4.0.2"
+    "@types/node": "^20.19.37",
+    "@typescript-eslint/eslint-plugin": "^8.57.1",
+    "@typescript-eslint/parser": "^8.57.1",
+    "@vitest/browser": "^4.1.0",
+    "@vitest/browser-playwright": "^4.1.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/ui": "^4.1.0",
+    "eslint": "^9.39.4",
+    "lerna": "^8.2.4",
+    "playwright": "^1.58.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
   }
 }

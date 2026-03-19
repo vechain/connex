@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master]
+
+jobs:
+  # ─── Unit Tests ──────────────────────────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+  # ─── Integration Tests ───────────────────────────────────────────────────────
+  integration-tests:
+    name: Integration Tests (thor-solo)
+    runs-on: ubuntu-latest
+    services:
+      thor-solo:
+        image: vechain/thor:latest
+        ports:
+          - 8669:8669
+        options: >-
+          --health-cmd "wget -qO- http://localhost:8669/blocks/0 || exit 1"
+          --health-interval 3s
+          --health-timeout 5s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run integration tests
+        run: npm run test:integration
+        env:
+          THOR_SOLO_URL: http://localhost:8669
+
+  # ─── Browser Bundle Tests ────────────────────────────────────────────────────
+  browser-tests:
+    name: Browser Bundle Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Build connex UMD bundle
+        run: npm run build
+        working-directory: packages/connex
+
+      - name: Run browser bundle tests
+        run: npm run test:browser
+
+  # ─── Browser Testnet Tests ───────────────────────────────────────────────────
+  browser-testnet-tests:
+    name: Browser Testnet Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Build connex bundle
+        run: npm run build
+        working-directory: packages/connex
+
+      - name: Run browser testnet tests
+        run: npm run test:browser:testnet
