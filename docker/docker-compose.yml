@@ -1,0 +1,11 @@
+services:
+  thor-solo:
+    image: vechain/thor:latest
+    command: solo --api-cors '*' --api-addr 0.0.0.0:8669 --api-timeout 60
+    ports:
+      - "8669:8669"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8669/blocks/0"]
+      interval: 3s
+      timeout: 5s
+      retries: 10

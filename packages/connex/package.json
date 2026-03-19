@@ -3,6 +3,7 @@
   "version": "2.2.1",
   "description": "Standard interface to connect DApp with VeChain and user",
   "main": "dist/connex.js",
+  "module": "dist/connex.esm.js",
   "unpkg": "dist/connex.min.js",
   "jsdelivr": "dist/connex.min.js",
   "types": "esm/index.d.ts",
@@ -11,8 +12,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && export NODE_OPTIONS=--openssl-legacy-provider && webpack",
-    "lint": "../../node_modules/.bin/tslint -p .",
+    "build": "rm -rf dist/ esm/ && tsc -p . && rollup -c rollup.config.mjs",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -33,14 +33,19 @@
   },
   "homepage": "https://github.com/vechain/connex/tree/master/packages/connex/#readme",
   "devDependencies": {
+    "@rollup/plugin-alias": "^6.0.0",
+    "@rollup/plugin-commonjs": "^29.0.2",
+    "@rollup/plugin-inject": "^5.0.5",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
     "@types/randombytes": "^2.0.0",
     "@vechain/connex-wallet-buddy": "^0.1.0",
     "buffer": "^5.6.1",
     "crypto-browserify": "^3.12.0",
+    "rollup": "^4.59.0",
     "stream-browserify": "^3.0.0",
-    "url": "^0.11.0",
-    "webpack": "^5.2.0",
-    "webpack-cli": "^4.1.0"
+    "url": "^0.11.0"
   },
   "dependencies": {
     "@vechain/connex-driver": "^2.2.1",

@@ -10,8 +10,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -d -p . && ../../node_modules/.bin/tsc --module esnext --outDir 'esm' -p .",
-    "lint": "../../node_modules/.bin/tslint -p .",
+    "build": "rm -rf dist/ esm/ && tsc -d -p . && tsc --module esnext --outDir 'esm' -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -37,5 +36,8 @@
     "thor-devkit": "^2.1.0",
     "validator-ts": "^0.9.1"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "devDependencies": {
+    "@vechain/connex-driver": "^2.2.1"
+  }
 }

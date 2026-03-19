@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import * as LRU from 'lru-cache'
+import LRU from 'lru-cache'
 import { newFilter } from './bloom'
 
 const WINDOW_LEN = 12

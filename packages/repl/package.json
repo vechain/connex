@@ -4,14 +4,13 @@
   "description": "",
   "main": "dist/index.js",
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=22.0.0"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist/;../../node_modules/.bin/tsc -p .;cp src/index.js dist/",
-    "lint": "../../node_modules/.bin/tslint -p .",
+    "build": "rm -rf dist/ && tsc -p . && cp src/index.js dist/",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

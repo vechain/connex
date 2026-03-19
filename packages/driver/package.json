@@ -10,8 +10,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -d -p . && ../../node_modules/.bin/tsc --module esnext --outDir 'esm' -p .",
-    "lint": "../../node_modules/.bin/tslint -p .",
+    "build": "rm -rf dist/ esm/ && tsc -d -p . && tsc --module esnext --outDir 'esm' -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -29,7 +28,7 @@
   "bugs": {
     "url": "https://github.com/vechain/connex/issues"
   },
-  "homepage": "https://github.com/vechain/connex/tree/marster/packages/driver/#readme",
+  "homepage": "https://github.com/vechain/connex/tree/master/packages/driver/#readme",
   "devDependencies": {
     "@types/lru-cache": "^5.1.0",
     "@types/ws": "^6.0.1",
