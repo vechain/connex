@@ -33,7 +33,7 @@
   "dependencies": {
     "@vechain/connex-types": "^2.2.1",
     "bignumber.js": "^7.2.1",
-    "thor-devkit": "^2.1.0",
+    "thor-devkit": "^2.2.0",
     "validator-ts": "^0.9.1"
   },
   "sideEffects": false,
