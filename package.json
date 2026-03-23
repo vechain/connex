@@ -6,7 +6,7 @@
     "test:all": "TESTNET=true vitest run --project framework --project driver --project connex --project connex-browser --project connex-browser-testnet",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:integration": "INTEGRATION=true vitest run --project framework-integration --project driver-integration",
+    "test:integration": "vitest run --project framework-integration --project driver-integration",
     "test:browser": "vitest run --project connex-browser",
     "test:browser:ui": "vitest --project connex-browser --ui",
     "test:browser:testnet": "TESTNET=true vitest run --project connex-browser-testnet",
