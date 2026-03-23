@@ -36,11 +36,11 @@
   },
   "dependencies": {
     "@vechain/connex-types": "^2.2.1",
-    "axios": "^0.21.1",
+    "axios": "^1.13.6",
     "bignumber.js": "^7.2.1",
     "isomorphic-ws": "^4.0.1",
     "lru-cache": "^5.1.1",
-    "thor-devkit": "^2.1.0",
+    "thor-devkit": "^2.2.0",
     "ws": "^7.1.0"
   },
   "sideEffects": false
