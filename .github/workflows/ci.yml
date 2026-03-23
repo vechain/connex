@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master, develop]
+    branches: [master, dev]
   pull_request:
     branches: [master]
 
@@ -20,8 +20,14 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
+
+      - name: Install package dependencies
+        run: |
+          npm ci --prefix packages/driver
+          npm ci --prefix packages/framework
+          npm ci --prefix packages/connex
 
       - name: Run unit tests
         run: npm test
@@ -49,8 +55,13 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
+
+      - name: Install package dependencies
+        run: |
+          npm ci --prefix packages/driver
+          npm ci --prefix packages/framework
 
       - name: Run integration tests
         run: npm run test:integration
@@ -70,8 +81,14 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
+
+      - name: Install package dependencies
+        run: |
+          npm ci --prefix packages/driver
+          npm ci --prefix packages/framework
+          npm ci --prefix packages/connex
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
@@ -87,6 +104,7 @@ jobs:
   browser-testnet-tests:
     name: Browser Testnet Tests
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4
 
@@ -96,8 +114,14 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
+
+      - name: Install package dependencies
+        run: |
+          npm ci --prefix packages/driver
+          npm ci --prefix packages/framework
+          npm ci --prefix packages/connex
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
