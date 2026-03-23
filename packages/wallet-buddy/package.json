@@ -11,7 +11,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && export NODE_OPTIONS=--openssl-legacy-provider && webpack",
+    "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && rollup -c rollup.config.mjs",
     "lint": "../../node_modules/.bin/tslint -p .",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,9 +26,11 @@
     "detect-browser": "^5.2.0"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-terser": "^0.4.4",
     "@vechain/connex-types": "^2.1.0",
-    "html-loader": "^2.1.1",
-    "webpack": "^5.2.0",
-    "webpack-cli": "^4.1.0"
+    "rollup": "^4.0.0"
   }
 }
