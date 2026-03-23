@@ -36,16 +36,6 @@ jobs:
   integration-tests:
     name: Integration Tests (thor-solo)
     runs-on: ubuntu-latest
-    services:
-      thor-solo:
-        image: vechain/thor:latest
-        ports:
-          - 8669:8669
-        options: >-
-          --health-cmd "wget -qO- http://localhost:8669/blocks/0 || exit 1"
-          --health-interval 3s
-          --health-timeout 5s
-          --health-retries 15
     steps:
       - uses: actions/checkout@v4
 
@@ -54,6 +44,19 @@ jobs:
         with:
           node-version: 22
           cache: npm
+
+      - name: Start thor-solo
+        run: |
+          docker run -d --name thor-solo \
+            -p 8669:8669 \
+            vechain/thor:latest solo --api-cors '*' --api-addr 0.0.0.0:8669 --api-timeout 60
+
+      - name: Wait for thor-solo
+        run: |
+          for i in $(seq 1 30); do
+            wget -qO- http://localhost:8669/blocks/0 && break
+            sleep 2
+          done
 
       - name: Install root dependencies
         run: npm ci
