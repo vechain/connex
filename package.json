@@ -13,7 +13,8 @@
     "test:browser:testnet:ui": "TESTNET=true vitest --project connex-browser-testnet --ui",
     "serve:test-pages": "npx serve packages/connex -p 3000",
     "solo:up": "docker compose -f docker/docker-compose.yml up -d",
-    "solo:down": "docker compose -f docker/docker-compose.yml down"
+    "solo:down": "docker compose -f docker/docker-compose.yml down",
+    "update-after-release": "npm install --prefix packages/driver && npm install --prefix packages/framework && npm install --prefix packages/connex && npm install --prefix packages/repl"
   },
   "devDependencies": {
     "@types/node": "^22.19.15",
