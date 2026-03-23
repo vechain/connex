@@ -2,7 +2,8 @@
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "outDir": "./dist",
-        "types": ["@vechain/connex-types"],
+        "lib": ["ES2017"],
+        "types": ["@vechain/connex-types", "node"],
     },
     "include": [
         "./src"

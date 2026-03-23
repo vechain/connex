@@ -36,7 +36,7 @@ export class SimpleNet implements Net {
                 params: params.query
             })
             if (params.validateResponseHeader) {
-                params.validateResponseHeader(resp.headers)
+                params.validateResponseHeader(resp.headers as Record<string, string>)
             }
             return resp.data
         } catch (err) {
@@ -55,6 +55,8 @@ export class SimpleNet implements Net {
 }
 
 function convertError(err: AxiosError) {
+    const method = err.config?.method ?? ''
+    const url = err.config?.url ?? ''
     if (err.response) {
         const resp = err.response
         if (typeof resp.data === 'string') {
@@ -62,11 +64,11 @@ function convertError(err: AxiosError) {
             if (text.length > 50) {
                 text = text.slice(0, 50) + '...'
             }
-            return new Error(`${resp.status} ${err.config.method} ${err.config.url}: ${text}`)
+            return new Error(`${resp.status} ${method} ${url}: ${text}`)
         } else {
-            return new Error(`${resp.status} ${err.config.method} ${err.config.url}`)
+            return new Error(`${resp.status} ${method} ${url}`)
         }
     } else {
-        return new Error(`${err.config.method} ${err.config.url}: ${err.message}`)
+        return new Error(`${method} ${url}: ${err.message}`)
     }
 }

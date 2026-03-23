@@ -16,7 +16,7 @@
     "solo:down": "docker compose -f docker/docker-compose.yml down"
   },
   "devDependencies": {
-    "@types/node": "^20.19.37",
+    "@types/node": "^22.19.15",
     "@typescript-eslint/eslint-plugin": "^8.57.1",
     "@typescript-eslint/parser": "^8.57.1",
     "@vitest/browser": "^4.1.0",
