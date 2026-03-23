@@ -50,6 +50,7 @@
   "dependencies": {
     "@vechain/connex-driver": "^2.3.1",
     "@vechain/connex-framework": "^2.3.1",
+    "@vechain/connex-types": "^2.2.1",
     "randombytes": "^2.1.0",
     "thor-devkit": "^2.2.0"
   }

@@ -1,4 +1,3 @@
-
 /** Connex driver interface */
 declare namespace Connex {
     interface Driver extends Connex.Signer{
