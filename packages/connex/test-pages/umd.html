@@ -37,8 +37,7 @@
     const BALANCE_OF_SELECTOR = '0x70a08231'
 
     async function run() {
-      // window.Connex is the UMD namespace: { default: ConnexClass, Connex: ConnexClass }
-      const ConnexClass = window.Connex.Connex
+      const ConnexClass = window.Connex
       const ThorClass = ConnexClass.Thor
 
       log('window.Connex defined', typeof window.Connex, !!window.Connex)
@@ -99,7 +98,7 @@
     run()
 
     document.getElementById('btn-sign-cert').addEventListener('click', async () => {
-      const VendorClass = window.Connex.Connex.Vendor
+      const VendorClass = window.Connex.Vendor
       try {
         const vendor = new VendorClass('test')
         const res = await vendor.sign('cert', {
@@ -114,7 +113,7 @@
     })
 
     document.getElementById('btn-sign-tx').addEventListener('click', async () => {
-      const VendorClass = window.Connex.Connex.Vendor
+      const VendorClass = window.Connex.Vendor
       try {
         const vendor = new VendorClass('test')
         const recipient = '0x' + 'ab'.repeat(20)

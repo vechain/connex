@@ -54,22 +54,22 @@ describe.skipIf(!import.meta.env.TESTNET)('dist/connex.js (UMD) – testnet', ()
     it('window.Connex is defined after script injection', () => {
         const w = window as any
         expect(w.Connex).toBeDefined()
-        expect(typeof w.Connex.Connex).toBe('function')
+        expect(typeof w.Connex).toBe('function')
     })
 
     it('Connex.Thor is a constructor', () => {
-        const ThorClass = (window as any).Connex.Connex.Thor
+        const ThorClass = (window as any).Connex.Thor
         expect(typeof ThorClass).toBe('function')
     })
 
     it('genesis block id matches testnet', () => {
-        const ThorClass = (window as any).Connex.Connex.Thor
+        const ThorClass = (window as any).Connex.Thor
         const thor = new ThorClass({ node: TESTNET_URL, network: 'test' })
         expect(thor.genesis.id).toBe(TESTNET_GENESIS_ID)
     })
 
     it('block 1 exists and follows genesis', async () => {
-        const ThorClass = (window as any).Connex.Connex.Thor
+        const ThorClass = (window as any).Connex.Thor
         const thor = new ThorClass({ node: TESTNET_URL, network: 'test' })
         const block = await thor.block(1).get()
         expect(block).not.toBeNull()
@@ -78,14 +78,14 @@ describe.skipIf(!import.meta.env.TESTNET)('dist/connex.js (UMD) – testnet', ()
     }, 15_000)
 
     it('energy contract has code deployed', async () => {
-        const ThorClass = (window as any).Connex.Connex.Thor
+        const ThorClass = (window as any).Connex.Thor
         const thor = new ThorClass({ node: TESTNET_URL, network: 'test' })
         const account = await thor.account(ENERGY_CONTRACT).get()
         expect(account.hasCode).toBe(true)
     }, 15_000)
 
     it('filter transfer returns logs with correct structure', async () => {
-        const ThorClass = (window as any).Connex.Connex.Thor
+        const ThorClass = (window as any).Connex.Thor
         const thor = new ThorClass({ node: TESTNET_URL, network: 'test' })
         const filter = thor.filter('transfer', [])
         filter.range({ unit: 'block', from: 0, to: 1000 })
@@ -102,7 +102,7 @@ describe.skipIf(!import.meta.env.TESTNET)('dist/connex.js (UMD) – testnet', ()
     }, 15_000)
 
     it('explain returns VTHO balance via balanceOf call', async () => {
-        const ThorClass = (window as any).Connex.Connex.Thor
+        const ThorClass = (window as any).Connex.Thor
         const thor = new ThorClass({ node: TESTNET_URL, network: 'test' })
         // Query the VTHO balance of the ENERGY_CONTRACT address itself (call won't revert)
         const data = BALANCE_OF_SELECTOR + '000000000000000000000000' + ENERGY_CONTRACT.slice(2)
@@ -114,7 +114,7 @@ describe.skipIf(!import.meta.env.TESTNET)('dist/connex.js (UMD) – testnet', ()
     }, 15_000)
 
     it('get transaction finds a real tx from an early block', async () => {
-        const ThorClass = (window as any).Connex.Connex.Thor
+        const ThorClass = (window as any).Connex.Thor
         const thor = new ThorClass({ node: TESTNET_URL, network: 'test' })
         // Find a tx by scanning transfer logs in the first 1000 blocks
         const filter = thor.filter('transfer', [])

@@ -41,6 +41,17 @@ const fixLruNamespaceImport = {
     },
 }
 
+// Virtual entry for UMD builds: re-exports only the default export so the
+// UMD global (window.Connex) is ConnexClass directly, not { Connex, default }.
+const UMD_ENTRY = '\0umd-entry'
+const umdEntry = {
+    name: 'umd-entry',
+    resolveId(id) { if (id === UMD_ENTRY) return id },
+    load(id) {
+        if (id === UMD_ENTRY) return `export { default } from './esm/index.js'`
+    },
+}
+
 const basePlugins = [
     fixLruNamespaceImport,
     alias({
@@ -65,30 +76,28 @@ const basePlugins = [
 export default [
     // ── UMD (unminified) ─────────────────────────────────────────────────────
     {
-        input: 'esm/index.js',
+        input: UMD_ENTRY,
         output: {
             file: 'dist/connex.js',
             format: 'umd',
             name: 'Connex',
             sourcemap: true,
-            exports: 'auto',
-            // 'default' interop: `import Foo from 'cjs-module'` resolves to
-            // the module.exports value directly, not wrapped in a namespace.
-            // Fixes `new LRU()` and similar CJS-default-import usages.
+            exports: 'default',
         },
-        plugins: basePlugins,
+        plugins: [umdEntry, ...basePlugins],
     },
     // ── UMD (minified) ───────────────────────────────────────────────────────
     {
-        input: 'esm/index.js',
+        input: UMD_ENTRY,
         output: {
             file: 'dist/connex.min.js',
             format: 'umd',
             name: 'Connex',
             sourcemap: true,
-            exports: 'auto',
+            exports: 'default',
         },
         plugins: [
+            umdEntry,
             ...basePlugins,
             terser({ keep_classnames: true }),
         ],
