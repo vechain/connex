@@ -1,6 +1,6 @@
 {
   "name": "@vechain/connex",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Standard interface to connect DApp with VeChain and user",
   "main": "dist/connex.js",
   "module": "dist/connex.esm.js",
@@ -48,8 +48,8 @@
     "url": "^0.11.0"
   },
   "dependencies": {
-    "@vechain/connex-driver": "^2.2.1",
-    "@vechain/connex-framework": "^2.2.1",
+    "@vechain/connex-driver": "^2.3.0",
+    "@vechain/connex-framework": "^2.3.0",
     "randombytes": "^2.1.0",
     "thor-devkit": "^2.2.0"
   }
