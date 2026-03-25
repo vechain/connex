@@ -104,3 +104,6 @@ typings/
 
 dist/
 esm/
+
+.omc/
+.claude/
