@@ -68,7 +68,7 @@ async function pollResponse(rid: string, suffix: string, timeout: number, tosUrl
             if (text) {
                 return text
             }
-        } catch (err) {
+        } catch {
             if (++errCount > 2) {
                 throw new Error('failed fetch response')
             }
@@ -126,8 +126,8 @@ async function sign<T extends 'tx' | 'cert'>(
                     abort,
                     sleep(1500)
                 ])
-                !accepted && helper.show()
-            } catch { }
+                if (!accepted) { helper.show() }
+            } catch { /* intentionally empty */ }
         })()
 
         void (async () => {
@@ -135,8 +135,8 @@ async function sign<T extends 'tx' | 'cert'>(
                 await pollResponse(rid, ACCEPTED_SUFFIX, 60 * 1000, tosUrl, abort)
                 accepted = true
                 helper.hide()
-                onAccepted && onAccepted()
-            } catch { }
+                onAccepted?.()
+            } catch { /* intentionally empty */ }
         })()
 
         const respJson = await pollResponse(rid, RESP_SUFFIX, 10 * 60 * 1000, tosUrl, abort)
@@ -144,6 +144,7 @@ async function sign<T extends 'tx' | 'cert'>(
         if (resp.error) {
             throw new Error(resp.error)
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return resp.payload as any
     } finally {
         abort.reject(new Error('aborted'))

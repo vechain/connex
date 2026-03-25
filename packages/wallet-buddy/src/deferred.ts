@@ -2,7 +2,7 @@ export class Deferred<T> extends Promise<T> {
     constructor() {
         if (arguments.length > 0) {
             // fallback to Promise constructor
-            // eslint-disable-next-line prefer-rest-params
+            // eslint-disable-next-line prefer-rest-params, @typescript-eslint/no-unsafe-argument
             super(arguments[0])
             this.resolve = () => { throw new Error('Deferred.resolve is not callable') }
             this.reject = () => { throw new Error('Deferred.reject is not callable') }

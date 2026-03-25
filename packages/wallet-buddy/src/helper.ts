@@ -73,10 +73,11 @@ export function connect(src: string): Helper {
                 hide() { }
             }
         }
-    } catch { }
+    } catch { /* intentionally empty */ }
 
     const actionFrame = createActionIframe()
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const msgHandler = (ev: MessageEvent<any>) => {
         if (ev.data && ev.data.src === 'connex-helper' && ev.data.action) {
             switch (ev.data.action) {

@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "build": "rm -rf dist/ esm/ && ../../node_modules/.bin/tsc -p . && rollup -c rollup.config.mjs",
-    "lint": "../../node_modules/.bin/tslint -p .",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false ../../node_modules/.bin/eslint src --ext .ts",
     "prepack": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
